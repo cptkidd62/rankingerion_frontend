@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import LoginForm from '../components/LoginForm.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useRouter, RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const error = ref<string | null>(null)
 
@@ -28,7 +28,6 @@ const handleLogin = async (payload: { username: string; password: string }) => {
     <h1>Strona logowania</h1>
     <LoginForm @submit="handleLogin" />
     <p v-if="error" style="color:red;">{{ error }}</p>
-    <RouterLink to="/signup">Utwórz nowe konto</RouterLink>
   </div>
 </template>
 
