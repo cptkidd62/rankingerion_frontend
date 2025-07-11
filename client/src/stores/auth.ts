@@ -27,17 +27,6 @@ export const useAuthStore = defineStore('auth', {
                 console.error('Błąd logowania', error);
             })
         },
-        async create(user: User) {
-            axios.post(`${API_URL}/signup`, { user }).then((response) => {
-                this.user = response.data.user;
-                this.token = response.data.token;
-                if (this.token)
-                    localStorage.setItem('token', this.token)
-                axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-            }).catch((error) => {
-                console.error('Błąd logowania', error);
-            })
-        },
         logout() {
             this.token = null
             this.user = null
