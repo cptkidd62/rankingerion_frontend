@@ -14,13 +14,8 @@ export default defineComponent({
 
 <template>
   <div class="result-list-item">
-    <a href="#">
-      <h3 class="name">{{ match.bot1name }}</h3>
-      <h3 class="name">{{ match.score1 }}</h3>
-      :
-      <h3 class="name">{{ match.bot2name }}</h3>
-      <h3 class="name">{{ match.score2 }}</h3>
-    </a>
+    <h3 class="name">{{ match.botname1 }} - {{ match.botname2 }}</h3>
+    <span v-for="score in match.scores">{{ score[0] }} : {{ score[1] }}; </span>
   </div>
 </template>
 

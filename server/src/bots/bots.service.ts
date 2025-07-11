@@ -17,11 +17,11 @@ export class BotsService {
     return this.botRepo.filterByUserId(id);
   }
 
-  async create(name: string, file: string, userId: number): Promise<void> {
+  async create(name: string, language: string, userId: number): Promise<void> {
     return this.botRepo.create({
       id: 0,
       name: name,
-      file: file,
+      language: language,
       userId: userId,
     });
   }

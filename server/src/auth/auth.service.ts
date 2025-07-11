@@ -5,8 +5,8 @@ import { User, UserRepository } from 'src/data/user.repository';
 export class AuthService {
   constructor(private userRepo: UserRepository) {}
 
-  async validateUser(login: string, password: string): Promise<User> {
-    const user = await this.userRepo.findByLoginOrEmail(login);
+  async validateUser(username: string, password: string): Promise<User> {
+    const user = await this.userRepo.findByUsername(username);
     if (!user) {
       throw new UnauthorizedException('Nieprawidłowy login');
     }

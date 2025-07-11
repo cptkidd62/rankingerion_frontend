@@ -5,22 +5,18 @@ import { User, UserRepository } from '../user.repository';
 export class InMemoryUserRepository extends UserRepository {
   private users: User[] = [
     {
-      id: 1,
-      name: 'John',
-      login: 'john',
-      email: 'john@mail.com',
+      id: 0,
+      username: 'john',
       password: 'abc',
     },
     {
-      id: 2,
-      name: 'Kate',
-      login: 'kate',
-      email: 'kate@mail.com',
+      id: 1,
+      username: 'kate',
       password: 'abcd',
     },
   ];
 
-  private nextId = 3;
+  private nextId = 2;
 
   async findAll(): Promise<User[]> {
     await Promise.resolve();
@@ -32,13 +28,9 @@ export class InMemoryUserRepository extends UserRepository {
     return this.users.find((user) => user.id == id) || null;
   }
 
-  async findByLoginOrEmail(logmail: string): Promise<User | null> {
+  async findByUsername(username: string): Promise<User | null> {
     await Promise.resolve();
-    return (
-      this.users.find(
-        (user) => user.login === logmail || user.email === logmail,
-      ) || null
-    );
+    return this.users.find((user) => user.username === username) || null;
   }
 
   async create(user: User): Promise<User | null> {

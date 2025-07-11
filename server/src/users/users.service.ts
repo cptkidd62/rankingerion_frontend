@@ -13,17 +13,10 @@ export class UsersService {
     return this.userRepo.findById(id);
   }
 
-  async create(
-    name: string,
-    login: string,
-    email: string,
-    password: string,
-  ): Promise<User | null> {
+  async create(username: string, password: string): Promise<User | null> {
     return this.userRepo.create({
       id: 0,
-      name: name,
-      login: login,
-      email: email,
+      username: username,
       password: password,
     });
   }

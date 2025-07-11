@@ -5,32 +5,32 @@ import { Bot, BotRepository } from '../bot.repository';
 export class InMemoryBotRepository extends BotRepository {
   private bots: Bot[] = [
     {
-      id: 1,
+      id: 0,
       name: 'Bot J',
-      file: 'bj',
+      language: 'c',
+      userId: 1,
+    },
+    {
+      id: 1,
+      name: 'BotJ',
+      language: 'py',
       userId: 1,
     },
     {
       id: 2,
-      name: 'BotJ',
-      file: 'bjo',
-      userId: 1,
-    },
-    {
-      id: 3,
       name: 'Bot K',
-      file: 'bk',
+      language: 'cpp',
       userId: 2,
     },
     {
-      id: 4,
+      id: 3,
       name: 'BotK',
-      file: 'bka',
+      language: 'cpp',
       userId: 2,
     },
   ];
 
-  private nextId = 5;
+  private nextId = 4;
 
   async findAll(): Promise<Bot[]> {
     await Promise.resolve();

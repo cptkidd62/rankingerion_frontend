@@ -39,9 +39,17 @@ export class BotsController {
   @Post()
   async create(
     @Body()
-    { name, file, userId }: { name: string; file: string; userId: number },
+    {
+      name,
+      language,
+      userId,
+    }: {
+      name: string;
+      language: string;
+      userId: number;
+    },
   ) {
-    return this.botsService.create(name, file, userId);
+    return this.botsService.create(name, language, userId);
   }
 
   @Delete(':id')

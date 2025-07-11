@@ -1,6 +1,6 @@
 export interface Bot {
     id: number;
     name: string;
-    file: string;
+    language: string;
     userId: number;
 }

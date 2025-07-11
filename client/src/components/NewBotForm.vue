@@ -2,16 +2,16 @@
 import { ref } from 'vue'
 
 const emit = defineEmits<{
-    (e: 'submit', payload: { name: string, file: string }): void
+    (e: 'submit', payload: { name: string, language: string }): void
 }>()
 
 const name = ref('')
-const file = ref('')
+const language = ref('')
 
 const handleSubmit = () => {
     emit('submit', {
         name: name.value,
-        file: file.value,
+        language: language.value,
     })
 }
 </script>
@@ -20,7 +20,7 @@ const handleSubmit = () => {
     <div class="new-bot-form">
         <form @submit.prevent="handleSubmit">
             <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa">
-            <input type="text" name="file" id="file" v-model="file" placeholder="Plik">
+            <input type="text" name="language" id="language" v-model="language" placeholder="Język">
             <input type="submit" value="Utwórz">
         </form>
     </div>

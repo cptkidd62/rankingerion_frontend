@@ -20,12 +20,7 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() { user }: { user: User }) {
-    const nuser = await this.userService.create(
-      user.name,
-      user.login,
-      user.email,
-      user.password,
-    );
+    const nuser = await this.userService.create(user.username, user.password);
     return { user: nuser, token: 'sampletoken' };
   }
 }

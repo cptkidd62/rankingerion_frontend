@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:3000/auth'
 
 
 interface Credentials {
-    login: string
+    username: string
     password: string
 }
 
@@ -16,8 +16,8 @@ export const useAuthStore = defineStore('auth', {
         token: localStorage.getItem('token') as string | null,
     }),
     actions: {
-        async login({ login, password }: Credentials) {
-            axios.post(`${API_URL}/login`, { login, password }).then((response) => {
+        async login({ username, password }: Credentials) {
+            axios.post(`${API_URL}/login`, { username, password }).then((response) => {
                 this.user = response.data.user;
                 this.token = response.data.token;
                 if (this.token)

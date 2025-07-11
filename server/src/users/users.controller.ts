@@ -29,19 +29,9 @@ export class UsersController {
   @Post()
   async create(
     @Body()
-    {
-      name,
-      login,
-      email,
-      password,
-    }: {
-      name: string;
-      login: string;
-      email: string;
-      password: string;
-    },
+    { username, password }: { username: string; password: string },
   ) {
-    return this.usersService.create(name, login, email, password);
+    return this.usersService.create(username, password);
   }
 
   @Delete(':id')

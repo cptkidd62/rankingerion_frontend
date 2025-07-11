@@ -13,7 +13,7 @@ const handleLogin = async (payload: { username: string; password: string }) => {
   try {
     error.value = null
     await auth.login({
-      login: payload.username,
+      username: payload.username,
       password: payload.password,
     })
     router.push('/')

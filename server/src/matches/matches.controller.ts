@@ -1,36 +1,21 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { MatchesService } from './matches.service';
-import { Match, MatchFull } from 'src/data/match.repository';
+import { Match } from 'src/data/match.repository';
 
 @Controller('matches')
 export class MatchesController {
   constructor(private matchesService: MatchesService) {}
 
   @Get()
-  async findAll(): Promise<MatchFull[]> {
+  async findAll(): Promise<Match[]> {
     return this.matchesService.findAll();
   }
 
-  @Get(':id')
-  async findById(@Param('id') id: number): Promise<Match | null> {
-    return this.matchesService.findById(id);
-  }
-
-  @Post()
-  async create(
-    @Body()
-    {
-      bot1id,
-      bot2id,
-      score1,
-      score2,
-    }: {
-      bot1id: number;
-      bot2id: number;
-      score1: number;
-      score2: number;
-    },
-  ) {
-    return this.matchesService.create(bot1id, bot2id, score1, score2);
+  @Get(':id1-:id2')
+  async findById(
+    @Param('id1') id1: number,
+    @Param('id2') id2: number,
+  ): Promise<Match | null> {
+    return this.matchesService.findById(id1, id2);
   }
 }
