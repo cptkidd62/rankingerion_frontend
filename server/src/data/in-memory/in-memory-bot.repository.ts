@@ -8,25 +8,25 @@ export class InMemoryBotRepository extends BotRepository {
       id: 0,
       name: 'Bot J',
       language: 'c',
-      userId: 1,
+      user_id: 1,
     },
     {
       id: 1,
       name: 'BotJ',
       language: 'py',
-      userId: 1,
+      user_id: 1,
     },
     {
       id: 2,
       name: 'Bot K',
       language: 'cpp',
-      userId: 2,
+      user_id: 2,
     },
     {
       id: 3,
       name: 'BotK',
       language: 'cpp',
-      userId: 2,
+      user_id: 2,
     },
   ];
 
@@ -44,7 +44,7 @@ export class InMemoryBotRepository extends BotRepository {
 
   async filterByUserId(id: number): Promise<Bot[]> {
     await Promise.resolve();
-    return this.bots.filter((Bot) => Bot.userId == id);
+    return this.bots.filter((Bot) => Bot.user_id == id);
   }
 
   async create(bot: Bot): Promise<void> {

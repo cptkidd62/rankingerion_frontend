@@ -2,7 +2,7 @@ export interface Bot {
   id: number;
   name: string;
   language: string;
-  userId: number;
+  user_id: number;
 }
 
 export abstract class BotRepository {
