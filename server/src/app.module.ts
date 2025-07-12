@@ -10,9 +10,15 @@ import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DataModule],
+  imports: [
+    DataModule,
+    ConfigModule.forRoot({
+      envFilePath: ['.env.local', '.env'],
+    }),
+  ],
   controllers: [
     AppController,
     MatchesController,
