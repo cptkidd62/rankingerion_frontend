@@ -70,13 +70,13 @@ export class FileBotRepository extends BotRepository {
   }
 
   async create(bot: Bot): Promise<void> {
-    await Promise.resolve();
     bot.id = this.nextId++;
     this.bots.push(bot);
+    await this.saveData();
   }
 
   async deleteById(id: number): Promise<void> {
-    await Promise.resolve();
     this.bots = this.bots.filter((bot) => bot.id != id);
+    await this.saveData();
   }
 }
