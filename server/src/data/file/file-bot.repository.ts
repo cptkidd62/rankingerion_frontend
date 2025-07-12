@@ -69,10 +69,11 @@ export class FileBotRepository extends BotRepository {
     return this.bots.filter((Bot) => Bot.user_id == id);
   }
 
-  async create(bot: Bot): Promise<void> {
+  async create(bot: Bot): Promise<number> {
     bot.id = this.nextId++;
     this.bots.push(bot);
     await this.saveData();
+    return bot.id;
   }
 
   async deleteById(id: number): Promise<void> {

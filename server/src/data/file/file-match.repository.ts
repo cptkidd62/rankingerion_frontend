@@ -70,7 +70,7 @@ export class FileMatchRepository extends MatchRepository {
   }
 
   async create(match: Match): Promise<void> {
-    await Promise.resolve();
     this.matches.push(match);
+    await this.saveData();
   }
 }

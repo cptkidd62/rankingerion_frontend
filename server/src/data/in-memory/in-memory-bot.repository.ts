@@ -47,10 +47,11 @@ export class InMemoryBotRepository extends BotRepository {
     return this.bots.filter((Bot) => Bot.user_id == id);
   }
 
-  async create(bot: Bot): Promise<void> {
+  async create(bot: Bot): Promise<number> {
     await Promise.resolve();
     bot.id = this.nextId++;
     this.bots.push(bot);
+    return bot.id;
   }
 
   async deleteById(id: number): Promise<void> {

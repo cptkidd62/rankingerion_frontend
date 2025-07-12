@@ -49,7 +49,7 @@ export class BotsController {
       userId: number;
     },
   ) {
-    return this.botsService.create(name, language, userId);
+    return this.botsService.createWithMockMatches(name, language, userId);
   }
 
   @Delete(':id')
