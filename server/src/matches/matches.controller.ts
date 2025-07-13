@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { Match } from 'src/data/match.repository';
 
@@ -7,8 +7,10 @@ export class MatchesController {
   constructor(private matchesService: MatchesService) {}
 
   @Get()
-  async findAll(): Promise<Match[]> {
-    return this.matchesService.findAll();
+  async findAll(@Query('userId') id?: number): Promise<Match[]> {
+    return id
+      ? this.matchesService.filterByUserId(id)
+      : this.matchesService.findAll();
   }
 
   @Get(':id1-:id2')

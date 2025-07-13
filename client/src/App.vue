@@ -17,7 +17,7 @@ const auth = useAuthStore()
             Rankingerion
           </span>
         </RouterLink>
-        <RouterLink to="/wyniki">Wyniki</RouterLink>
+        <RouterLink v-if="auth.token" to="/wyniki">Wyniki</RouterLink>
         <RouterLink v-if="auth.token" to="/boty">Moje boty</RouterLink>
         <RouterLink v-if="auth.token" to="/konto">Moje konto</RouterLink>
         <RouterLink v-if="!auth.token" to="/signin">Zaloguj</RouterLink>

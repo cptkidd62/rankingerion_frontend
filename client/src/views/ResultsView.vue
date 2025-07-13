@@ -2,13 +2,15 @@
 import { onMounted, ref } from 'vue';
 import ResultListItem from '../components/ResultListItem.vue'
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
 const API_URL = 'http://localhost:3000/matches'
 const matches = ref([]);
+const auth = useAuthStore()
 
 const loadMatches = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(auth.token ? `${API_URL}?userId=${auth.user?.id}` : API_URL);
     matches.value = response.data;
     console.log(matches);
   } catch (error) {
