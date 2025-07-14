@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User, UserRepository } from 'src/data/user.repository';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -17,5 +18,11 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  generateToken(userId: number): string {
+    return jwt.sign({ sub: userId }, process.env.JWT_SECRET ?? '', {
+      expiresIn: '1h',
+    });
   }
 }

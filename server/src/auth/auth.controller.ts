@@ -10,6 +10,7 @@ export class AuthController {
     @Body() { username, password }: { username: string; password: string },
   ) {
     const user = await this.authService.validateUser(username, password);
-    return { user: user, token: 'sampletoken' };
+    const token = this.authService.generateToken(user.id);
+    return { user: user, token: token };
   }
 }
