@@ -33,5 +33,17 @@ export const useAuthStore = defineStore('auth', {
             localStorage.removeItem('token')
             delete axios.defaults.headers.common['Authorization']
         },
+        async fetchUser() {
+            if (!this.token) return;
+
+            try {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+                const response = await axios.get(`${API_URL}/me`);
+                this.user = response.data;
+            } catch (error) {
+                console.error('Nie udało się pobrać użytkownika, wylogowano', error);
+                this.logout(); // token nieprawidłowy / wygasł / użytkownik nie istnieje
+            }
+        },
     }
 })
