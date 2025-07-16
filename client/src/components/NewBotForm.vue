@@ -24,9 +24,12 @@ const handleSubmit = () => {
             <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa">
             <select name="language" id="language" v-model="language" placeholder="Język">
                 <option disabled value="">Wybierz język</option>
+                <option value="c">C</option>
                 <option value="cpp">C++</option>
                 <option value="cs">C#</option>
-                <option value="c">C</option>
+                <option value="java">Java</option>
+                <option value="py">Python</option>
+                <option value="rs">Rust</option>
             </select>
             <textarea type="text" name="code" id="code" v-model="code">Tu wklej kod</textarea>
             <input type="submit" value="Utwórz">
