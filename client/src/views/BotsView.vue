@@ -21,8 +21,9 @@ const loadBots = async () => {
   }
 };
 
-const createBot = async (payload: { name: string, language: string }) => {
-  axios.post(API_URL, { name: payload.name, language: payload.language, userId: auth.user?.id }).then(function (_) {
+const createBot = async (payload: { name: string, language: string, code: string }) => {
+  axios.post(API_URL, { name: payload.name, language: payload.language, code: payload.code,  userId: auth.user?.id }).then(function (_) {
+    newbottoggle.value = false;
     loadBots();
   }).catch(function (error) {
     console.error('Błąd tworzenia bota', error);

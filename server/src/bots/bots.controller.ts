@@ -42,13 +42,16 @@ export class BotsController {
     {
       name,
       language,
+      code,
       userId,
     }: {
       name: string;
       language: string;
+      code: string;
       userId: number;
     },
   ) {
+    console.log(name, ' code: ', code);
     return this.botsService.createWithMockMatches(name, language, userId);
   }
 
