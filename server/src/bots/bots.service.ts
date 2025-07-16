@@ -3,6 +3,8 @@ import { randomInt } from 'crypto';
 import { BotRepository, Bot } from 'src/data/bot.repository';
 import { MatchRepository } from 'src/data/match.repository';
 import { UserRepository } from 'src/data/user.repository';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class BotsService {
@@ -24,18 +26,10 @@ export class BotsService {
     return this.botRepo.filterByUserId(id);
   }
 
-  async create(name: string, language: string, user_id: number): Promise<void> {
-    await this.botRepo.create({
-      id: 0,
-      name: name,
-      language: language,
-      user_id: user_id,
-    });
-  }
-
-  async createWithMockMatches(
+  async create(
     name: string,
     language: string,
+    code: string,
     user_id: number,
   ): Promise<void> {
     const id = await this.botRepo.create({
@@ -44,6 +38,33 @@ export class BotsService {
       language: language,
       user_id: user_id,
     });
+
+    const filePath = path.join(
+      process.env.BOTS_DIR ?? './',
+      id + '_bot.' + language,
+    );
+    await fs.writeFile(filePath, code, 'utf-8');
+  }
+
+  async createWithMockMatches(
+    name: string,
+    language: string,
+    code: string,
+    user_id: number,
+  ): Promise<void> {
+    const id = await this.botRepo.create({
+      id: 0,
+      name: name,
+      language: language,
+      user_id: user_id,
+    });
+
+    const filePath = path.join(
+      process.env.BOTS_DIR ?? './',
+      id + '_bot.' + language,
+    );
+    await fs.writeFile(filePath, code, 'utf-8');
+
     const bots = await this.botRepo.findAll();
     const users = await this.userRepo.findAll();
     const this_user = users.find((u) => u.id == user_id) ?? {

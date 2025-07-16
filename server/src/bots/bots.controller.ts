@@ -11,8 +11,6 @@ import { BotsService } from './bots.service';
 import { Bot } from 'src/data/bot.repository';
 import { MatchesService } from 'src/matches/matches.service';
 import { Match } from 'src/data/match.repository';
-import { promises as fs } from 'fs';
-import * as path from 'path';
 
 @Controller('bots')
 export class BotsController {
@@ -53,12 +51,7 @@ export class BotsController {
       userId: number;
     },
   ) {
-    const filePath = path.join(
-      process.env.BOTS_DIR ?? './',
-      name + '.' + language,
-    );
-    await fs.writeFile(filePath, code, 'utf-8');
-    return this.botsService.createWithMockMatches(name, language, userId);
+    return this.botsService.createWithMockMatches(name, language, code, userId);
   }
 
   @Delete(':id')
