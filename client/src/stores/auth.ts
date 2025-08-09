@@ -16,15 +16,18 @@ export const useAuthStore = defineStore('auth', {
         token: localStorage.getItem('token') as string | null,
     }),
     actions: {
-        async login({ username, password }: Credentials) {
-            axios.post(`${API_URL}/login`, { username, password }).then((response) => {
+        async login({ username, password }: Credentials): Promise<string | null> {
+            return axios.post(`${API_URL}/login`, { username, password }).then((response) => {
                 this.user = response.data.user;
                 this.token = response.data.token;
                 if (this.token)
                     localStorage.setItem('token', this.token)
                 axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+                console.log('Sukces logowania');
+                return null;
             }).catch((error) => {
                 console.error('Błąd logowania', error);
+                return error.response.data.message;
             })
         },
         logout() {

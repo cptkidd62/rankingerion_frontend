@@ -10,15 +10,16 @@ const auth = useAuthStore()
 const router = useRouter()
 
 const handleLogin = async (payload: { username: string; password: string }) => {
-  try {
-    error.value = null
-    await auth.login({
-      username: payload.username,
-      password: payload.password,
-    })
-    router.push('/')
-  } catch (e) {
-    error.value = 'Nieprawidłowe dane logowania'
+  error.value = null;
+  let err = await auth.login({
+    username: payload.username,
+    password: payload.password,
+  });
+  if (err) {
+    error.value = err;
+  }
+  else {
+    router.push('/');
   }
 }
 </script>
