@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 const emit = defineEmits<{
     (e: 'submit', payload: { name: string, language: string, code: string }): void
@@ -9,12 +9,35 @@ const name = ref('')
 const language = ref('')
 const code = ref('')
 
+const errors = reactive({
+    name: '',
+    language: '',
+    code: ''
+})
+
 const handleSubmit = () => {
-    emit('submit', {
-        name: name.value,
-        language: language.value,
-        code: code.value,
-    })
+    if (validate()) {
+        emit('submit', {
+            name: name.value,
+            language: language.value,
+            code: code.value,
+        })
+    }
+}
+
+const validate = () => {
+    errors.name = name.value != '' ? '' : 'Nazwa nie może być pusta!';
+    errors.language = language.value != '' ? '' : 'Wybierz język';
+    errors.code = code.value != '' ? '' : 'Kod nie może być pusty!';
+    errors.code = code.value.length > 50000 ? 'Kod nie może dłuższy niż 50 000 znaków!' : errors.code;
+
+    if (!errors.name && !errors.language && !errors.code) {
+        return true;
+    }
+    else {
+        console.error('Błąd walidacji formularza: ' + (errors.name || errors.language || errors.code));
+        return false;
+    }
 }
 </script>
 
