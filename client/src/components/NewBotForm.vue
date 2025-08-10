@@ -16,7 +16,7 @@ const errors = reactive({
 })
 
 const handleSubmit = () => {
-    if (validate()) {
+    if (validateAll()) {
         emit('submit', {
             name: name.value,
             language: language.value,
@@ -25,11 +25,10 @@ const handleSubmit = () => {
     }
 }
 
-const validate = () => {
-    errors.name = name.value != '' ? '' : 'Nazwa nie może być pusta!';
-    errors.language = language.value != '' ? '' : 'Wybierz język';
-    errors.code = code.value != '' ? '' : 'Kod nie może być pusty!';
-    errors.code = code.value.length > 50000 ? 'Kod nie może dłuższy niż 50 000 znaków!' : errors.code;
+const validateAll = () => {
+    validateField("name");
+    validateField("language");
+    validateField("code");
 
     if (!errors.name && !errors.language && !errors.code) {
         return true;
@@ -39,13 +38,26 @@ const validate = () => {
         return false;
     }
 }
+
+const validateField = (field: string) => {
+    if (field === "name")
+        errors.name = name.value != '' ? '' : 'Nazwa nie może być pusta!';
+    if (field === "language")
+        errors.language = language.value != '' ? '' : 'Wybierz język';
+    if (field === "code") {
+        errors.code = code.value != '' ? '' : 'Kod nie może być pusty!';
+        errors.code = code.value.length > 50000 ? 'Kod nie może dłuższy niż 50 000 znaków!' : errors.code;
+    }
+}
 </script>
 
 <template>
     <div class="new-bot-form">
         <form @submit.prevent="handleSubmit">
-            <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa">
-            <select name="language" id="language" v-model="language" placeholder="Język">
+            <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa" @blur="validateField('name')">
+            <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
+            <select name="language" id="language" v-model="language" placeholder="Język"
+                @blur="validateField('language')">
                 <option disabled value="">Wybierz język</option>
                 <option value="c">C</option>
                 <option value="cpp">C++</option>
@@ -54,7 +66,10 @@ const validate = () => {
                 <option value="py">Python</option>
                 <option value="rs">Rust</option>
             </select>
-            <textarea type="text" name="code" id="code" v-model="code">Tu wklej kod</textarea>
+            <p v-if="errors.language" style="color:red;">{{ errors.language }}</p>
+            <textarea type="text" name="code" id="code" v-model="code"
+                @blur="validateField('code')">Tu wklej kod</textarea>
+            <p v-if="errors.code" style="color:red;">{{ errors.code }}</p>
             <input type="submit" value="Utwórz">
         </form>
     </div>
