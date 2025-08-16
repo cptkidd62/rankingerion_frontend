@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Bot, BotRepository } from '../bot.repository';
+import { Mutex } from 'async-mutex';
 
 interface BotFileData {
   next_id: number;
@@ -12,6 +13,8 @@ interface BotFileData {
 export class FileBotRepository extends BotRepository {
   private bots: Bot[] = [];
   private nextId = 0;
+  private mutex: Mutex = new Mutex();
+  private dirty: boolean = false;
 
   constructor() {
     super();
@@ -40,18 +43,28 @@ export class FileBotRepository extends BotRepository {
     }
   }
 
-  private async saveData() {
+  async saveData() {
     const data: BotFileData = {
       next_id: this.nextId,
       bots: this.bots,
     };
-    const json = JSON.stringify(data, null, 2);
+    if (this.dirty) {
+      await this.mutex.acquire();
+      const json = JSON.stringify(data, null, 2);
+      this.dirty = false;
+      this.mutex.release();
 
-    const dataDir = process.env.DATA_DIR ?? './';
-    const fileName = process.env.BOTS_FILE ?? 'bots.json';
-    const filePath = path.join(dataDir, fileName);
+      const dataDir = process.env.DATA_DIR ?? './';
+      const fileName = process.env.BOTS_FILE ?? 'bots.json';
+      const filePath = path.join(dataDir, fileName);
+      const tmpPath = filePath + '.tmp';
+      const bakPath = filePath + '.bak';
 
-    await fs.writeFile(filePath, json, 'utf-8');
+      await fs.writeFile(tmpPath, json, 'utf-8');
+      await fs.rename(filePath, bakPath).catch(() => {});
+      await fs.rename(tmpPath, filePath);
+      console.log('Zapisano bot repo');
+    }
   }
 
   async findAll(): Promise<Bot[]> {
@@ -70,14 +83,18 @@ export class FileBotRepository extends BotRepository {
   }
 
   async create(bot: Bot): Promise<number> {
+    await this.mutex.acquire();
     bot.id = this.nextId++;
     this.bots.push(bot);
-    await this.saveData();
+    this.dirty = true;
+    this.mutex.release();
     return bot.id;
   }
 
   async deleteById(id: number): Promise<void> {
+    await this.mutex.acquire();
     this.bots = this.bots.filter((bot) => bot.id != id);
-    await this.saveData();
+    this.dirty = true;
+    this.mutex.release();
   }
 }

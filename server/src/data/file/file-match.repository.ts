@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Match, MatchRepository } from '../match.repository';
+import { Mutex } from 'async-mutex';
 
 interface MatchesFileData {
   matches: Match[];
@@ -10,6 +11,8 @@ interface MatchesFileData {
 @Injectable()
 export class FileMatchRepository extends MatchRepository {
   private matches: Match[] = [];
+  private mutex: Mutex = new Mutex();
+  private dirty: boolean = false;
 
   constructor() {
     super();
@@ -35,17 +38,27 @@ export class FileMatchRepository extends MatchRepository {
     }
   }
 
-  private async saveData() {
+  async saveData() {
     const data: MatchesFileData = {
       matches: this.matches,
     };
-    const json = JSON.stringify(data, null, 2);
+    if (this.dirty) {
+      await this.mutex.acquire();
+      const json = JSON.stringify(data, null, 2);
+      this.dirty = false;
+      this.mutex.release();
 
-    const dataDir = process.env.DATA_DIR ?? './';
-    const fileName = process.env.MATCHES_FILE ?? 'matches.json';
-    const filePath = path.join(dataDir, fileName);
+      const dataDir = process.env.DATA_DIR ?? './';
+      const fileName = process.env.MATCHES_FILE ?? 'matches.json';
+      const filePath = path.join(dataDir, fileName);
+      const tmpPath = filePath + '.tmp';
+      const bakPath = filePath + '.bak';
 
-    await fs.writeFile(filePath, json, 'utf-8');
+      await fs.writeFile(tmpPath, json, 'utf-8');
+      await fs.rename(filePath, bakPath).catch(() => {});
+      await fs.rename(tmpPath, filePath);
+      console.log('Zapisano match repo');
+    }
   }
 
   async findAll(): Promise<Match[]> {
@@ -70,7 +83,9 @@ export class FileMatchRepository extends MatchRepository {
   }
 
   async create(match: Match): Promise<void> {
+    await this.mutex.acquire();
     this.matches.push(match);
-    await this.saveData();
+    this.dirty = true;
+    this.mutex.release();
   }
 }

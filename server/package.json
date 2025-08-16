@@ -24,7 +24,9 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "async-mutex": "^0.5.0",
     "jsonwebtoken": "^9.0.2",
+    "module": "^1.2.5",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

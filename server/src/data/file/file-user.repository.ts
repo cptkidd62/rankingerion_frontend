@@ -38,20 +38,6 @@ export class FileUserRepository extends UserRepository {
     }
   }
 
-  private async saveData() {
-    const data: UserFileData = {
-      next_id: this.nextId,
-      users: this.users,
-    };
-    const json = JSON.stringify(data, null, 2);
-
-    const dataDir = process.env.DATA_DIR ?? './';
-    const fileName = process.env.USERS_FILE ?? 'users.json';
-    const filePath = path.join(dataDir, fileName);
-
-    await fs.writeFile(filePath, json, 'utf-8');
-  }
-
   async findAll(): Promise<User[]> {
     await Promise.resolve();
     return this.users;

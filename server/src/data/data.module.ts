@@ -1,26 +1,16 @@
 import { Module } from '@nestjs/common';
-import { UserRepository } from './user.repository';
-import { FileUserRepository } from './file/file-user.repository';
-import { BotRepository } from './bot.repository';
-import { FileBotRepository } from './file/file-bot.repository';
-import { MatchRepository } from './match.repository';
-import { FileMatchRepository } from './file/file-match.repository';
+import { FileRepositoryModule } from './file/file-repository.module';
+import { InMemoryRepositoryModule } from './in-memory/in-memory-repository.module';
+
+const RepositoryModule =
+  process.env.REPO_TYPE === 'file'
+    ? FileRepositoryModule
+    : process.env.REPO_TYPE === 'memory'
+      ? InMemoryRepositoryModule
+      : FileRepositoryModule;
 
 @Module({
-  providers: [
-    {
-      provide: UserRepository,
-      useClass: FileUserRepository,
-    },
-    {
-      provide: BotRepository,
-      useClass: FileBotRepository,
-    },
-    {
-      provide: MatchRepository,
-      useClass: FileMatchRepository,
-    },
-  ],
-  exports: [UserRepository, BotRepository, MatchRepository],
+  imports: [RepositoryModule],
+  exports: [RepositoryModule],
 })
 export class DataModule {}
