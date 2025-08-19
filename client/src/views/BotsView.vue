@@ -45,7 +45,7 @@ onMounted(loadBots);
   <div class="bots">
     <h1>Moje boty</h1>
     <BotListItem v-for="bot in bots" :bot="bot" @delete="deleteBot" />
-    <button @click="newbottoggle = !newbottoggle">Nowy bot</button>
+    <button @click="newbottoggle = !newbottoggle">{{ newbottoggle ? "▲" : "▼" }} Nowy bot</button>
     <NewBotForm v-if="newbottoggle" @submit="createBot" />
   </div>
 </template>
@@ -57,6 +57,8 @@ onMounted(loadBots);
     display: flex;
     flex-flow: column;
     align-items: center;
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

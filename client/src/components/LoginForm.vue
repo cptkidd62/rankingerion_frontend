@@ -31,6 +31,7 @@ const handleSubmit = () => {
   display: flex;
   flex-flow: column;
   margin-bottom: 1rem;
+  margin-top: 2rem;
 }
 
 .login-form form {

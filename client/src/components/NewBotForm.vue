@@ -68,7 +68,7 @@ const validateField = (field: string) => {
             </select>
             <p v-if="errors.language" style="color:red;">{{ errors.language }}</p>
             <textarea type="text" name="code" id="code" v-model="code"
-                @blur="validateField('code')">Tu wklej kod</textarea>
+                @blur="validateField('code')" placeholder="Tu wklej kod"></textarea>
             <p v-if="errors.code" style="color:red;">{{ errors.code }}</p>
             <input type="submit" value="Utwórz">
         </form>
@@ -80,15 +80,37 @@ const validateField = (field: string) => {
     display: flex;
     flex-flow: column;
     margin-bottom: 1rem;
+    width: 100%;
+    height: 100%;
 }
 
 .new-bot-form form {
     display: flex;
     flex-flow: column;
+    width: 100%;
+    height: 100%;
+    margin-top: 2em;
 }
 
-.new-bot-form input {
+.new-bot-form input, select, textarea {
     margin-bottom: 1em;
+    margin-left: auto;
+    margin-right: auto;
     font-family: inherit;
+    align-items: center;
+    width: 20em;
+}
+
+.new-bot-form p {
+    margin-bottom: 1em;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: inherit;
+    align-items: center;
+}
+
+.new-bot-form textarea:focus {
+    width: 100%;
+    height: 70%;
 }
 </style>
