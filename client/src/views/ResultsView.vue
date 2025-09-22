@@ -59,7 +59,10 @@ onMounted(loadMatches)
 <template>
   <div class="results">
     <h1>Strona z wynikami</h1>
-    <ResultListItem v-for="match in matches" :match="match" />
+    <details v-for="group in groupedMatches">
+      <summary>{{ group.botName }}</summary>
+      <ResultListItem v-for="match in group.matches" :match="match" />
+    </details>
   </div>
 </template>
 
