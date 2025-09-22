@@ -4,7 +4,6 @@ import type { User } from "@/types/user";
 
 const API_URL = 'http://localhost:3000/auth'
 
-
 interface Credentials {
     username: string
     password: string
@@ -24,6 +23,7 @@ export const useAuthStore = defineStore('auth', {
                     localStorage.setItem('token', this.token)
                 axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
                 console.log('Sukces logowania');
+                console.log(this.user);
                 return null;
             }).catch((error) => {
                 console.error('Błąd logowania', error);

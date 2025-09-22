@@ -20,7 +20,7 @@ const loadMatches = async () => {
     const response = await axios.get(auth.token ? `${API_URL}?userId=${auth.user?.id}` : API_URL);
     matches.value = response.data;
     console.log(matches);
-    groupedMatches.value = groupMatchesByMyBots(matches.value as Match[], 0);
+    groupedMatches.value = groupMatchesByMyBots(matches.value as Match[], auth.user?.id || -1);
     console.log(groupedMatches);
   } catch (error) {
     console.error('Błąd ładowania meczy', error);

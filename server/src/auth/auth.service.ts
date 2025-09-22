@@ -1,12 +1,17 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { User, UserRepository } from 'src/data/user.repository';
+import { UserRepository } from 'src/data/user.repository';
 import * as jwt from 'jsonwebtoken';
+
+export interface AuthUser {
+  id: number;
+  username: string;
+}
 
 @Injectable()
 export class AuthService {
   constructor(private userRepo: UserRepository) {}
 
-  async validateUser(username: string, password: string): Promise<User> {
+  async validateUser(username: string, password: string): Promise<AuthUser> {
     const user = await this.userRepo.findByUsername(username);
     if (!user) {
       throw new UnauthorizedException('Nieprawidłowy login');
@@ -17,7 +22,7 @@ export class AuthService {
       throw new UnauthorizedException('Nieprawidłowe hasło');
     }
 
-    return user;
+    return { id: user.id, username: user.username };
   }
 
   generateToken(userId: number): string {
