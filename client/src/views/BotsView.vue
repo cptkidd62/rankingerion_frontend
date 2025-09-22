@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/auth';
 const API_URL = 'http://localhost:3000/bots'
 const bots = ref<Bot[]>([]);
 const auth = useAuthStore()
-const newbottoggle = ref<boolean>(false);
+const isOpen = ref(false)
 
 const loadBots = async () => {
   try {
@@ -22,8 +22,8 @@ const loadBots = async () => {
 };
 
 const createBot = async (payload: { name: string, language: string, code: string }) => {
-  axios.post(API_URL, { name: payload.name, language: payload.language, code: payload.code,  userId: auth.user?.id }).then(function (_) {
-    newbottoggle.value = false;
+  axios.post(API_URL, { name: payload.name, language: payload.language, code: payload.code, userId: auth.user?.id }).then(function (_) {
+    isOpen.value = false;
     loadBots();
   }).catch(function (error) {
     console.error('Błąd tworzenia bota', error);
@@ -45,8 +45,10 @@ onMounted(loadBots);
   <div class="bots">
     <h1>Moje boty</h1>
     <BotListItem v-for="bot in bots" :bot="bot" @delete="deleteBot" />
-    <button @click="newbottoggle = !newbottoggle">{{ newbottoggle ? "▲" : "▼" }} Nowy bot</button>
-    <NewBotForm v-if="newbottoggle" @submit="createBot" />
+    <details :open="isOpen">
+      <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
+      <NewBotForm @submit="createBot" />
+    </details>
   </div>
 </template>
 
