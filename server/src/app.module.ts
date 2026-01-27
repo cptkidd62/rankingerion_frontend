@@ -11,7 +11,6 @@ import { UsersService } from './users/users.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { ConfigModule } from '@nestjs/config';
-import { BenchmarkerConnectService } from './benchmarker-connect/benchmarker-connect.service';
 
 @Module({
   imports: [
@@ -33,7 +32,6 @@ import { BenchmarkerConnectService } from './benchmarker-connect/benchmarker-con
     BotsService,
     UsersService,
     AuthService,
-    BenchmarkerConnectService,
   ],
 })
 export class AppModule {}
