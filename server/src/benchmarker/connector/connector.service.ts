@@ -15,6 +15,7 @@ export class ConnectorService {
       ),
     ],
     checkServerIdentity: () => undefined,
+    timeout: 5000,
   };
 
   getSocket(host: string, port: number): TLSSocket {
