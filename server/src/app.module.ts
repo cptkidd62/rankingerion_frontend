@@ -11,6 +11,7 @@ import { UsersService } from './users/users.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { ConfigModule } from '@nestjs/config';
+import { BenchmarkerModule } from './benchmarker/benchmarker.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       envFilePath: ['.env.local', '.env'],
     }),
+    BenchmarkerModule,
   ],
   controllers: [
     AppController,
