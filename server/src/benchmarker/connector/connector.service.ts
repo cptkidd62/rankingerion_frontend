@@ -14,7 +14,6 @@ export class ConnectorService {
       ),
     ],
     checkServerIdentity: () => undefined,
-    timeout: 5000,
   };
 
   getSocket(host: string, port: number): TLSSocket {
@@ -23,18 +22,6 @@ export class ConnectorService {
         'client connected',
         socket.authorized ? 'authorized' : 'unauthorized',
       );
-    });
-    socket.on('data', (data) => {
-      console.log('<< data:', JSON.stringify(data));
-    });
-    socket.on('error', (err) => {
-      console.error('!! socket error:', err);
-    });
-    socket.on('close', (hadError) => {
-      console.log('socket closed, error?', hadError);
-    });
-    socket.on('timeout', () => {
-      console.log('socket timeout');
     });
     return socket;
   }
