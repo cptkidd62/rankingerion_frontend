@@ -43,4 +43,26 @@ export class Agent {
       this.version = null;
     }
   }
+
+  getParamsString(): string {
+    let s = '';
+    if (this.paramNames.length > 0) {
+      s += '@';
+      for (let i = 0; i < this.paramNames.length; i++) {
+        if (i > 0) s += ';';
+        s += this.paramNames[i] + '=' + this.values[i];
+      }
+    }
+    return s;
+  }
+
+  toString(): string {
+    let s = this.baseName;
+    if (this.version != null) {
+      s += '#' + this.version;
+    }
+    s += this.lang;
+    s += this.getParamsString();
+    return s;
+  }
 }

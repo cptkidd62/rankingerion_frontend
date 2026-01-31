@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConnectionOptions, TLSSocket, connect } from 'tls';
 import { readFileSync } from 'fs';
-import { stdin } from 'process';
 
 @Injectable()
 export class ConnectorService {
@@ -24,15 +23,18 @@ export class ConnectorService {
         'client connected',
         socket.authorized ? 'authorized' : 'unauthorized',
       );
-      stdin.pipe(socket);
-      stdin.resume();
     });
-    socket.setEncoding('utf8');
     socket.on('data', (data) => {
-      console.log(data);
+      console.log('<< data:', JSON.stringify(data));
     });
-    socket.on('end', () => {
-      console.log('server ends connection');
+    socket.on('error', (err) => {
+      console.error('!! socket error:', err);
+    });
+    socket.on('close', (hadError) => {
+      console.log('socket closed, error?', hadError);
+    });
+    socket.on('timeout', () => {
+      console.log('socket timeout');
     });
     return socket;
   }
