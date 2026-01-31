@@ -37,7 +37,7 @@ export class Agent {
     }
     if (name.includes('#')) {
       this.baseName = name.substring(0, name.indexOf('#'));
-      this.version = name.substring(name.indexOf('#'));
+      this.version = name.substring(name.indexOf('#') + 1);
     } else {
       this.baseName = name;
       this.version = null;
