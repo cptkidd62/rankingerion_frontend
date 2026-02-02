@@ -91,6 +91,7 @@ export class ClientService {
         }
         case ClientService.CMD_PING: {
           console.log('ping request');
+          this.sendPong();
           break;
         }
       }
@@ -118,5 +119,9 @@ export class ClientService {
     this.outstream.writeLong(BigInt(1));
     this.outstream.writeUTF('Sandbox');
     console.log('end sendPlayTask');
+  }
+
+  sendPong() {
+    this.outstream.writeInt(ClientService.ANS_PONG);
   }
 }

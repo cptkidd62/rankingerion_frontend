@@ -6,12 +6,16 @@ export class InputStream {
 
   addToBuffer(chunk: Buffer) {
     this.buffer = Buffer.concat([this.buffer, chunk]);
+    console.log('&&& buffer after receiving: ');
+    console.log(this.buffer);
   }
 
   tryReadInt(): number | null {
     if (this.buffer.length < 4) return null;
     const n = this.buffer.readInt32BE();
     this.buffer = this.buffer.subarray(4);
+    console.log('&&& buffer after reading int: ');
+    console.log(this.buffer);
     return n;
   }
 
@@ -19,6 +23,8 @@ export class InputStream {
     if (this.buffer.length < 4) return null;
     const n = this.buffer.readBigInt64BE();
     this.buffer = this.buffer.subarray(8);
+    console.log('&&& buffer after reading long: ');
+    console.log(this.buffer);
     return n;
   }
 
@@ -26,6 +32,8 @@ export class InputStream {
     if (this.buffer.length < bytes) return null;
     const s = String(this.buffer.subarray(0, bytes));
     this.buffer = this.buffer.subarray(bytes);
+    console.log('&&& buffer after reading string: ');
+    console.log(this.buffer);
     return s;
   }
 
@@ -35,6 +43,8 @@ export class InputStream {
     if (this.buffer.length < 2 + len) return null;
     const s = String(this.buffer.subarray(2, 2 + len));
     this.buffer = this.buffer.subarray(2 + len);
+    console.log('&&& buffer after reading utf: ');
+    console.log(this.buffer);
     return s;
   }
 }
