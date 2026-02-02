@@ -4,6 +4,8 @@ import { TLSSocket } from 'tls';
 import { Agent } from '../models/agent';
 import { OutputStream } from '../datastream/OutputStream';
 import { InputStream } from '../datastream/InputStream';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class ClientService {
@@ -56,7 +58,7 @@ export class ClientService {
 
   sendPlayTask() {
     console.log('in sendPlayTask');
-    const agent = new Agent('randomScore#r1.cpp');
+    const agent = new Agent('test_bot#b1.cpp');
     this.outstream.writeInt(ClientService.CMD_PLAY);
     this.outstream.writeInt(1);
     this.outstream.writeUTF(agent.toString());
@@ -65,8 +67,27 @@ export class ClientService {
     console.log('end sendPlayTask');
   }
 
+  sendSource(sourceName: string) {
+    const botsDir = process.env.BOTS_DIR ?? './';
+    const filePath = path.join(botsDir, sourceName);
+    try {
+      const code_buf = fs.readFileSync(filePath);
+      this.outstream.writeInt(ClientService.CMD_SOURCE);
+      this.outstream.writeUTF(sourceName);
+      this.outstream.writeInt(code_buf.length);
+      this.outstream.write(code_buf);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   sendPong() {
     this.outstream.writeInt(ClientService.ANS_PONG);
+  }
+
+  acceptPlayTask(id: number) {
+    console.log(id);
+    // TODO
   }
 
   parseBuffer(): boolean {
@@ -84,6 +105,7 @@ export class ClientService {
           return false;
         }
         console.log('id: ' + id);
+        this.acceptPlayTask(id);
         break;
       }
       case ClientService.ANS_PLAY_RESULT: {
@@ -121,6 +143,7 @@ export class ClientService {
           return false;
         }
         console.log('summaries: ' + summaries);
+        // TODO
         break;
       }
       case ClientService.ANS_COMPILATION_ERROR: {
@@ -162,6 +185,7 @@ export class ClientService {
           return false;
         }
         console.log('sourceName: ' + sourceName);
+        this.sendSource(sourceName);
         break;
       }
       case ClientService.ANS_GENERAL_ERROR: {

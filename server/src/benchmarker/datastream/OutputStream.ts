@@ -22,4 +22,8 @@ export class OutputStream {
     b.writeBigInt64BE(v);
     this.socket.write(b);
   }
+
+  write(data: Buffer) {
+    this.socket.write(data);
+  }
 }
