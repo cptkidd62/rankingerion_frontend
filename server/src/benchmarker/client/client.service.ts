@@ -38,63 +38,7 @@ export class ClientService {
     this.instream = new InputStream();
     this.socket.on('data', (chunk: Buffer) => {
       this.instream.addToBuffer(chunk);
-      const ans = this.instream.tryReadInt();
-      console.log('ans code: ' + ans);
-      switch (ans) {
-        case ClientService.ANS_ACCEPTED: {
-          const id = this.instream.tryReadInt();
-          console.log('id: ' + id);
-          break;
-        }
-        case ClientService.ANS_PLAY_RESULT: {
-          const id = this.instream.tryReadInt();
-          console.log('id: ' + id);
-          const time = this.instream.tryReadLong();
-          console.log('time: ' + time);
-          const score = this.instream.tryReadInt();
-          console.log('score: ' + score);
-          const log = this.instream.tryReadNBytesString(
-            this.instream.tryReadInt() ?? 0,
-          );
-          console.log('log: ' + log);
-          const summaries = this.instream.tryReadNBytesString(
-            this.instream.tryReadInt() ?? 0,
-          );
-          console.log('summaries: ' + summaries);
-          break;
-        }
-        case ClientService.ANS_COMPILATION_ERROR: {
-          const agent = this.instream.tryReadUTF();
-          console.log('agent: ' + agent);
-          const msg = this.instream.tryReadNBytesString(
-            this.instream.tryReadInt() ?? 0,
-          );
-          console.log('msg: ' + msg);
-          break;
-        }
-        case ClientService.ANS_PLAY_ERROR: {
-          const id = this.instream.tryReadInt();
-          console.log('id: ' + id);
-          const msg = this.instream.tryReadUTF();
-          console.log('msg: ' + msg);
-          break;
-        }
-        case ClientService.ANS_REQUEST_SOURCE: {
-          const sourceName = this.instream.tryReadUTF();
-          console.log('sourceName: ' + sourceName);
-          break;
-        }
-        case ClientService.ANS_GENERAL_ERROR: {
-          const msg = this.instream.tryReadUTF();
-          console.log('msg: ' + msg);
-          break;
-        }
-        case ClientService.CMD_PING: {
-          console.log('ping request');
-          this.sendPong();
-          break;
-        }
-      }
+      while (this.parseBuffer());
     });
     this.socket.on('error', (err) => {
       console.error('!! socket error:', err);
@@ -123,5 +67,119 @@ export class ClientService {
 
   sendPong() {
     this.outstream.writeInt(ClientService.ANS_PONG);
+  }
+
+  parseBuffer(): boolean {
+    const ans = this.instream.peekInt();
+    if (ans == null) {
+      this.instream.resetCursor();
+      return false;
+    }
+    console.log('ans code: ' + ans);
+    switch (ans) {
+      case ClientService.ANS_ACCEPTED: {
+        const id = this.instream.peekInt();
+        if (id == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('id: ' + id);
+        break;
+      }
+      case ClientService.ANS_PLAY_RESULT: {
+        const id = this.instream.peekInt();
+        if (id == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('id: ' + id);
+        const time = this.instream.peekLong();
+        if (time == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('time: ' + time);
+        const score = this.instream.peekInt();
+        if (score == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('score: ' + score);
+        const log = this.instream.peekNBytesString(
+          this.instream.peekInt() ?? 0,
+        );
+        if (log == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('log: ' + log);
+        const summaries = this.instream.peekNBytesString(
+          this.instream.peekInt() ?? 0,
+        );
+        if (summaries == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('summaries: ' + summaries);
+        break;
+      }
+      case ClientService.ANS_COMPILATION_ERROR: {
+        const agent = this.instream.peekUTF();
+        if (agent == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('agent: ' + agent);
+        const msg = this.instream.peekNBytesString(
+          this.instream.peekInt() ?? 0,
+        );
+        if (msg == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('msg: ' + msg);
+        break;
+      }
+      case ClientService.ANS_PLAY_ERROR: {
+        const id = this.instream.peekInt();
+        if (id == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('id: ' + id);
+        const msg = this.instream.peekUTF();
+        if (msg == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('msg: ' + msg);
+        break;
+      }
+      case ClientService.ANS_REQUEST_SOURCE: {
+        const sourceName = this.instream.peekUTF();
+        if (sourceName == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('sourceName: ' + sourceName);
+        break;
+      }
+      case ClientService.ANS_GENERAL_ERROR: {
+        const msg = this.instream.peekUTF();
+        if (msg == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        console.log('msg: ' + msg);
+        break;
+      }
+      case ClientService.CMD_PING: {
+        console.log('ping request');
+        this.sendPong();
+        break;
+      }
+    }
+    this.instream.clearCursor();
+    return true;
   }
 }

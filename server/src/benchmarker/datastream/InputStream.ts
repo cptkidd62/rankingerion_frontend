@@ -1,50 +1,56 @@
 export class InputStream {
   private buffer: Buffer;
+  private cursor = 0;
   constructor() {
     this.buffer = Buffer.alloc(0);
   }
 
   addToBuffer(chunk: Buffer) {
     this.buffer = Buffer.concat([this.buffer, chunk]);
-    console.log('&&& buffer after receiving: ');
+    console.log('&&& buffer after receiving:');
     console.log(this.buffer);
   }
 
-  tryReadInt(): number | null {
-    if (this.buffer.length < 4) return null;
-    const n = this.buffer.readInt32BE();
-    this.buffer = this.buffer.subarray(4);
-    console.log('&&& buffer after reading int: ');
+  resetCursor() {
+    this.cursor = 0;
+  }
+
+  clearCursor() {
+    this.buffer = this.buffer.subarray(this.cursor);
+    console.log('&&& buffer after parsing:');
     console.log(this.buffer);
+    this.resetCursor();
+  }
+
+  peekInt(): number | null {
+    if (this.buffer.length - this.cursor < 4) return null;
+    const n = this.buffer.subarray(this.cursor).readInt32BE();
+    this.cursor += 4;
     return n;
   }
 
-  tryReadLong(): bigint | null {
-    if (this.buffer.length < 4) return null;
-    const n = this.buffer.readBigInt64BE();
-    this.buffer = this.buffer.subarray(8);
-    console.log('&&& buffer after reading long: ');
-    console.log(this.buffer);
+  peekLong(): bigint | null {
+    if (this.buffer.length - this.cursor < 4) return null;
+    const n = this.buffer.subarray(this.cursor).readBigInt64BE();
+    this.cursor += 8;
     return n;
   }
 
-  tryReadNBytesString(bytes: number): string | null {
-    if (this.buffer.length < bytes) return null;
-    const s = String(this.buffer.subarray(0, bytes));
-    this.buffer = this.buffer.subarray(bytes);
-    console.log('&&& buffer after reading string: ');
-    console.log(this.buffer);
+  peekNBytesString(bytes: number): string | null {
+    if (this.buffer.length - this.cursor < bytes) return null;
+    const s = String(this.buffer.subarray(this.cursor, this.cursor + bytes));
+    this.cursor += bytes;
     return s;
   }
 
-  tryReadUTF(): string | null {
-    if (this.buffer.length < 2) return null;
-    const len = this.buffer.readInt16BE();
-    if (this.buffer.length < 2 + len) return null;
-    const s = String(this.buffer.subarray(2, 2 + len));
-    this.buffer = this.buffer.subarray(2 + len);
-    console.log('&&& buffer after reading utf: ');
-    console.log(this.buffer);
+  peekUTF(): string | null {
+    if (this.buffer.length - this.cursor < 2) return null;
+    const len = this.buffer.subarray(this.cursor).readInt16BE();
+    if (this.buffer.length - this.cursor < 2 + len) return null;
+    const s = String(
+      this.buffer.subarray(this.cursor + 2, this.cursor + 2 + len),
+    );
+    this.cursor += 2 + len;
     return s;
   }
 }
