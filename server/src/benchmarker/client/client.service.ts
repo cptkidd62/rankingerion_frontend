@@ -36,7 +36,7 @@ export class ClientService {
       process.env.BENCHMARKER_SERVER!,
       Number(process.env.BENCHMARKER_PORT_CLIENTS!),
     );
-    this.outstream = new OutputStream(this.socket);
+    this.outstream = new OutputStream();
     this.instream = new InputStream();
     this.socket.on('data', (chunk: Buffer) => {
       this.instream.addToBuffer(chunk);
@@ -54,16 +54,20 @@ export class ClientService {
     this.outstream.writeUTF('lenovo');
     this.outstream.writeUTF(''); // referee
     this.outstream.writeInt(10);
+    const buf = this.outstream.getBuffer();
+    this.socket.write(buf);
   }
 
   sendPlayTask() {
     console.log('in sendPlayTask');
-    const agent = new Agent('test_bot#b1.cpp');
+    const agent = new Agent('randomScore#r1.cpp');
     this.outstream.writeInt(ClientService.CMD_PLAY);
     this.outstream.writeInt(1);
     this.outstream.writeUTF(agent.toString());
     this.outstream.writeLong(BigInt(1));
     this.outstream.writeUTF('Sandbox');
+    const buf = this.outstream.getBuffer();
+    this.socket.write(buf);
     console.log('end sendPlayTask');
   }
 
@@ -76,6 +80,8 @@ export class ClientService {
       this.outstream.writeUTF(sourceName);
       this.outstream.writeInt(code_buf.length);
       this.outstream.write(code_buf);
+      const buf = this.outstream.getBuffer();
+      this.socket.write(buf);
     } catch (err) {
       console.error(err);
     }
@@ -83,6 +89,8 @@ export class ClientService {
 
   sendPong() {
     this.outstream.writeInt(ClientService.ANS_PONG);
+    const buf = this.outstream.getBuffer();
+    this.socket.write(buf);
   }
 
   acceptPlayTask(id: number) {
