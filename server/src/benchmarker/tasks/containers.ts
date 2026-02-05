@@ -7,11 +7,17 @@ export class BatchContainer {
   constructor(public batch: PlayTask[]) {}
 }
 
-export class PlayTaskContainer {
+export class TaskContainer {
+  time = Date.now();
+}
+
+export class PlayTaskContainer extends TaskContainer {
   constructor(
     public index: number,
     public bc: BatchContainer,
-  ) {}
+  ) {
+    super();
+  }
 
   getAgents(): Agent[] {
     return this.bc.batch[this.index].agents;
@@ -30,12 +36,14 @@ export class PlayTaskContainer {
   }
 }
 
-export class CompileContainer {
+export class CompileContainer extends TaskContainer {
   constructor(
     public agent: Agent,
     public referee: string,
     public expectedPlays: number,
-  ) {}
+  ) {
+    super();
+  }
 
   getAgent(): Agent {
     return this.agent;

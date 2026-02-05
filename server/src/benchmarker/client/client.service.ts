@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConnectorService } from '../connector/connector.service';
 import { TLSSocket } from 'tls';
-import { Agent } from '../models/agent';
 import { OutputStream } from '../datastream/OutputStream';
 import { InputStream } from '../datastream/InputStream';
 import * as fs from 'fs';
 import * as path from 'path';
+import { PlayTaskContainer, TaskContainer } from '../tasks/containers';
 
 @Injectable()
 export class ClientService {
@@ -32,6 +32,8 @@ export class ClientService {
   private instream: InputStream;
 
   private sendingQueue: Array<Buffer> = [];
+  private sentTasks: Array<TaskContainer> = [];
+  private acceptedPlayTasks: Map<number, PlayTaskContainer> = new Map();
 
   constructor(private connectorService: ConnectorService) {
     this.socket = connectorService.getSocket(
@@ -61,15 +63,17 @@ export class ClientService {
     this.trySend();
   }
 
-  sendPlayTask() {
-    const agent = new Agent('randomScore#r1.cpp');
+  sendPlayTask(playTask: PlayTaskContainer) {
+    const agents = playTask.getAgents();
     this.outstream.writeInt(ClientService.CMD_PLAY);
-    this.outstream.writeInt(1);
-    this.outstream.writeUTF(agent.toString());
-    this.outstream.writeLong(BigInt(1));
-    this.outstream.writeUTF('Sandbox');
+    this.outstream.writeInt(agents.length);
+    agents.forEach((agent) => this.outstream.writeUTF(agent.toString()));
+    this.outstream.writeLong(playTask.getSeed());
+    this.outstream.writeUTF(playTask.getReferee());
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
+    this.sentTasks.push(playTask);
+    console.log('senttasks queue: ', this.sentTasks);
     this.trySend();
   }
 
@@ -99,7 +103,11 @@ export class ClientService {
 
   acceptPlayTask(id: number) {
     console.log(id);
-    // TODO
+    const task = this.sentTasks.shift();
+    if (task instanceof PlayTaskContainer) {
+      this.acceptedPlayTasks.set(id, task);
+      console.log(this.acceptedPlayTasks.get(id));
+    }
   }
 
   parseBuffer(): boolean {
