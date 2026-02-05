@@ -181,6 +181,7 @@ export class ClientService {
           return false;
         }
         console.log('msg: ' + msg);
+        // TODO
         break;
       }
       case ClientService.ANS_PLAY_ERROR: {
@@ -196,6 +197,11 @@ export class ClientService {
           return false;
         }
         console.log('msg: ' + msg);
+        const playTask = this.acceptedPlayTasks.get(id);
+        if (playTask) {
+          this.acceptedPlayTasks.delete(id);
+          // TODO
+        }
         break;
       }
       case ClientService.ANS_REQUEST_SOURCE: {
@@ -214,13 +220,15 @@ export class ClientService {
           this.instream.resetCursor();
           return false;
         }
-        console.log('msg: ' + msg);
-        break;
+        throw new Error(msg);
       }
       case ClientService.CMD_PING: {
         console.log('ping request');
         this.sendPong();
         break;
+      }
+      default: {
+        throw new Error('Invalid ANS ' + ans);
       }
     }
     this.instream.clearCursor();
