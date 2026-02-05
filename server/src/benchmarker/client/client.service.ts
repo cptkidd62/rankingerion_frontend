@@ -31,6 +31,8 @@ export class ClientService {
   private outstream: OutputStream;
   private instream: InputStream;
 
+  private sendingQueue: Array<Buffer> = [];
+
   constructor(private connectorService: ConnectorService) {
     this.socket = connectorService.getSocket(
       process.env.BENCHMARKER_SERVER!,
@@ -55,11 +57,11 @@ export class ClientService {
     this.outstream.writeUTF(''); // referee
     this.outstream.writeInt(10);
     const buf = this.outstream.getBuffer();
-    this.socket.write(buf);
+    this.sendingQueue.push(buf);
+    this.trySend();
   }
 
   sendPlayTask() {
-    console.log('in sendPlayTask');
     const agent = new Agent('randomScore#r1.cpp');
     this.outstream.writeInt(ClientService.CMD_PLAY);
     this.outstream.writeInt(1);
@@ -67,8 +69,8 @@ export class ClientService {
     this.outstream.writeLong(BigInt(1));
     this.outstream.writeUTF('Sandbox');
     const buf = this.outstream.getBuffer();
-    this.socket.write(buf);
-    console.log('end sendPlayTask');
+    this.sendingQueue.push(buf);
+    this.trySend();
   }
 
   sendSource(sourceName: string) {
@@ -81,7 +83,8 @@ export class ClientService {
       this.outstream.writeInt(code_buf.length);
       this.outstream.write(code_buf);
       const buf = this.outstream.getBuffer();
-      this.socket.write(buf);
+      this.sendingQueue.push(buf);
+      this.trySend();
     } catch (err) {
       console.error(err);
     }
@@ -90,7 +93,8 @@ export class ClientService {
   sendPong() {
     this.outstream.writeInt(ClientService.ANS_PONG);
     const buf = this.outstream.getBuffer();
-    this.socket.write(buf);
+    this.sendingQueue.push(buf);
+    this.trySend();
   }
 
   acceptPlayTask(id: number) {
@@ -213,5 +217,18 @@ export class ClientService {
     }
     this.instream.clearCursor();
     return true;
+  }
+
+  private trySend() {
+    while (this.sendingQueue.length > 0) {
+      const buf = this.sendingQueue[0];
+      const ok = this.socket.write(buf);
+      this.sendingQueue.shift();
+
+      if (!ok) {
+        this.socket.once('drain', () => this.trySend());
+        return;
+      }
+    }
   }
 }
