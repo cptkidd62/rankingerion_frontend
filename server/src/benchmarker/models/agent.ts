@@ -65,4 +65,13 @@ export class Agent {
     s += this.getParamsString();
     return s;
   }
+
+  equals(other: Agent): boolean {
+    return (
+      this.baseName == other.baseName &&
+      this.version == other.version &&
+      JSON.stringify(this.paramNames) == JSON.stringify(other.paramNames) &&
+      JSON.stringify(this.values) == JSON.stringify(other.values)
+    );
+  }
 }

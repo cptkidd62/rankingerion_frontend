@@ -5,7 +5,14 @@ import { OutputStream } from '../datastream/OutputStream';
 import { InputStream } from '../datastream/InputStream';
 import * as fs from 'fs';
 import * as path from 'path';
-import { PlayTaskContainer, TaskContainer } from '../tasks/containers';
+import {
+  BatchContainer,
+  PlayTaskContainer,
+  TaskContainer,
+} from '../tasks/containers';
+import { PlayTask } from '../tasks/playtask';
+import { PlayResult } from '../tasks/playresult';
+import { ok } from 'assert';
 
 @Injectable()
 export class ClientService {
@@ -31,7 +38,12 @@ export class ClientService {
   private outstream: OutputStream;
   private instream: InputStream;
 
+  private queuedCompilations: number = 0;
+  private queuedPlays: number = 0;
+  private awaitingPlays: number = 0;
+
   private sendingQueue: Array<Buffer> = [];
+  private batches: Array<BatchContainer> = [];
   private sentTasks: Array<TaskContainer> = [];
   private acceptedPlayTasks: Map<number, PlayTaskContainer> = new Map();
 
@@ -107,6 +119,113 @@ export class ClientService {
     if (task instanceof PlayTaskContainer) {
       this.acceptedPlayTasks.set(id, task);
       console.log(this.acceptedPlayTasks.get(id));
+    }
+  }
+
+  enqueueBatch(batch: PlayTask[]) {
+    const bc = new BatchContainer(batch);
+    if (Boolean(process.env.RESULTS_IN_ORDER) == true) {
+      this.batches.push(bc);
+    }
+    this.queuedPlays += batch.length;
+    if (
+      Boolean(process.env.ASSUME_DRAW_FOR_EQUAL_AGENTS) == true &&
+      batch.length > 1
+    ) {
+      let allEqual = true;
+      for (let i = 0; i < batch.length; i++) {
+        let equal = true;
+        for (let p = 1; p < batch[i].agents.length; p++) {
+          if (!batch[i].agents[p].equals(batch[i].agents[0])) {
+            equal = allEqual = false;
+            break;
+          }
+        }
+        if (equal) {
+          this.queuedPlays--;
+          this.awaitingPlays++;
+          bc.playCount++;
+          const equalScores: number[] = new Array<number>(
+            batch[i].agents.length,
+          );
+          equalScores.fill(1);
+          bc.results[i] = new PlayResult(BigInt(-1), equalScores, [], '');
+        }
+        this.enqueuePlay(new PlayTaskContainer(i, bc));
+      }
+      if (allEqual) {
+        if (Boolean(process.env.RESULTS_IN_ORDER) == true) {
+          this.reportCompleteResults();
+        } else {
+          this.reportBatchResults(bc);
+        }
+      }
+    } else {
+      for (let i = 0; i < batch.length; i++) {
+        this.enqueuePlay(new PlayTaskContainer(i, bc));
+      }
+    }
+  }
+
+  enqueuePlay(playTask: PlayTaskContainer) {
+    this.sendPlayTask(playTask);
+  }
+
+  reportBatchResults(bc: BatchContainer) {
+    ok(bc.playCount != 0);
+    if (bc.playCount > 0) {
+      this.reportBatchCompleted(bc.batch, bc.results);
+    } else {
+      const index = -bc.playCount - 1;
+      this.playBatchError(bc.batch, index, bc.results[index].summaries);
+    }
+  }
+
+  reportCompleteResults() {
+    // TODO do poprawy - nie mogę mieć takiej pętli chyba
+    while (true) {
+      if (this.batches.length == 0) return;
+      const bc = this.batches[0];
+      ok(bc.playCount >= 0);
+      if (bc.playCount != bc.batch.length) return;
+      this.batches.shift();
+      this.reportBatchCompleted(bc.batch, bc.results);
+    }
+  }
+
+  reportBatchCompleted(batch: PlayTask[], playResults: PlayResult[]) {
+    this.awaitingPlays -= batch.length;
+    this.playBatchCompleted(batch, playResults);
+  }
+
+  playBatchCompleted(batch: PlayTask[], playResults: PlayResult[]) {
+    ok(batch.length == playResults.length);
+    console.log('Batch results:');
+    for (let i = 0; i < batch.length; i++) {
+      console.log(
+        'id: ',
+        i,
+        ', seed: ',
+        batch[i].seed,
+        ', score: ',
+        playResults[i].scores[0],
+      );
+    }
+    console.log('--------');
+  }
+
+  playBatchError(batch: PlayTask[], idx: number, errorMsg: string) {
+    console.log('Batch error: ', errorMsg, ' | ', batch, ' at ', idx);
+  }
+
+  taskPlayed(playTask: PlayTaskContainer, playResults: PlayResult) {
+    if (playTask.bc.playCount < 0) return;
+    playTask.bc.results[playTask.index] = playResults;
+    playTask.bc.playCount++;
+    if (Boolean(process.env.RESULTS_IN_ORDER) == true) {
+      this.reportCompleteResults();
+    } else if (playTask.bc.playCount == playTask.bc.batch.length) {
+      this.reportBatchResults(playTask.bc);
     }
   }
 

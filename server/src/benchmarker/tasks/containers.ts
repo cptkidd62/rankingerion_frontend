@@ -4,7 +4,10 @@ import { PlayTask } from './playtask';
 
 export class BatchContainer {
   public results: PlayResult[];
-  constructor(public batch: PlayTask[]) {}
+  public playCount: number = 0;
+  constructor(public batch: PlayTask[]) {
+    this.results = new Array<PlayResult>(batch.length);
+  }
 }
 
 export class TaskContainer {

@@ -2,10 +2,6 @@ import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { BenchmarkerService } from './benchmarker/benchmarker.service';
 import { ClientService } from './benchmarker/client/client.service';
-import {
-  BatchContainer,
-  PlayTaskContainer,
-} from './benchmarker/tasks/containers';
 import { PlayTask } from './benchmarker/tasks/playtask';
 import { Agent } from './benchmarker/models/agent';
 
@@ -29,13 +25,11 @@ export class AppController {
 
   @Get('testsend')
   sendTest() {
-    this.clientService.sendPlayTask(
-      new PlayTaskContainer(
-        0,
-        new BatchContainer([
-          new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(2), 'Sandbox'),
-        ]),
-      ),
-    );
+    this.clientService.enqueueBatch([
+      new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(1), 'Sandbox'),
+      new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(2), 'Sandbox'),
+      new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(1), 'Sandbox'),
+      new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(2), 'Sandbox'),
+    ]);
   }
 }
