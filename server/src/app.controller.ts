@@ -31,5 +31,8 @@ export class AppController {
       new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(1), 'Sandbox'),
       new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(2), 'Sandbox'),
     ]);
+    this.clientService.enqueueBatch([
+      new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(1), 'Sandbox'),
+    ]);
   }
 }
