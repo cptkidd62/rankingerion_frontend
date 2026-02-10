@@ -52,4 +52,15 @@ export class AppController {
       new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(2), 'Sandbox'),
     ]);
   }
+
+  @Get('testsend4')
+  sendTest4() {
+    this.clientService.enqueueBatch([
+      new PlayTask(
+        [new Agent('test_bot#b1.cpp'), new Agent('randomScore#r1.cpp')],
+        BigInt(7),
+        'Sandbox',
+      ),
+    ]);
+  }
 }

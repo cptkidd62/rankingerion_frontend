@@ -202,8 +202,8 @@ export class ClientService {
         i,
         ', seed: ',
         batch[i].seed,
-        ', score: ',
-        playResults[i].scores[0],
+        ', scores: ',
+        playResults[i].scores,
       );
     }
     console.log('--------');
