@@ -37,6 +37,7 @@ export class InputStream {
   }
 
   peekNBytesString(bytes: number): string | null {
+    if (bytes == 0) return '';
     if (this.buffer.length - this.cursor < bytes) return null;
     const s = String(this.buffer.subarray(this.cursor, this.cursor + bytes));
     this.cursor += bytes;

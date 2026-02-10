@@ -35,4 +35,21 @@ export class AppController {
       new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(1), 'Sandbox'),
     ]);
   }
+
+  @Get('testsend2')
+  sendTest2() {
+    this.clientService.enqueueBatch([
+      new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(2), 'Sandbox'),
+    ]);
+    this.clientService.enqueueBatch([
+      new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(3), 'Sandbox'),
+    ]);
+  }
+
+  @Get('testsend3')
+  sendTest3() {
+    this.clientService.enqueueBatch([
+      new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(2), 'Sandbox'),
+    ]);
+  }
 }

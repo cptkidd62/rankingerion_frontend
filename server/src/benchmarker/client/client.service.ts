@@ -275,7 +275,7 @@ export class ClientService {
           return false;
         }
         const scores: number[] = [];
-        for (let i = 0; i < playTask.getAgents.length; i++) {
+        for (let i = 0; i < playTask.getAgents().length; i++) {
           const s = this.instream.peekInt();
           if (s == null) {
             this.instream.resetCursor();
@@ -284,7 +284,7 @@ export class ClientService {
           scores[i] = s;
         }
         const logs: string[] = [];
-        for (let i = 0; i < playTask.getAgents.length; i++) {
+        for (let i = 0; i < playTask.getAgents().length; i++) {
           const log = this.instream.peekNBytesString(
             this.instream.peekInt() ?? 0,
           );
