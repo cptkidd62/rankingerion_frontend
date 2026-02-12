@@ -5,8 +5,24 @@ import { PlayTask } from './playtask';
 export class BatchContainer {
   public results: PlayResult[];
   public playCount: number = 0;
+  public promise: Promise<PlayResult[]>;
+  private resolve: (value: PlayResult[]) => void;
+  private reject: (reason?: any) => void;
+
   constructor(public batch: PlayTask[]) {
     this.results = new Array<PlayResult>(batch.length);
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+
+  complete() {
+    this.resolve(this.results);
+  }
+
+  fail(error: any) {
+    this.reject(error);
   }
 }
 

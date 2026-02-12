@@ -18,49 +18,52 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('testagent')
-  agentTest() {
-    this.benchmarkerService.agentTest();
-  }
-
   @Get('testsend')
-  sendTest() {
-    this.clientService.enqueueBatch([
+  async sendTest() {
+    await this.clientService.enqueueBatch([
       new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(1), 'Sandbox'),
       new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(2), 'Sandbox'),
       new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(1), 'Sandbox'),
       new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(2), 'Sandbox'),
     ]);
-    this.clientService.enqueueBatch([
+    await this.clientService.enqueueBatch([
       new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(1), 'Sandbox'),
     ]);
   }
 
   @Get('testsend2')
-  sendTest2() {
-    this.clientService.enqueueBatch([
+  async sendTest2() {
+    await this.clientService.enqueueBatch([
       new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(2), 'Sandbox'),
     ]);
-    this.clientService.enqueueBatch([
+    await this.clientService.enqueueBatch([
       new PlayTask([new Agent('randomScore#r1.cpp')], BigInt(3), 'Sandbox'),
     ]);
   }
 
   @Get('testsend3')
-  sendTest3() {
-    this.clientService.enqueueBatch([
+  async sendTest3() {
+    await this.clientService.enqueueBatch([
       new PlayTask([new Agent('test_bot#b1.cpp')], BigInt(2), 'Sandbox'),
     ]);
   }
 
   @Get('testsend4')
-  sendTest4() {
-    this.clientService.enqueueBatch([
+  async sendTest4() {
+    await this.clientService.enqueueBatch([
       new PlayTask(
         [new Agent('test_bot#b1.cpp'), new Agent('randomScore#r1.cpp')],
         BigInt(7),
         'Sandbox',
       ),
+    ]);
+  }
+
+  @Get('testapi')
+  async testAPI() {
+    await this.benchmarkerService.playSingle([
+      'test_bot#b1.cpp',
+      'randomScore#r1.cpp',
     ]);
   }
 }

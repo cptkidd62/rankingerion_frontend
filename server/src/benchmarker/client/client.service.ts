@@ -82,7 +82,7 @@ export class ClientService {
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.sentTasks.push(playTask);
-    console.log('senttasks queue: ', this.sentTasks);
+    // console.log('senttasks queue: ', this.sentTasks);
     this.trySend();
   }
 
@@ -111,17 +111,17 @@ export class ClientService {
   }
 
   acceptPlayTask(id: number) {
-    console.log(id);
+    // console.log(id);
     const task = this.sentTasks.shift();
-    console.log('senttasks queue: ', this.sentTasks);
+    // console.log('senttasks queue: ', this.sentTasks);
     if (task instanceof PlayTaskContainer) {
       this.acceptedPlayTasks.set(id, task);
-      console.log(this.acceptedPlayTasks.get(id));
-      console.log(this.acceptedPlayTasks);
+      // console.log(this.acceptedPlayTasks.get(id));
+      // console.log(this.acceptedPlayTasks);
     }
   }
 
-  enqueueBatch(batch: PlayTask[]) {
+  enqueueBatch(batch: PlayTask[]): Promise<PlayResult[]> {
     const bc = new BatchContainer(batch);
     if (Boolean(process.env.RESULTS_IN_ORDER) == true) {
       this.batches.push(bc);
@@ -162,6 +162,7 @@ export class ClientService {
         this.enqueuePlay(new PlayTaskContainer(i, bc));
       }
     }
+    return bc.promise;
   }
 
   enqueuePlay(playTask: PlayTaskContainer) {
@@ -172,9 +173,11 @@ export class ClientService {
     ok(bc.playCount != 0);
     if (bc.playCount > 0) {
       this.reportBatchCompleted(bc.batch, bc.results);
+      bc.complete();
     } else {
       const index = -bc.playCount - 1;
       this.playBatchError(bc.batch, index, bc.results[index].summaries);
+      bc.fail(bc.results[index].summaries);
     }
   }
 
@@ -186,6 +189,7 @@ export class ClientService {
       if (bc.playCount != bc.batch.length) return;
       this.batches.shift();
       this.reportBatchCompleted(bc.batch, bc.results);
+      bc.complete();
     }
   }
 
@@ -247,7 +251,7 @@ export class ClientService {
       this.instream.resetCursor();
       return false;
     }
-    console.log('ans code: ' + ans);
+    // console.log('ans code: ' + ans);
     switch (ans) {
       case ClientService.ANS_ACCEPTED: {
         const id = this.instream.peekInt();
@@ -255,7 +259,7 @@ export class ClientService {
           this.instream.resetCursor();
           return false;
         }
-        console.log('id: ' + id);
+        // console.log('id: ' + id);
         this.acceptPlayTask(id);
         break;
       }
@@ -266,7 +270,7 @@ export class ClientService {
           return false;
         }
         const playTask = this.acceptedPlayTasks.get(id);
-        console.log('Playtask with id: ', id, playTask);
+        // console.log('Playtask with id: ', id, playTask);
         if (!playTask) throw Error('No playtask found with id ' + id);
         this.acceptedPlayTasks.delete(id);
         const time = this.instream.peekLong();
@@ -345,7 +349,7 @@ export class ClientService {
           this.instream.resetCursor();
           return false;
         }
-        console.log('sourceName: ' + sourceName);
+        // console.log('sourceName: ' + sourceName);
         this.sendSource(sourceName);
         break;
       }
@@ -358,7 +362,7 @@ export class ClientService {
         throw new Error(msg);
       }
       case ClientService.CMD_PING: {
-        console.log('ping request');
+        // console.log('ping request');
         this.sendPong();
         break;
       }
