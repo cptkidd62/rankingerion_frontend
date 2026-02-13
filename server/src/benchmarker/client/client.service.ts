@@ -5,6 +5,7 @@ import { OutputStream } from '../datastream/OutputStream';
 import { InputStream } from '../datastream/InputStream';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import {
   BatchContainer,
   PlayTaskContainer,
@@ -64,7 +65,7 @@ export class ClientService {
     this.socket.on('timeout', () => {
       console.log('socket timeout');
     });
-    this.outstream.writeUTF('lenovo');
+    this.outstream.writeUTF(os.hostname());
     this.outstream.writeUTF(''); // referee
     this.outstream.writeInt(10);
     const buf = this.outstream.getBuffer();
