@@ -5,6 +5,6 @@ import { ClientService } from './client/client.service';
 
 @Module({
   providers: [BenchmarkerService, ConnectorService, ClientService],
-  exports: [BenchmarkerService, ClientService],
+  exports: [BenchmarkerService],
 })
 export class BenchmarkerModule {}
