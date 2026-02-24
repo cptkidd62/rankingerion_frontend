@@ -51,12 +51,20 @@ export class BotsController {
       userId: number;
     },
   ) {
-    return this.botsService.createWithBenchmarkerMatches(
-      name,
-      language,
-      code,
-      userId,
-    );
+    if (process.env.USE_BENCHMARKER == 'true')
+      return this.botsService.createWithBenchmarkerMatches(
+        name,
+        language,
+        code,
+        userId,
+      );
+    else
+      return this.botsService.createWithMockMatches(
+        name,
+        language,
+        code,
+        userId,
+      );
   }
 
   @Delete(':id')

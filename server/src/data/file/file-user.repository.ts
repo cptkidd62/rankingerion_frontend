@@ -45,12 +45,12 @@ export class FileUserRepository extends UserRepository {
 
   async findById(id: number): Promise<User | null> {
     await Promise.resolve();
-    return this.users.find((user) => user.id == id) || null;
+    return this.users.find((user) => user.id == id) ?? null;
   }
 
   async findByUsername(username: string): Promise<User | null> {
     await Promise.resolve();
-    return this.users.find((user) => user.username === username) || null;
+    return this.users.find((user) => user.username === username) ?? null;
   }
 
   async create(user: User): Promise<User | null> {

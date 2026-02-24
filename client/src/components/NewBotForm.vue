@@ -34,7 +34,7 @@ const validateAll = () => {
         return true;
     }
     else {
-        console.error('Błąd walidacji formularza: ' + (errors.name || errors.language || errors.code));
+        console.error('Błąd walidacji formularza: ' + (errors.name ?? errors.language ?? errors.code));
         return false;
     }
 }

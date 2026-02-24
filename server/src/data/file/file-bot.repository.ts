@@ -74,7 +74,7 @@ export class FileBotRepository extends BotRepository {
 
   async findById(id: number): Promise<Bot | null> {
     await Promise.resolve();
-    return this.bots.find((Bot) => Bot.id == id) || null;
+    return this.bots.find((Bot) => Bot.id == id) ?? null;
   }
 
   async filterByUserId(id: number): Promise<Bot[]> {

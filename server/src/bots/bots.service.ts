@@ -54,6 +54,7 @@ export class BotsService {
     code: string,
     user_id: number,
   ): Promise<void> {
+    console.log('create with mock');
     const id = await this.botRepo.create({
       id: 0,
       name: name,
@@ -83,14 +84,10 @@ export class BotsService {
         };
         this.matchRepo
           .create({
-            bot_id1: bot.id,
-            botname1: bot.name,
-            user_id1: user.id,
-            username1: user.username,
-            bot_id2: id,
-            botname2: name,
-            user_id2: user_id,
-            username2: this_user.username,
+            bot_ids: [bot.id, id],
+            botnames: [bot.name, name],
+            user_ids: [user.id, user_id],
+            usernames: [user.username, this_user.username],
             scores: [[randomInt(0, 1000), randomInt(0, 1000)]],
           })
           .catch((err) => {
@@ -106,6 +103,7 @@ export class BotsService {
     code: string,
     user_id: number,
   ): Promise<void> {
+    console.log('create with benchmarker');
     const id = await this.botRepo.create({
       id: 0,
       name: name,
@@ -145,14 +143,10 @@ export class BotsService {
         };
         this.matchRepo
           .create({
-            bot_id1: bot.id,
-            botname1: bot.name,
-            user_id1: user.id,
-            username1: user.username,
-            bot_id2: id,
-            botname2: name,
-            user_id2: user_id,
-            username2: this_user.username,
+            bot_ids: [bot.id, id],
+            botnames: [bot.name, name],
+            user_ids: [user.id, user_id],
+            usernames: [user.username, this_user.username],
             scores: [score ?? [randomInt(0, 1000), randomInt(0, 1000)]],
           })
           .catch((err) => {

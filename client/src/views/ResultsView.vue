@@ -17,10 +17,11 @@ type MatchesGroup = {
 
 const loadMatches = async () => {
   try {
+    console.log('auth', auth.user);
     const response = await axios.get(auth.token ? `${API_URL}?userId=${auth.user?.id}` : API_URL);
     matches.value = response.data;
     console.log(matches);
-    groupedMatches.value = groupMatchesByMyBots(matches.value as Match[], auth.user?.id || -1);
+    groupedMatches.value = groupMatchesByMyBots(matches.value as Match[], auth.user?.id ?? -1);
     console.log(groupedMatches);
   } catch (error) {
     console.error('Błąd ładowania meczy', error);
@@ -33,11 +34,12 @@ function groupMatchesByMyBots(matches: Match[], currentUserId: number): MatchesG
   for (const match of matches) {
     let botName: string | null = null;
 
-    if (match.user_id1 === currentUserId) {
-      botName = match.botname1;
-    } else if (match.user_id2 === currentUserId) {
-      botName = match.botname2;
-    }
+    const id = match.user_ids.findIndex((i) => i == currentUserId);
+    console.log(currentUserId);
+    console.log(id);
+
+    if (id >= 0)
+      botName = match.botnames[id];
 
     if (botName) {
       if (!map.has(botName)) {

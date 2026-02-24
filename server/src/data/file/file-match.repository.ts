@@ -70,15 +70,15 @@ export class FileMatchRepository extends MatchRepository {
     await Promise.resolve();
     return (
       this.matches.find(
-        (Match) => Match.bot_id1 == id1 && Match.bot_id2 == id2,
-      ) || null
+        (Match) => Match.bot_ids[0] == id1 && Match.bot_ids[1] == id2,
+      ) ?? null
     );
   }
 
   async filterByBotIds(ids: number[]): Promise<Match[]> {
     await Promise.resolve();
-    return this.matches.filter(
-      (match) => ids.includes(match.bot_id1) || ids.includes(match.bot_id2),
+    return this.matches.filter((match) =>
+      match.bot_ids.some((id) => ids.includes(id)),
     );
   }
 
