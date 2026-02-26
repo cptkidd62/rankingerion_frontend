@@ -130,10 +130,6 @@ export class BotsService {
         'test_bot#b2.cpp',
       ])
     )?.scores;
-    let score: [number, number];
-    if ((scores?.length ?? 0) >= 2) {
-      score = [scores![0], scores![1]];
-    }
     bots.forEach((bot) => {
       if (bot.user_id != user_id) {
         const user = users.find((u) => u.id == bot.user_id) ?? {
@@ -147,7 +143,7 @@ export class BotsService {
             botnames: [bot.name, name],
             user_ids: [user.id, user_id],
             usernames: [user.username, this_user.username],
-            scores: [score ?? [randomInt(0, 1000), randomInt(0, 1000)]],
+            scores: [scores ?? [randomInt(0, 1000), randomInt(0, 1000)]],
           })
           .catch((err) => {
             console.error('Błąd podczas create match:', err);
