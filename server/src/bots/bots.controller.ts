@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BotsService } from './bots.service';
 import { Bot } from 'src/data/bot.repository';
 import { MatchesService } from 'src/matches/matches.service';
 import { Match } from 'src/data/match.repository';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('bots')
 export class BotsController {
@@ -37,32 +40,34 @@ export class BotsController {
   }
 
   @Post()
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @Body()
     {
       name,
       language,
-      code,
       userId,
     }: {
       name: string;
       language: string;
-      code: string;
       userId: number;
     },
+    @UploadedFile() file: Express.Multer.File,
   ) {
+    console.log(name, language, userId);
+    console.log('file', file);
     if (process.env.USE_BENCHMARKER == 'true')
       return this.botsService.createWithBenchmarkerMatches(
         name,
         language,
-        code,
+        'code',
         userId,
       );
     else
       return this.botsService.createWithMockMatches(
         name,
         language,
-        code,
+        'code',
         userId,
       );
   }

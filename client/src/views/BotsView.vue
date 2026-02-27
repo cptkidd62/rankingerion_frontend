@@ -22,7 +22,13 @@ const loadBots = async () => {
 };
 
 const createBot = async (payload: { name: string, language: string, file: any }) => {
-  axios.post(API_URL, { name: payload.name, language: payload.language, file: payload.file, userId: auth.user?.id }).then(function (_) {
+  const formData = new FormData();
+  formData.append('name', payload.name);
+  formData.append('language', payload.language);
+  formData.append('file', payload.file);
+  if (auth.user !== null)
+    formData.append('userId', String(auth.user.id));
+  axios.post(API_URL, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(function (_) {
     isOpen.value = false;
     loadBots();
   }).catch(function (error) {
