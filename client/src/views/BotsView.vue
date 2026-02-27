@@ -21,8 +21,8 @@ const loadBots = async () => {
   }
 };
 
-const createBot = async (payload: { name: string, language: string, code: string }) => {
-  axios.post(API_URL, { name: payload.name, language: payload.language, code: payload.code, userId: auth.user?.id }).then(function (_) {
+const createBot = async (payload: { name: string, language: string, file: any }) => {
+  axios.post(API_URL, { name: payload.name, language: payload.language, file: payload.file, userId: auth.user?.id }).then(function (_) {
     isOpen.value = false;
     loadBots();
   }).catch(function (error) {

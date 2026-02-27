@@ -35,8 +35,6 @@ function groupMatchesByMyBots(matches: Match[], currentUserId: number): MatchesG
     let botName: string | null = null;
 
     const id = match.user_ids.findIndex((i) => i == currentUserId);
-    console.log(currentUserId);
-    console.log(id);
 
     if (id >= 0)
       botName = match.botnames[id];

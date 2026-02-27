@@ -2,17 +2,18 @@
 import { reactive, ref } from 'vue'
 
 const emit = defineEmits<{
-    (e: 'submit', payload: { name: string, language: string, code: string }): void
+    (e: 'submit', payload: { name: string, language: string, file: any }): void
 }>()
 
 const name = ref('')
 const language = ref('')
-const code = ref('')
+const fileInput = ref<HTMLInputElement | null>()
+const file = ref<File | null>()
 
 const errors = reactive({
     name: '',
     language: '',
-    code: ''
+    file: ''
 })
 
 const handleSubmit = () => {
@@ -20,21 +21,26 @@ const handleSubmit = () => {
         emit('submit', {
             name: name.value,
             language: language.value,
-            code: code.value,
+            file: file.value,
         })
     }
+}
+
+const onFileChanged = () => {
+    file.value = fileInput.value?.files![0];
+    console.log('Selected file', file.value);
 }
 
 const validateAll = () => {
     validateField("name");
     validateField("language");
-    validateField("code");
+    validateField("file");
 
-    if (!errors.name && !errors.language && !errors.code) {
+    if (!errors.name && !errors.language && !errors.file) {
         return true;
     }
     else {
-        console.error('Błąd walidacji formularza: ' + (errors.name ?? errors.language ?? errors.code));
+        console.error('Błąd walidacji formularza: ' + (errors.name ?? errors.language ?? errors.file));
         return false;
     }
 }
@@ -44,9 +50,8 @@ const validateField = (field: string) => {
         errors.name = name.value != '' ? '' : 'Nazwa nie może być pusta!';
     if (field === "language")
         errors.language = language.value != '' ? '' : 'Wybierz język';
-    if (field === "code") {
-        errors.code = code.value != '' ? '' : 'Kod nie może być pusty!';
-        errors.code = code.value.length > 50000 ? 'Kod nie może dłuższy niż 50 000 znaków!' : errors.code;
+    if (field === "file") {
+        errors.file = file.value != null ? '' : 'Wybierz plik do wysłania';
     }
 }
 </script>
@@ -67,9 +72,9 @@ const validateField = (field: string) => {
                 <option value="rs">Rust</option>
             </select>
             <p v-if="errors.language" style="color:red;">{{ errors.language }}</p>
-            <textarea type="text" name="code" id="code" v-model="code"
-                @blur="validateField('code')" placeholder="Tu wklej kod"></textarea>
-            <p v-if="errors.code" style="color:red;">{{ errors.code }}</p>
+            <input type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
+                @blur="validateField('file')" placeholder="Tu wklej kod">
+            <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
             <input type="submit" value="Utwórz">
         </form>
     </div>
