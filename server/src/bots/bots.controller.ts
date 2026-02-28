@@ -56,20 +56,7 @@ export class BotsController {
   ) {
     console.log(name, language, userId);
     console.log('file', file);
-    if (process.env.USE_BENCHMARKER == 'true')
-      return this.botsService.createWithBenchmarkerMatches(
-        name,
-        language,
-        'code',
-        userId,
-      );
-    else
-      return this.botsService.createWithMockMatches(
-        name,
-        language,
-        'code',
-        userId,
-      );
+    return this.botsService.createWithMatches(name, language, file, userId);
   }
 
   @Delete(':id')

@@ -31,9 +31,9 @@ export class BotsService {
   async create(
     name: string,
     language: string,
-    code: string,
+    file: Express.Multer.File,
     user_id: number,
-  ): Promise<void> {
+  ): Promise<number> {
     const id = await this.botRepo.create({
       id: 0,
       name: name,
@@ -45,28 +45,32 @@ export class BotsService {
       process.env.BOTS_DIR ?? './',
       id + '_bot.' + language,
     );
-    await fs.writeFile(filePath, code, 'utf-8');
+    await fs.writeFile(filePath, file.buffer, 'utf-8');
+    return id;
   }
 
-  async createWithMockMatches(
+  async createWithMatches(
     name: string,
     language: string,
-    code: string,
+    file: Express.Multer.File,
+    user_id: number,
+  ): Promise<number> {
+    const id = await this.create(name, language, file, user_id);
+
+    if (process.env.USE_BENCHMARKER == 'true') {
+      await this.generateBenchmarkerMatches(name, id, user_id);
+    } else {
+      await this.generateMockMatches(name, id, user_id);
+    }
+    return id;
+  }
+
+  private async generateMockMatches(
+    name: string,
+    id: number,
     user_id: number,
   ): Promise<void> {
     console.log('create with mock');
-    const id = await this.botRepo.create({
-      id: 0,
-      name: name,
-      language: language,
-      user_id: user_id,
-    });
-
-    const filePath = path.join(
-      process.env.BOTS_DIR ?? './',
-      id + '_bot.' + language,
-    );
-    await fs.writeFile(filePath, code, 'utf-8');
 
     const bots = await this.botRepo.findAll();
     const users = await this.userRepo.findAll();
@@ -97,25 +101,12 @@ export class BotsService {
     });
   }
 
-  async createWithBenchmarkerMatches(
+  private async generateBenchmarkerMatches(
     name: string,
-    language: string,
-    code: string,
+    id: number,
     user_id: number,
   ): Promise<void> {
     console.log('create with benchmarker');
-    const id = await this.botRepo.create({
-      id: 0,
-      name: name,
-      language: language,
-      user_id: user_id,
-    });
-
-    const filePath = path.join(
-      process.env.BOTS_DIR ?? './',
-      id + '_bot.' + language,
-    );
-    await fs.writeFile(filePath, code, 'utf-8');
 
     const bots = await this.botRepo.findAll();
     const users = await this.userRepo.findAll();
