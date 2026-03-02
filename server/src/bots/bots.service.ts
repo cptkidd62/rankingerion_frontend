@@ -115,32 +115,36 @@ export class BotsService {
       username: 'undefined',
       password: '',
     };
-    const scores = (
-      await this.benchmarkerService.playSingle([
-        'test_bot#b1.cpp',
-        'test_bot#b2.cpp',
-      ])
-    )?.scores;
-    bots.forEach((bot) => {
+    const this_bot = bots.find((b) => b.id == id)!;
+    for (const bot of bots) {
       if (bot.user_id != user_id) {
         const user = users.find((u) => u.id == bot.user_id) ?? {
           id: -1,
           username: 'undefined',
           password: '',
         };
+        const res = await this.benchmarkerService.playSingle([
+          this.botFile(bot),
+          this.botFile(this_bot),
+        ]);
+        const scores = res!.scores;
         this.matchRepo
           .create({
             bot_ids: [bot.id, id],
             botnames: [bot.name, name],
             user_ids: [user.id, user_id],
             usernames: [user.username, this_user.username],
-            scores: [scores ?? [randomInt(0, 1000), randomInt(0, 1000)]],
+            scores: [scores],
           })
           .catch((err) => {
             console.error('Błąd podczas create match:', err);
           });
       }
-    });
+    }
+  }
+
+  private botFile(bot: Bot): string {
+    return String(bot.id) + '_bot.' + bot.language;
   }
 
   async deleteById(id: number): Promise<void> {

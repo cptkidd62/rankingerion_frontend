@@ -64,10 +64,12 @@ const validateField = (field: string) => {
             <select name="language" id="language" v-model="language" placeholder="Język"
                 @blur="validateField('language')">
                 <option disabled value="">Wybierz język</option>
+                <option value="exe">Plik wykonywalny</option>
                 <option value="c">C</option>
                 <option value="cpp">C++</option>
                 <option value="cs">C#</option>
                 <option value="java">Java</option>
+                <option value="jar">Jar</option>
                 <option value="py">Python</option>
                 <option value="rs">Rust</option>
             </select>
