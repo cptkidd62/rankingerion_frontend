@@ -127,7 +127,11 @@ export class BotsService {
           this.botFile(bot),
           this.botFile(this_bot),
         ]);
-        const scores = res!.scores;
+        if (res?.summaries != '') {
+          console.error(res?.summaries);
+          return;
+        }
+        const scores = res.scores;
         this.matchRepo
           .create({
             bot_ids: [bot.id, id],

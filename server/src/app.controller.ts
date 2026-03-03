@@ -17,7 +17,7 @@ export class AppController {
   @Get('testapi')
   async testAPI() {
     await this.benchmarkerService.playSingle([
-      'test_bot#b1.cpp',
+      'test_err#e1.cpp',
       'randomScore#r1.cpp',
     ]);
   }
