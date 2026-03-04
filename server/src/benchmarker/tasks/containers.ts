@@ -1,4 +1,5 @@
 import { Agent } from '../models/agent';
+import { CompileResult } from './compileresult';
 import { PlayResult } from './playresult';
 import { PlayTask } from './playtask';
 
@@ -56,12 +57,20 @@ export class PlayTaskContainer extends TaskContainer {
 }
 
 export class CompileContainer extends TaskContainer {
+  public promise: Promise<CompileResult>;
+  private resolve: (value: CompileResult) => void;
+  private reject: (value: CompileResult) => void;
+
   constructor(
     public agent: Agent,
     public referee: string,
     public expectedPlays: number,
   ) {
     super();
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
   }
 
   getAgent(): Agent {
@@ -70,5 +79,13 @@ export class CompileContainer extends TaskContainer {
 
   getPriority(): number {
     return Number(process.env.DEFAULT_PRIORITY ?? 10);
+  }
+
+  complete() {
+    this.resolve(new CompileResult(this.agent.toString(), ''));
+  }
+
+  fail(error: string) {
+    this.reject(new CompileResult(this.agent.toString(), error));
   }
 }

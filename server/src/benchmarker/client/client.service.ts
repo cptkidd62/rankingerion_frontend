@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as os from 'os';
 import {
   BatchContainer,
+  CompileContainer,
   PlayTaskContainer,
   TaskContainer,
 } from '../tasks/containers';
@@ -15,6 +16,7 @@ import { PlayTask } from '../tasks/playtask';
 import { PlayResult } from '../tasks/playresult';
 import { ok } from 'assert';
 import { Agent } from '../models/agent';
+import { CompileResult } from '../tasks/compileresult';
 
 @Injectable()
 export class ClientService {
@@ -73,6 +75,18 @@ export class ClientService {
     this.trySend();
   }
 
+  sendCompileTask(compileTask: CompileContainer) {
+    this.outstream.writeInt(ClientService.CMD_COMPILE);
+    this.outstream.writeUTF(compileTask.agent.toString());
+    this.outstream.writeUTF(compileTask.referee);
+    this.outstream.writeInt(compileTask.expectedPlays);
+    const buf = this.outstream.getBuffer();
+    this.sendingQueue.push(buf);
+    this.sentTasks.push(compileTask);
+    // console.log('senttasks queue: ', this.sentTasks);
+    this.trySend();
+  }
+
   sendPlayTask(playTask: PlayTaskContainer) {
     const agents = playTask.getAgents();
     this.outstream.writeInt(ClientService.CMD_PLAY);
@@ -119,6 +133,8 @@ export class ClientService {
       this.acceptedPlayTasks.set(id, task);
       // console.log(this.acceptedPlayTasks.get(id));
       // console.log(this.acceptedPlayTasks);
+    } else if (task instanceof CompileContainer) {
+      task.complete();
     }
   }
 
@@ -168,6 +184,11 @@ export class ClientService {
 
   enqueuePlay(playTask: PlayTaskContainer) {
     this.sendPlayTask(playTask);
+  }
+
+  enqueueCompile(compileTask: CompileContainer): Promise<CompileResult> {
+    this.sendCompileTask(compileTask);
+    return compileTask.promise;
   }
 
   reportBatchResults(bc: BatchContainer) {
@@ -225,6 +246,10 @@ export class ClientService {
         ' with msg: ' +
         errorMsg,
     );
+    const task = this.sentTasks.shift();
+    if (task instanceof CompileContainer) {
+      task.fail(errorMsg);
+    }
   }
 
   taskPlayed(playTask: PlayTaskContainer, playResults: PlayResult) {
@@ -254,6 +279,16 @@ export class ClientService {
     }
     // console.log('ans code: ' + ans);
     switch (ans) {
+      case ClientService.ANS_COMPILED: {
+        // const id = this.instream.peekInt();
+        // if (id == null) {
+        //   this.instream.resetCursor();
+        //   return false;
+        // }
+        // console.log('id: ' + id);
+        this.acceptPlayTask(-1);
+        break;
+      }
       case ClientService.ANS_ACCEPTED: {
         const id = this.instream.peekInt();
         if (id == null) {

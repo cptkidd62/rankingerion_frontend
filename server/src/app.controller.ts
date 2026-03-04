@@ -14,6 +14,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('testcomerr')
+  async testComErr() {
+    await this.benchmarkerService.compileAgent('test_err#e1.cpp');
+  }
+
   @Get('testapi')
   async testAPI() {
     await this.benchmarkerService.playSingle([

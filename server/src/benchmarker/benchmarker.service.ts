@@ -4,6 +4,7 @@ import { PlayTask } from './tasks/playtask';
 import { Agent } from './models/agent';
 import { PlayResult } from './tasks/playresult';
 import { randomInt } from 'crypto';
+import { CompileContainer } from './tasks/containers';
 
 @Injectable()
 export class BenchmarkerService {
@@ -54,5 +55,13 @@ export class BenchmarkerService {
       console.error(error);
       return undefined;
     }
+  }
+
+  async compileAgent(bot: string): Promise<string> {
+    const res = await this.clientService.enqueueCompile(
+      new CompileContainer(new Agent(bot), 'Sandbox', 10),
+    );
+    console.log('Compilation results: ', res.msg);
+    return res.msg;
   }
 }
