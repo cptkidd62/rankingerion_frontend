@@ -75,7 +75,7 @@ export class ClientService {
     this.trySend();
   }
 
-  sendCompileTask(compileTask: CompileContainer) {
+  private sendCompileTask(compileTask: CompileContainer) {
     this.outstream.writeInt(ClientService.CMD_COMPILE);
     this.outstream.writeUTF(compileTask.agent.toString());
     this.outstream.writeUTF(compileTask.referee);
@@ -87,7 +87,7 @@ export class ClientService {
     this.trySend();
   }
 
-  sendPlayTask(playTask: PlayTaskContainer) {
+  private sendPlayTask(playTask: PlayTaskContainer) {
     const agents = playTask.getAgents();
     this.outstream.writeInt(ClientService.CMD_PLAY);
     this.outstream.writeInt(agents.length);
@@ -101,7 +101,7 @@ export class ClientService {
     this.trySend();
   }
 
-  sendSource(sourceName: string) {
+  private sendSource(sourceName: string) {
     const botsDir = process.env.BOTS_DIR ?? './';
     const filePath = path.join(botsDir, sourceName);
     try {
@@ -118,14 +118,14 @@ export class ClientService {
     }
   }
 
-  sendPong() {
+  private sendPong() {
     this.outstream.writeInt(ClientService.ANS_PONG);
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.trySend();
   }
 
-  acceptPlayTask(id: number) {
+  private acceptPlayTask(id: number) {
     // console.log(id);
     const task = this.sentTasks.shift();
     // console.log('senttasks queue: ', this.sentTasks);
@@ -182,7 +182,7 @@ export class ClientService {
     return bc.promise;
   }
 
-  enqueuePlay(playTask: PlayTaskContainer) {
+  private enqueuePlay(playTask: PlayTaskContainer) {
     this.sendPlayTask(playTask);
   }
 
@@ -191,55 +191,28 @@ export class ClientService {
     return compileTask.promise;
   }
 
-  reportBatchResults(bc: BatchContainer) {
+  private reportBatchResults(bc: BatchContainer) {
     ok(bc.playCount != 0);
     if (bc.playCount > 0) {
-      this.reportBatchCompleted(bc.batch, bc.results);
       bc.complete();
     } else {
       const index = -bc.playCount - 1;
-      this.playBatchError(bc.batch, index, bc.results[index].summaries);
       bc.fail(bc.results[index].summaries);
     }
   }
 
-  reportCompleteResults() {
+  private reportCompleteResults() {
     while (true) {
       if (this.batches.length == 0) return;
       const bc = this.batches[0];
       ok(bc.playCount >= 0);
       if (bc.playCount != bc.batch.length) return;
       this.batches.shift();
-      this.reportBatchCompleted(bc.batch, bc.results);
       bc.complete();
     }
   }
 
-  reportBatchCompleted(batch: PlayTask[], playResults: PlayResult[]) {
-    this.playBatchCompleted(batch, playResults);
-  }
-
-  playBatchCompleted(batch: PlayTask[], playResults: PlayResult[]) {
-    ok(batch.length == playResults.length);
-    console.log('Batch results:');
-    for (let i = 0; i < batch.length; i++) {
-      console.log(
-        'id: ',
-        i,
-        ', seed: ',
-        batch[i].seed,
-        ', scores: ',
-        playResults[i].scores,
-      );
-    }
-    console.log('--------');
-  }
-
-  playBatchError(batch: PlayTask[], idx: number, errorMsg: string) {
-    console.log('Batch error: ', errorMsg, ' | ', batch, ' at ', idx);
-  }
-
-  compilationError(agent: Agent, errorMsg: string) {
+  private compilationError(agent: Agent, errorMsg: string) {
     console.log(
       'Compilation error on agent: ' +
         agent.toString() +
@@ -252,7 +225,7 @@ export class ClientService {
     }
   }
 
-  taskPlayed(playTask: PlayTaskContainer, playResults: PlayResult) {
+  private taskPlayed(playTask: PlayTaskContainer, playResults: PlayResult) {
     if (playTask.bc.playCount < 0) return;
     playTask.bc.results[playTask.index] = playResults;
     playTask.bc.playCount++;
@@ -263,7 +236,7 @@ export class ClientService {
     }
   }
 
-  taskError(playTask: PlayTaskContainer, errorMsg: string) {
+  private taskError(playTask: PlayTaskContainer, errorMsg: string) {
     if (playTask.bc.playCount < 0) return;
     playTask.bc.playCount = -playTask.index - 1;
     playTask.bc.results[playTask.index] = PlayResult.Error(errorMsg);
@@ -271,7 +244,7 @@ export class ClientService {
     if (i > -1) this.batches.splice(i, 1);
   }
 
-  parseBuffer(): boolean {
+  private parseBuffer(): boolean {
     const ans = this.instream.peekInt();
     if (ans == null) {
       this.instream.resetCursor();
