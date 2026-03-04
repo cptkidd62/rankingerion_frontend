@@ -16,7 +16,12 @@ export class AppController {
 
   @Get('testcomerr')
   async testComErr() {
-    await this.benchmarkerService.compileAgent('test_err#e1.cpp');
+    await this.benchmarkerService.compileAgent('test_err#e2.cpp');
+  }
+
+  @Get('testcomsuc')
+  async testComSuc() {
+    await this.benchmarkerService.compileAgent('test_bot#b6.cpp');
   }
 
   @Get('testapi')

@@ -259,6 +259,7 @@ export class ClientService {
         //   return false;
         // }
         // console.log('id: ' + id);
+        console.log('compiled');
         this.acceptPlayTask(-1);
         break;
       }
