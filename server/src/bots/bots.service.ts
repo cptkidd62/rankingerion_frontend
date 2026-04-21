@@ -6,9 +6,12 @@ import { UserRepository } from 'src/data/user.repository';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { BenchmarkerService } from 'src/benchmarker/benchmarker.service';
+import { BotUploadException } from 'src/errors/BotUploadExceptions';
 
 @Injectable()
 export class BotsService {
+  private acceptedExtentions: string[] = ['.cpp', '.exe'];
+
   constructor(
     private readonly botRepo: BotRepository,
     private readonly matchRepo: MatchRepository,
@@ -34,6 +37,12 @@ export class BotsService {
     user_id: number,
   ): Promise<number> {
     const ext = this.getExtention(file.originalname);
+    if (ext === '') {
+      throw new BotUploadException('Brak rozszerzenia pliku');
+    }
+    if (!this.validateExtention(ext)) {
+      throw new BotUploadException('Nieobsługiwane rozszerzenie pliku');
+    }
     const id = await this.botRepo.create({
       id: 0,
       name: name,
@@ -52,6 +61,9 @@ export class BotsService {
   ): Promise<number> {
     const id = await this.create(name, file, user_id);
 
+    if (id === undefined) {
+      return id;
+    }
     if (process.env.USE_BENCHMARKER == 'true') {
       await this.generateBenchmarkerMatches(name, id, user_id);
     } else {
@@ -152,5 +164,9 @@ export class BotsService {
 
   private getExtention(filepath: string): string {
     return path.extname(filepath);
+  }
+
+  private validateExtention(extention: string): boolean {
+    return this.acceptedExtentions.includes(extention);
   }
 }
