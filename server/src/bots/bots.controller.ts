@@ -45,7 +45,6 @@ export class BotsController {
     @Body()
     {
       name,
-      language,
       userId,
     }: {
       name: string;
@@ -54,9 +53,9 @@ export class BotsController {
     },
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(name, language, userId);
+    console.log(name, userId);
     console.log('file', file);
-    return this.botsService.createWithMatches(name, language, file, userId);
+    return this.botsService.createWithMatches(name, file, userId);
   }
 
   @Delete(':id')

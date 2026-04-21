@@ -7,25 +7,25 @@ export class InMemoryBotRepository extends BotRepository {
     {
       id: 0,
       name: 'Bot J',
-      language: 'c',
+      language: '.c',
       user_id: 1,
     },
     {
       id: 1,
       name: 'BotJ',
-      language: 'py',
+      language: '.py',
       user_id: 1,
     },
     {
       id: 2,
       name: 'Bot K',
-      language: 'cpp',
+      language: '.cpp',
       user_id: 2,
     },
     {
       id: 3,
       name: 'BotK',
-      language: 'cpp',
+      language: '.cpp',
       user_id: 2,
     },
   ];

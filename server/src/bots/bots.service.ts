@@ -30,33 +30,27 @@ export class BotsService {
 
   async create(
     name: string,
-    language: string,
     file: Express.Multer.File,
     user_id: number,
   ): Promise<number> {
+    const ext = this.getExtention(file.originalname);
     const id = await this.botRepo.create({
       id: 0,
       name: name,
-      language: language,
+      language: ext,
       user_id: user_id,
     });
-
-    console.log(this.getExtention(file.originalname));
-    const filePath = path.join(
-      process.env.BOTS_DIR ?? './',
-      id + '_bot.' + language,
-    );
+    const filePath = path.join(process.env.BOTS_DIR ?? './', id + '_bot' + ext);
     await fs.writeFile(filePath, file.buffer, 'utf-8');
     return id;
   }
 
   async createWithMatches(
     name: string,
-    language: string,
     file: Express.Multer.File,
     user_id: number,
   ): Promise<number> {
-    const id = await this.create(name, language, file, user_id);
+    const id = await this.create(name, file, user_id);
 
     if (process.env.USE_BENCHMARKER == 'true') {
       await this.generateBenchmarkerMatches(name, id, user_id);
