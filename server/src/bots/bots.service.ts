@@ -41,6 +41,7 @@ export class BotsService {
       user_id: user_id,
     });
 
+    console.log(this.getExtention(file.originalname));
     const filePath = path.join(
       process.env.BOTS_DIR ?? './',
       id + '_bot.' + language,
@@ -153,5 +154,9 @@ export class BotsService {
 
   async deleteById(id: number): Promise<void> {
     return this.botRepo.deleteById(id);
+  }
+
+  private getExtention(filepath: string): string {
+    return path.extname(filepath);
   }
 }
