@@ -21,10 +21,9 @@ const loadBots = async () => {
   }
 };
 
-const createBot = async (payload: { name: string, language: string, file: any }) => {
+const createBot = async (payload: { name: string, file: any }) => {
   const formData = new FormData();
   formData.append('name', payload.name);
-  formData.append('language', payload.language);
   formData.append('file', payload.file);
   if (auth.user !== null)
     formData.append('userId', String(auth.user.id));

@@ -48,7 +48,6 @@ export class BotsController {
       userId,
     }: {
       name: string;
-      language: string;
       userId: number;
     },
     @UploadedFile() file: Express.Multer.File,

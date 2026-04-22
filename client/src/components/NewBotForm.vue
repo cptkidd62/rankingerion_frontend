@@ -2,17 +2,15 @@
 import { reactive, ref } from 'vue'
 
 const emit = defineEmits<{
-    (e: 'submit', payload: { name: string, language: string, file: any }): void
+    (e: 'submit', payload: { name: string, file: any }): void
 }>()
 
 const name = ref('')
-const language = ref('')
 const fileInput = ref<HTMLInputElement | null>()
 const file = ref<File | null>()
 
 const errors = reactive({
     name: '',
-    language: '',
     file: ''
 })
 
@@ -20,7 +18,6 @@ const handleSubmit = () => {
     if (validateAll()) {
         emit('submit', {
             name: name.value,
-            language: language.value,
             file: file.value,
         })
     }
@@ -33,14 +30,13 @@ const onFileChanged = () => {
 
 const validateAll = () => {
     validateField("name");
-    validateField("language");
     validateField("file");
 
-    if (!errors.name && !errors.language && !errors.file) {
+    if (!errors.name && !errors.file) {
         return true;
     }
     else {
-        console.error('Błąd walidacji formularza: ' + (errors.name ?? errors.language ?? errors.file));
+        console.error('Błąd walidacji formularza: ' + (errors.name ?? errors.file));
         return false;
     }
 }
@@ -48,8 +44,6 @@ const validateAll = () => {
 const validateField = (field: string) => {
     if (field === "name")
         errors.name = name.value != '' ? '' : 'Nazwa nie może być pusta!';
-    if (field === "language")
-        errors.language = language.value != '' ? '' : 'Wybierz język';
     if (field === "file") {
         errors.file = file.value != null ? '' : 'Wybierz plik do wysłania';
     }
@@ -61,19 +55,6 @@ const validateField = (field: string) => {
         <form @submit.prevent="handleSubmit">
             <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa" @blur="validateField('name')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
-            <select name="language" id="language" v-model="language" placeholder="Język"
-                @blur="validateField('language')">
-                <option disabled value="">Wybierz język</option>
-                <option value="exe">Plik wykonywalny</option>
-                <option value="c">C</option>
-                <option value="cpp">C++</option>
-                <option value="cs">C#</option>
-                <option value="java">Java</option>
-                <option value="jar">Jar</option>
-                <option value="py">Python</option>
-                <option value="rs">Rust</option>
-            </select>
-            <p v-if="errors.language" style="color:red;">{{ errors.language }}</p>
             <input type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
                 @blur="validateField('file')" placeholder="Tu wklej kod">
             <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
