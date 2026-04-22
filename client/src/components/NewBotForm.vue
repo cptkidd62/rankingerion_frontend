@@ -2,7 +2,8 @@
 import { reactive, ref } from 'vue'
 
 const emit = defineEmits<{
-    (e: 'submit', payload: { name: string, file: any }): void
+    (e: 'submit', payload: { name: string, file: any }): void,
+    (e: 'input-change'): void,
 }>()
 
 const name = ref('')
@@ -26,6 +27,7 @@ const handleSubmit = () => {
 const onFileChanged = () => {
     file.value = fileInput.value?.files![0];
     console.log('Selected file', file.value);
+    emit('input-change');
 }
 
 const validateAll = () => {

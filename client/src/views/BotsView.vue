@@ -10,6 +10,7 @@ const API_URL = 'http://localhost:3000/bots'
 const bots = ref<Bot[]>([]);
 const auth = useAuthStore()
 const isOpen = ref(false)
+const errorMsg = ref('')
 
 const loadBots = async () => {
   try {
@@ -30,7 +31,9 @@ const createBot = async (payload: { name: string, file: any }) => {
   axios.post(API_URL, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(function (_) {
     isOpen.value = false;
     loadBots();
+    errorMsg.value = '';
   }).catch(function (error) {
+    errorMsg.value = error.response.data.message;
     console.error('Błąd tworzenia bota', error);
   })
 }
@@ -52,7 +55,8 @@ onMounted(loadBots);
     <BotListItem v-for="bot in bots" :bot="bot" @delete="deleteBot" />
     <details :open="isOpen">
       <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
-      <NewBotForm @submit="createBot" />
+      <NewBotForm @submit="createBot" @input-change="errorMsg = ''" />
+      <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
     </details>
   </div>
 </template>
