@@ -49,7 +49,10 @@ export class BotsService {
       language: ext,
       user_id: user_id,
     });
-    const filePath = path.join(process.env.BOTS_DIR ?? './', id + '_bot' + ext);
+    const filePath = path.join(
+      process.env.BOTS_DIR ?? './',
+      id + '_singlescore' + ext,
+    );
     await fs.writeFile(filePath, file.buffer, 'utf-8');
     return id;
   }
@@ -136,7 +139,7 @@ export class BotsService {
         ]);
         if (res?.summaries != '') {
           console.error(res?.summaries);
-          return;
+          continue;
         }
         const scores = res.scores;
         this.matchRepo
