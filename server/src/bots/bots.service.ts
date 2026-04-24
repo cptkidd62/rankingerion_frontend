@@ -155,7 +155,7 @@ export class BotsService {
   }
 
   private botFile(bot: Bot): string {
-    return String(bot.id) + '_bot' + bot.language;
+    return String(bot.id) + '_singlescore' + bot.language;
   }
 
   async deleteById(id: number): Promise<void> {
