@@ -59,13 +59,13 @@ export class ClientService {
       while (this.parseBuffer());
     });
     this.socket.on('error', (err) => {
-      console.error('!! socket error:', err);
+      debugError(1, '!! socket error:', err);
     });
-    this.socket.on('close', (hadError) => {
-      console.log('socket closed, error?', hadError);
+    this.socket.on('close', (err) => {
+      debugLog(1, 'socket closed, error?', err);
     });
     this.socket.on('timeout', () => {
-      console.log('socket timeout');
+      debugLog(1, 'socket timeout');
     });
     this.outstream.writeUTF(os.hostname());
     this.outstream.writeUTF(''); // referee
@@ -83,7 +83,7 @@ export class ClientService {
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.sentTasks.push(compileTask);
-    // console.log('senttasks queue: ', this.sentTasks);
+    debugLog(3, 'senttasks queue: ', this.sentTasks);
     this.trySend();
   }
 
@@ -97,7 +97,7 @@ export class ClientService {
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.sentTasks.push(playTask);
-    // console.log('senttasks queue: ', this.sentTasks);
+    debugLog(3, 'senttasks queue: ', this.sentTasks);
     this.trySend();
   }
 
@@ -114,7 +114,7 @@ export class ClientService {
       this.sendingQueue.push(buf);
       this.trySend();
     } catch (err) {
-      console.error(err);
+      debugError(1, err);
     }
   }
 
@@ -126,13 +126,13 @@ export class ClientService {
   }
 
   private acceptPlayTask(id: number) {
-    // console.log(id);
+    debugLog(3, id);
     const task = this.sentTasks.shift();
-    // console.log('senttasks queue: ', this.sentTasks);
+    debugLog(3, 'senttasks queue: ', this.sentTasks);
     if (task instanceof PlayTaskContainer) {
       this.acceptedPlayTasks.set(id, task);
-      // console.log(this.acceptedPlayTasks.get(id));
-      // console.log(this.acceptedPlayTasks);
+      debugLog(3, this.acceptedPlayTasks.get(id));
+      debugLog(3, this.acceptedPlayTasks);
     } else if (task instanceof CompileContainer) {
       task.complete();
     }
@@ -213,7 +213,8 @@ export class ClientService {
   }
 
   private compilationError(agent: Agent, errorMsg: string) {
-    console.log(
+    debugLog(
+      1,
       'Compilation error on agent: ' +
         agent.toString() +
         ' with msg: ' +
@@ -250,7 +251,7 @@ export class ClientService {
       this.instream.resetCursor();
       return false;
     }
-    // console.log('ans code: ' + ans);
+    debugLog(3, 'ans code:', ans);
     switch (ans) {
       case ClientService.ANS_COMPILED: {
         // const id = this.instream.peekInt();
@@ -259,7 +260,7 @@ export class ClientService {
         //   return false;
         // }
         // console.log('id: ' + id);
-        console.log('compiled');
+        debugLog(2, 'compiled');
         this.acceptPlayTask(-1);
         break;
       }
@@ -269,7 +270,7 @@ export class ClientService {
           this.instream.resetCursor();
           return false;
         }
-        // console.log('id: ' + id);
+        debugLog(2, 'id:', id);
         this.acceptPlayTask(id);
         break;
       }
@@ -280,7 +281,7 @@ export class ClientService {
           return false;
         }
         const playTask = this.acceptedPlayTasks.get(id);
-        // console.log('Playtask with id: ', id, playTask);
+        debugLog(3, 'Playtask with id: ', id, playTask);
         if (!playTask) throw Error('No playtask found with id ' + id);
         this.acceptedPlayTasks.delete(id);
         const time = this.instream.peekLong();
@@ -359,7 +360,7 @@ export class ClientService {
           this.instream.resetCursor();
           return false;
         }
-        // console.log('sourceName: ' + sourceName);
+        debugLog(3, 'sourceName: ' + sourceName);
         this.sendSource(sourceName);
         break;
       }
@@ -372,7 +373,7 @@ export class ClientService {
         throw new Error(msg);
       }
       case ClientService.CMD_PING: {
-        // console.log('ping request');
+        debugLog(3, 'ping request');
         this.sendPong();
         break;
       }
@@ -395,5 +396,17 @@ export class ClientService {
         return;
       }
     }
+  }
+}
+
+function debugLog(level: number, ...args: unknown[]) {
+  if (Number(process.env.DEBUG_LEVEL!) >= level) {
+    console.log(...args);
+  }
+}
+
+function debugError(level: number, ...args: unknown[]) {
+  if (Number(process.env.DEBUG_LEVEL!) >= level) {
+    console.error(...args);
   }
 }
