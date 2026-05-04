@@ -243,7 +243,10 @@ export class ClientService {
     playTask.bc.playCount = -playTask.index - 1;
     playTask.bc.results[playTask.index] = PlayResult.Error(errorMsg);
     const i = this.batches.indexOf(playTask.bc);
-    if (i > -1) this.batches.splice(i, 1);
+    if (i > -1) {
+      const batch = this.batches.splice(i, 1);
+      batch[0].fail(errorMsg);
+    }
   }
 
   private parseBuffer(): boolean {

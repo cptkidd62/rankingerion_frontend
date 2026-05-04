@@ -138,7 +138,7 @@ export class BotsService {
           this.botFile(this_bot),
         ]);
         if (res?.summaries != '') {
-          console.error(res?.summaries);
+          console.error('Result summaries:', res?.summaries);
           continue;
         }
         const scores = res.scores;

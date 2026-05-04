@@ -26,10 +26,14 @@ export class AppController {
 
   @Get('testapi')
   async testAPI() {
-    await this.benchmarkerService.playSingle([
+    const res = await this.benchmarkerService.playSingle([
       'test_err#e4.cpp',
       'test_bot#b1.cpp',
     ]);
+    console.log('HERE');
+    if (res?.summaries != '') {
+      console.error('Result summaries:', res?.summaries);
+    }
   }
 
   @Get('testapi2')
