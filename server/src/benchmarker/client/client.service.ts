@@ -16,7 +16,7 @@ import { PlayTask } from '../tasks/playtask';
 import { PlayResult } from '../tasks/playresult';
 import { ok } from 'assert';
 import { Agent } from '../models/agent';
-import { CompileResult } from '../tasks/compileresult';
+// import { CompileResult } from '../tasks/compileresult';
 
 @Injectable()
 export class ClientService {
@@ -133,9 +133,10 @@ export class ClientService {
       this.acceptedPlayTasks.set(id, task);
       debugLog(3, this.acceptedPlayTasks.get(id));
       debugLog(3, this.acceptedPlayTasks);
-    } else if (task instanceof CompileContainer) {
-      task.complete();
     }
+    // else if (task instanceof CompileContainer) {
+    //   task.complete();
+    // }
   }
 
   enqueueBatch(batch: PlayTask[]): Promise<PlayResult[]> {
@@ -186,10 +187,10 @@ export class ClientService {
     this.sendPlayTask(playTask);
   }
 
-  enqueueCompile(compileTask: CompileContainer): Promise<CompileResult> {
-    this.sendCompileTask(compileTask);
-    return compileTask.promise;
-  }
+  // enqueueCompile(compileTask: CompileContainer): Promise<CompileResult> {
+  //   this.sendCompileTask(compileTask);
+  //   return compileTask.promise;
+  // }
 
   private reportBatchResults(bc: BatchContainer) {
     ok(bc.playCount != 0);
@@ -220,10 +221,10 @@ export class ClientService {
         ' with msg: ' +
         errorMsg,
     );
-    const task = this.sentTasks.shift();
-    if (task instanceof CompileContainer) {
-      task.fail(errorMsg);
-    }
+    // const task = this.sentTasks.shift();
+    // if (task instanceof CompileContainer) {
+    //   task.fail(errorMsg);
+    // }
   }
 
   private taskPlayed(playTask: PlayTaskContainer, playResults: PlayResult) {

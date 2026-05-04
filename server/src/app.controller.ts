@@ -14,21 +14,21 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('testcomerr')
-  async testComErr() {
-    await this.benchmarkerService.compileAgent('test_err#e2.cpp');
-  }
+  // @Get('testcomerr')
+  // async testComErr() {
+  //   await this.benchmarkerService.compileAgent('test_err#e2.cpp');
+  // }
 
-  @Get('testcomsuc')
-  async testComSuc() {
-    await this.benchmarkerService.compileAgent('test_bot#b6.cpp');
-  }
+  // @Get('testcomsuc')
+  // async testComSuc() {
+  //   await this.benchmarkerService.compileAgent('test_bot#b6.cpp');
+  // }
 
   @Get('testapi')
   async testAPI() {
     await this.benchmarkerService.playSingle([
-      'test_err#e1.cpp',
-      'randomScore#r1.cpp',
+      'test_err#e4.cpp',
+      'test_bot#b1.cpp',
     ]);
   }
 
