@@ -150,6 +150,16 @@ export class BotsService {
               res.agentName,
               res.agentIndex,
             );
+            const player = players.at(res.agentIndex!);
+            if (player) {
+              await this.botRepo.updateById(player.id, {
+                id: player.id,
+                name: player.name,
+                language: player.language,
+                user_id: player.user_id,
+                status: { type: 'compilation_error' },
+              });
+            }
           } else if (res instanceof PlaytimeError) {
             console.error(
               'playtime error of bot %s on index %d: %s',
@@ -157,6 +167,16 @@ export class BotsService {
               res.agentIndex,
               res.message,
             );
+            const player = players.at(res.agentIndex!);
+            if (player) {
+              await this.botRepo.updateById(player.id, {
+                id: player.id,
+                name: player.name,
+                language: player.language,
+                user_id: player.user_id,
+                status: { type: 'playtime_error' },
+              });
+            }
           } else {
             console.error('PlayTaskError');
           }

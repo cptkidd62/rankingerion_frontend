@@ -9,24 +9,28 @@ export class InMemoryBotRepository extends BotRepository {
       name: 'Bot J',
       language: '.c',
       user_id: 1,
+      status: { type: 'created' },
     },
     {
       id: 1,
       name: 'BotJ',
       language: '.py',
       user_id: 1,
+      status: { type: 'created' },
     },
     {
       id: 2,
       name: 'Bot K',
       language: '.cpp',
       user_id: 2,
+      status: { type: 'created' },
     },
     {
       id: 3,
       name: 'BotK',
       language: '.cpp',
       user_id: 2,
+      status: { type: 'created' },
     },
   ];
 
@@ -57,5 +61,13 @@ export class InMemoryBotRepository extends BotRepository {
   async deleteById(id: number): Promise<void> {
     await Promise.resolve();
     this.bots = this.bots.filter((bot) => bot.id != id);
+  }
+
+  async updateById(id: number, bot: Bot): Promise<void> {
+    await Promise.resolve();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0) {
+      this.bots[idx] = bot;
+    }
   }
 }

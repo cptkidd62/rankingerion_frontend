@@ -97,4 +97,14 @@ export class FileBotRepository extends BotRepository {
     this.dirty = true;
     this.mutex.release();
   }
+
+  async updateById(id: number, bot: Bot): Promise<void> {
+    await this.mutex.acquire();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0) {
+      this.bots[idx] = bot;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
 }

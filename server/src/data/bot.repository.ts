@@ -24,6 +24,7 @@ export abstract class BotRepository {
   abstract findAll(): Promise<Bot[]>;
   abstract findById(id: number): Promise<Bot | null>;
   abstract filterByUserId(id: number): Promise<Bot[]>;
-  abstract create(user: Bot): Promise<number>;
+  abstract create(bot: Bot): Promise<number>;
   abstract deleteById(id: number): Promise<void>;
+  abstract updateById(id: number, bot: Bot): Promise<void>;
 }
