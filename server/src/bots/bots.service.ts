@@ -53,6 +53,7 @@ export class BotsService {
       name: name,
       language: ext,
       user_id: user_id,
+      status: { type: 'created' },
     });
     const filePath = path.join(
       process.env.BOTS_DIR ?? './',
@@ -138,10 +139,10 @@ export class BotsService {
           username: 'undefined',
           password: '',
         };
-        const res = await this.benchmarkerService.playSingle([
-          this.botFile(bot),
-          this.botFile(this_bot),
-        ]);
+        const players = [bot, this_bot];
+        const res = await this.benchmarkerService.playSingle(
+          players.map((player) => this.botFile(player)),
+        );
         if (res instanceof PlayTaskError) {
           if (res instanceof CompilationError) {
             console.error(

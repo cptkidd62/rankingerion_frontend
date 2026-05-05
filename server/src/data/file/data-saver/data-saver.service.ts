@@ -22,7 +22,7 @@ export class DataSaverService implements OnModuleInit, OnModuleDestroy {
     this.intervalId = setInterval(() => {
       this.botRepo
         .saveData()
-        .catch((err) => console.error('Błąd zapisu match repo: ' + err));
+        .catch((err) => console.error('Błąd zapisu bot repo: ' + err));
       this.matchRepo
         .saveData()
         .catch((err) => console.error('Błąd zapisu match repo: ' + err));
