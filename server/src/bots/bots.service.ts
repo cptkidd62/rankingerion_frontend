@@ -7,7 +7,11 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { BenchmarkerService } from 'src/benchmarker/benchmarker.service';
 import { BotUploadException } from 'src/errors/BotUploadExceptions';
-import { CompilationError, PlayTaskError } from 'src/errors/PlayErrors';
+import {
+  CompilationError,
+  PlayTaskError,
+  PlaytimeError,
+} from 'src/errors/PlayErrors';
 
 @Injectable()
 export class BotsService {
@@ -144,6 +148,13 @@ export class BotsService {
               'compilation error of bot %s on index %d',
               res.agentName,
               res.agentIndex,
+            );
+          } else if (res instanceof PlaytimeError) {
+            console.error(
+              'playtime error of bot %s on index %d: %s',
+              res.agentName,
+              res.agentIndex,
+              res.message,
             );
           } else {
             console.error('PlayTaskError');

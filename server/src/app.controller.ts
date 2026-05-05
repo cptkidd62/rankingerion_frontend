@@ -1,7 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { BenchmarkerService } from './benchmarker/benchmarker.service';
-import { CompilationError, PlayTaskError } from './errors/PlayErrors';
+import {
+  CompilationError,
+  PlayTaskError,
+  PlaytimeError,
+} from './errors/PlayErrors';
 
 @Controller()
 export class AppController {
@@ -38,6 +42,13 @@ export class AppController {
           'compilation error of bot %s on index %d',
           res.agentName,
           res.agentIndex,
+        );
+      } else if (res instanceof PlaytimeError) {
+        console.error(
+          'playtime error of bot %s on index %d: %s',
+          res.agentName,
+          res.agentIndex,
+          res.message,
         );
       } else {
         console.error('PlayTaskError');

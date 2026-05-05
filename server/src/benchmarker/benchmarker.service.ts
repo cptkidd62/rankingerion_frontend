@@ -4,7 +4,11 @@ import { PlayTask } from './tasks/playtask';
 import { Agent } from './models/agent';
 import { PlayResult } from './tasks/playresult';
 import { randomInt } from 'crypto';
-import { CompilationError, PlayTaskError } from 'src/errors/PlayErrors';
+import {
+  CompilationError,
+  PlayTaskError,
+  PlaytimeError,
+} from 'src/errors/PlayErrors';
 import * as path from 'path';
 // import { CompileContainer } from './tasks/containers';
 
@@ -33,6 +37,8 @@ export class BenchmarkerService {
           const [, name] = match;
           const idx = bots.findIndex((bot) => path.parse(bot).name === name);
           return new CompilationError(idx, name);
+        } else {
+          return new PlaytimeError(error);
         }
       }
       throw Error('unknown error type ' + error);
