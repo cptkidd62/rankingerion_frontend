@@ -4,13 +4,15 @@ import { PlayTask } from './tasks/playtask';
 import { Agent } from './models/agent';
 import { PlayResult } from './tasks/playresult';
 import { randomInt } from 'crypto';
+import { CompilationError, PlayTaskError } from 'src/errors/PlayErrors';
+import * as path from 'path';
 // import { CompileContainer } from './tasks/containers';
 
 @Injectable()
 export class BenchmarkerService {
   constructor(private clientService: ClientService) {}
 
-  async playSingle(bots: string[]): Promise<PlayResult | undefined> {
+  async playSingle(bots: string[]): Promise<PlayResult | PlayTaskError> {
     const agents: Agent[] = [];
     bots.forEach((bot) => agents.push(new Agent(bot)));
     try {
@@ -25,37 +27,45 @@ export class BenchmarkerService {
       return results[0];
     } catch (error) {
       console.error(error);
-      return undefined;
+      if (typeof error === 'string') {
+        const match = error.match(/^(.+) is not compiled$/);
+        if (match) {
+          const [, name] = match;
+          const idx = bots.findIndex((bot) => path.parse(bot).name === name);
+          return new CompilationError(idx, name);
+        }
+      }
+      throw Error('unknown error type ' + error);
     }
   }
 
-  async playAgainst(
-    bot: string,
-    others: string[][],
-  ): Promise<PlayResult[] | undefined> {
-    const agentsList: Agent[][] = [];
-    for (let i = 0; i < others.length; i++) {
-      agentsList[i] = [];
-      agentsList[i].push(new Agent(bot));
-      others[i].forEach((other) => agentsList[i].push(new Agent(other)));
-    }
-    try {
-      const results = await this.clientService.enqueueBatch(
-        agentsList.map((agents) => {
-          return new PlayTask(agents, BigInt(randomInt(1000)), 'Sandbox');
-        }),
-      );
-      console.log('**** OUT2 Batch results:');
-      for (let i = 0; i < results.length; i++) {
-        console.log('id: ', i, ', scores: ', results[i].scores);
-      }
-      console.log('--------');
-      return results;
-    } catch (error) {
-      console.error(error);
-      return undefined;
-    }
-  }
+  // async playAgainst(
+  //   bot: string,
+  //   others: string[][],
+  // ): Promise<PlayResult[] | PlayTaskError> {
+  //   const agentsList: Agent[][] = [];
+  //   for (let i = 0; i < others.length; i++) {
+  //     agentsList[i] = [];
+  //     agentsList[i].push(new Agent(bot));
+  //     others[i].forEach((other) => agentsList[i].push(new Agent(other)));
+  //   }
+  //   try {
+  //     const results = await this.clientService.enqueueBatch(
+  //       agentsList.map((agents) => {
+  //         return new PlayTask(agents, BigInt(randomInt(1000)), 'Sandbox');
+  //       }),
+  //     );
+  //     console.log('**** OUT2 Batch results:');
+  //     for (let i = 0; i < results.length; i++) {
+  //       console.log('id: ', i, ', scores: ', results[i].scores);
+  //     }
+  //     console.log('--------');
+  //     return results;
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw Error('unknown error type ' + error);
+  //   }
+  // }
 
   // async compileAgent(bot: string): Promise<string> {
   //   const res = await this.clientService.enqueueCompile(

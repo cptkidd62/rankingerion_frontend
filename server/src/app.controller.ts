@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { BenchmarkerService } from './benchmarker/benchmarker.service';
+import { CompilationError, PlayTaskError } from './errors/PlayErrors';
 
 @Controller()
 export class AppController {
@@ -31,16 +32,24 @@ export class AppController {
       'test_bot#b1.cpp',
     ]);
     console.log('HERE');
-    if (res?.summaries != '') {
-      console.error('Result summaries:', res?.summaries);
+    if (res instanceof PlayTaskError) {
+      if (res instanceof CompilationError) {
+        console.error(
+          'compilation error of bot %s on index %d',
+          res.agentName,
+          res.agentIndex,
+        );
+      } else {
+        console.error('PlayTaskError');
+      }
     }
   }
 
-  @Get('testapi2')
-  async testAPI2() {
-    await this.benchmarkerService.playAgainst('test_bot#b2.cpp', [
-      ['test_bot#b1.cpp'],
-      ['randomScore#r1.cpp'],
-    ]);
-  }
+  // @Get('testapi2')
+  // async testAPI2() {
+  //   await this.benchmarkerService.playAgainst('test_bot#b2.cpp', [
+  //     ['test_bot#b1.cpp'],
+  //     ['randomScore#r1.cpp'],
+  //   ]);
+  // }
 }
