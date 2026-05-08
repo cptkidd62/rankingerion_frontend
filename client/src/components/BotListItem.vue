@@ -24,6 +24,8 @@ export default defineComponent({
 <template>
   <div class="bot-list-item">
     <h3 class="name">{{ bot.name }}</h3>
+    <div v-if="bot.status.type === 'compilation_error'" class="error">Błąd kompilacji!</div>
+    <div v-if="bot.status.type === 'playtime_error'" class="error">Błąd rozgrywki!</div>
     <button @click="handleDelete(bot.id)">usuń</button>
   </div>
 </template>
@@ -37,5 +39,9 @@ export default defineComponent({
 
 .name {
   margin-right: 1rem;
+}
+
+.error {
+  color: red;
 }
 </style>
