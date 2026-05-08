@@ -133,67 +133,71 @@ export class BotsService {
     };
     const this_bot = bots.find((b) => b.id == id)!;
     for (const bot of bots) {
+      // allow only other users' bots
       if (bot.user_id != user_id) {
-        const user = users.find((u) => u.id == bot.user_id) ?? {
-          id: -1,
-          username: 'undefined',
-          password: '',
-        };
-        const players = [bot, this_bot];
-        const res = await this.benchmarkerService.playSingle(
-          players.map((player) => this.botFile(player)),
-        );
-        if (res instanceof PlayTaskError) {
-          if (res instanceof CompilationError) {
-            console.error(
-              'compilation error of bot %s on index %d',
-              res.agentName,
-              res.agentIndex,
-            );
-            const player = players.at(res.agentIndex!);
-            if (player) {
-              await this.botRepo.updateById(player.id, {
-                id: player.id,
-                name: player.name,
-                language: player.language,
-                user_id: player.user_id,
-                status: { type: 'compilation_error' },
-              });
+        // don't allow bots with errors
+        if (bot.status.type === 'created' || bot.status.type === 'ok') {
+          const user = users.find((u) => u.id == bot.user_id) ?? {
+            id: -1,
+            username: 'undefined',
+            password: '',
+          };
+          const players = [bot, this_bot];
+          const res = await this.benchmarkerService.playSingle(
+            players.map((player) => this.botFile(player)),
+          );
+          if (res instanceof PlayTaskError) {
+            if (res instanceof CompilationError) {
+              console.error(
+                'compilation error of bot %s on index %d',
+                res.agentName,
+                res.agentIndex,
+              );
+              const player = players.at(res.agentIndex!);
+              if (player) {
+                await this.botRepo.updateById(player.id, {
+                  id: player.id,
+                  name: player.name,
+                  language: player.language,
+                  user_id: player.user_id,
+                  status: { type: 'compilation_error' },
+                });
+              }
+            } else if (res instanceof PlaytimeError) {
+              console.error(
+                'playtime error of bot %s on index %d: %s',
+                res.agentName,
+                res.agentIndex,
+                res.message,
+              );
+              const player = players.at(res.agentIndex!);
+              if (player) {
+                await this.botRepo.updateById(player.id, {
+                  id: player.id,
+                  name: player.name,
+                  language: player.language,
+                  user_id: player.user_id,
+                  status: { type: 'playtime_error' },
+                });
+              }
+            } else {
+              console.error('PlayTaskError');
             }
-          } else if (res instanceof PlaytimeError) {
-            console.error(
-              'playtime error of bot %s on index %d: %s',
-              res.agentName,
-              res.agentIndex,
-              res.message,
-            );
-            const player = players.at(res.agentIndex!);
-            if (player) {
-              await this.botRepo.updateById(player.id, {
-                id: player.id,
-                name: player.name,
-                language: player.language,
-                user_id: player.user_id,
-                status: { type: 'playtime_error' },
-              });
-            }
-          } else {
-            console.error('PlayTaskError');
+            continue;
           }
-          continue;
+          const scores = res.scores;
+          this.matchRepo
+            .create({
+              bot_ids: [bot.id, id],
+              botnames: [bot.name, name],
+              user_ids: [user.id, user_id],
+              usernames: [user.username, this_user.username],
+              scores: [scores],
+            })
+            .catch((err) => {
+              console.error('Błąd podczas create match:', err);
+            });
         }
-        const scores = res.scores;
-        this.matchRepo
-          .create({
-            bot_ids: [bot.id, id],
-            botnames: [bot.name, name],
-            user_ids: [user.id, user_id],
-            usernames: [user.username, this_user.username],
-            scores: [scores],
-          })
-          .catch((err) => {
-            console.error('Błąd podczas create match:', err);
-          });
       }
     }
   }
