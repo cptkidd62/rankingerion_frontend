@@ -74,7 +74,9 @@ export class BotsService {
       return id;
     }
     if (process.env.USE_BENCHMARKER == 'true') {
-      await this.generateBenchmarkerMatches(name, id, user_id);
+      this.generateBenchmarkerMatches(name, id, user_id).catch((error) => {
+        console.error(error);
+      });
     } else {
       await this.generateMockMatches(name, id, user_id);
     }
