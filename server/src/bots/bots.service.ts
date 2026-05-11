@@ -164,6 +164,10 @@ export class BotsService {
                   user_id: player.user_id,
                   status: { type: 'compilation_error' },
                 });
+                if (player.id === this_bot.id) {
+                  // don't continue if own bot has error
+                  return;
+                }
               }
             } else if (res instanceof PlaytimeError) {
               console.error(
@@ -181,6 +185,10 @@ export class BotsService {
                   user_id: player.user_id,
                   status: { type: 'playtime_error' },
                 });
+                if (player.id === this_bot.id) {
+                  // don't continue if own bot has error
+                  return;
+                }
               }
             } else {
               console.error('PlayTaskError');
@@ -199,9 +207,23 @@ export class BotsService {
             .catch((err) => {
               console.error('Błąd podczas create match:', err);
             });
+          await this.botRepo.updateById(bot.id, {
+            id: bot.id,
+            name: bot.name,
+            language: bot.language,
+            user_id: bot.user_id,
+            status: { type: 'ok' },
+          });
         }
       }
     }
+    await this.botRepo.updateById(this_bot.id, {
+      id: this_bot.id,
+      name: this_bot.name,
+      language: this_bot.language,
+      user_id: this_bot.user_id,
+      status: { type: 'ok' },
+    });
   }
 
   private botFile(bot: Bot): string {
