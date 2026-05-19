@@ -18,6 +18,7 @@ export interface Bot {
   language: string;
   user_id: number;
   status: BotStatus;
+  rating: number | undefined;
 }
 
 export abstract class BotRepository {
