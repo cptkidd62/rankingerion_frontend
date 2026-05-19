@@ -54,10 +54,11 @@ export class BotsService {
       language: ext,
       user_id: user_id,
       status: { type: 'created' },
+      rating: 0,
     });
     const filePath = path.join(
       process.env.BOTS_DIR ?? './',
-      id + '_singlescore' + ext,
+      id + '_singlescore1' + ext,
     );
     await fs.writeFile(filePath, file.buffer, 'utf-8');
     return id;
@@ -106,11 +107,12 @@ export class BotsService {
         };
         this.matchRepo
           .create({
+            id: 0,
             bot_ids: [bot.id, id],
             botnames: [bot.name, name],
             user_ids: [user.id, user_id],
             usernames: [user.username, this_user.username],
-            scores: [[randomInt(0, 1000), randomInt(0, 1000)]],
+            score: [randomInt(0, 1000), randomInt(0, 1000)],
           })
           .catch((err) => {
             console.error('Błąd podczas create match:', err);
@@ -163,6 +165,7 @@ export class BotsService {
                   language: player.language,
                   user_id: player.user_id,
                   status: { type: 'compilation_error' },
+                  rating: 0,
                 });
                 if (player.id === this_bot.id) {
                   // don't continue if own bot has error
@@ -184,6 +187,7 @@ export class BotsService {
                   language: player.language,
                   user_id: player.user_id,
                   status: { type: 'playtime_error' },
+                  rating: 0,
                 });
                 if (player.id === this_bot.id) {
                   // don't continue if own bot has error
@@ -198,11 +202,12 @@ export class BotsService {
           const scores = res.scores;
           this.matchRepo
             .create({
+              id: 0,
               bot_ids: [bot.id, id],
               botnames: [bot.name, name],
               user_ids: [user.id, user_id],
               usernames: [user.username, this_user.username],
-              scores: [scores],
+              score: scores,
             })
             .catch((err) => {
               console.error('Błąd podczas create match:', err);
@@ -213,6 +218,7 @@ export class BotsService {
             language: bot.language,
             user_id: bot.user_id,
             status: { type: 'ok' },
+            rating: 0,
           });
         }
       }
@@ -223,6 +229,7 @@ export class BotsService {
       language: this_bot.language,
       user_id: this_bot.user_id,
       status: { type: 'ok' },
+      rating: 0,
     });
   }
 

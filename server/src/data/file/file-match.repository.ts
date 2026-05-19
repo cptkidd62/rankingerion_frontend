@@ -5,12 +5,14 @@ import { Match, MatchRepository } from '../match.repository';
 import { Mutex } from 'async-mutex';
 
 interface MatchesFileData {
+  next_id: number;
   matches: Match[];
 }
 
 @Injectable()
 export class FileMatchRepository extends MatchRepository {
   private matches: Match[] = [];
+  private nextId = 0;
   private mutex: Mutex = new Mutex();
   private dirty: boolean = false;
 
@@ -31,6 +33,7 @@ export class FileMatchRepository extends MatchRepository {
       const raw = await fs.readFile(filePath, 'utf-8');
       const data: MatchesFileData = JSON.parse(raw) as MatchesFileData;
       this.matches = data.matches;
+      this.nextId = data.next_id;
     } catch (err) {
       console.error('Błąd wczytywania matches.json:', err);
       // jeśli plik nie istnieje — inicjuj puste dane
@@ -40,6 +43,7 @@ export class FileMatchRepository extends MatchRepository {
 
   async saveData() {
     const data: MatchesFileData = {
+      next_id: this.nextId,
       matches: this.matches,
     };
     if (this.dirty) {
@@ -82,10 +86,12 @@ export class FileMatchRepository extends MatchRepository {
     );
   }
 
-  async create(match: Match): Promise<void> {
+  async create(match: Match): Promise<number> {
     await this.mutex.acquire();
+    match.id = this.nextId++;
     this.matches.push(match);
     this.dirty = true;
     this.mutex.release();
+    return match.id;
   }
 }
