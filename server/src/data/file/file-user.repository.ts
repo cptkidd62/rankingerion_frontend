@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { User, UserRepository } from '../user.repository';
@@ -9,15 +9,16 @@ interface UserFileData {
 }
 
 @Injectable()
-export class FileUserRepository extends UserRepository {
+export class FileUserRepository extends UserRepository implements OnModuleInit {
   private users: User[] = [];
   private nextId = 0;
 
   constructor() {
     super();
-    this.loadData().catch((err) => {
-      console.error('Błąd podczas loadData:', err);
-    });
+  }
+
+  async onModuleInit() {
+    await this.loadData();
   }
 
   private async loadData() {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Match, MatchRepository } from '../match.repository';
@@ -10,7 +10,10 @@ interface MatchesFileData {
 }
 
 @Injectable()
-export class FileMatchRepository extends MatchRepository {
+export class FileMatchRepository
+  extends MatchRepository
+  implements OnModuleInit
+{
   private matches: Match[] = [];
   private nextId = 0;
   private mutex: Mutex = new Mutex();
@@ -18,9 +21,10 @@ export class FileMatchRepository extends MatchRepository {
 
   constructor() {
     super();
-    this.loadData().catch((err) => {
-      console.error('Błąd podczas loadData:', err);
-    });
+  }
+
+  async onModuleInit() {
+    await this.loadData();
   }
 
   private async loadData() {

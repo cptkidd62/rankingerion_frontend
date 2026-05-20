@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Bot, BotRepository } from '../bot.repository';
@@ -10,7 +10,7 @@ interface BotFileData {
 }
 
 @Injectable()
-export class FileBotRepository extends BotRepository {
+export class FileBotRepository extends BotRepository implements OnModuleInit {
   private bots: Bot[] = [];
   private nextId = 0;
   private mutex: Mutex = new Mutex();
@@ -18,9 +18,10 @@ export class FileBotRepository extends BotRepository {
 
   constructor() {
     super();
-    this.loadData().catch((err) => {
-      console.error('Błąd podczas loadData:', err);
-    });
+  }
+
+  async onModuleInit() {
+    await this.loadData();
   }
 
   private async loadData() {
