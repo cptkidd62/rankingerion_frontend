@@ -70,17 +70,17 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
 
   async findAll(): Promise<Bot[]> {
     await Promise.resolve();
-    return this.bots;
+    return structuredClone(this.bots);
   }
 
   async findById(id: number): Promise<Bot | null> {
     await Promise.resolve();
-    return this.bots.find((Bot) => Bot.id == id) ?? null;
+    return structuredClone(this.bots.find((Bot) => Bot.id == id)) ?? null;
   }
 
   async filterByUserId(id: number): Promise<Bot[]> {
     await Promise.resolve();
-    return this.bots.filter((Bot) => Bot.user_id == id);
+    return structuredClone(this.bots.filter((Bot) => Bot.user_id == id));
   }
 
   async create(bot: Bot): Promise<number> {

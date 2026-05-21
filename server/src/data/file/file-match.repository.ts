@@ -71,22 +71,26 @@ export class FileMatchRepository
 
   async findAll(): Promise<Match[]> {
     await Promise.resolve();
-    return this.matches;
+    return structuredClone(this.matches);
   }
 
   async findById(id1: number, id2: number): Promise<Match | null> {
     await Promise.resolve();
     return (
-      this.matches.find(
-        (Match) => Match.bot_ids[0] == id1 && Match.bot_ids[1] == id2,
+      structuredClone(
+        this.matches.find(
+          (Match) => Match.bot_ids[0] == id1 && Match.bot_ids[1] == id2,
+        ),
       ) ?? null
     );
   }
 
   async filterByBotIds(ids: number[]): Promise<Match[]> {
     await Promise.resolve();
-    return this.matches.filter((match) =>
-      match.bot_ids.some((id) => ids.includes(id)),
+    return structuredClone(
+      this.matches.filter((match) =>
+        match.bot_ids.some((id) => ids.includes(id)),
+      ),
     );
   }
 

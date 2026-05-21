@@ -41,24 +41,27 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
 
   async findAll(): Promise<User[]> {
     await Promise.resolve();
-    return this.users;
+    return structuredClone(this.users);
   }
 
   async findById(id: number): Promise<User | null> {
     await Promise.resolve();
-    return this.users.find((user) => user.id == id) ?? null;
+    return structuredClone(this.users.find((user) => user.id == id)) ?? null;
   }
 
   async findByUsername(username: string): Promise<User | null> {
     await Promise.resolve();
-    return this.users.find((user) => user.username === username) ?? null;
+    return (
+      structuredClone(this.users.find((user) => user.username === username)) ??
+      null
+    );
   }
 
   async create(user: User): Promise<User | null> {
     await Promise.resolve();
     user.id = this.nextId++;
     this.users.push(user);
-    return user;
+    return structuredClone(user);
   }
 
   async deleteById(id: number): Promise<void> {
