@@ -28,4 +28,5 @@ export abstract class BotRepository {
   abstract create(bot: Bot): Promise<number>;
   abstract deleteById(id: number): Promise<void>;
   abstract updateById(id: number, bot: Bot): Promise<void>;
+  abstract updateRatingById(id: number, rating: number): Promise<void>;
 }
