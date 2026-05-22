@@ -5,6 +5,7 @@ export interface Match {
   user_ids: number[];
   usernames: string[];
   score: number[];
+  sequence_number: number;
 }
 
 export abstract class MatchRepository {
@@ -12,4 +13,5 @@ export abstract class MatchRepository {
   abstract findById(id1: number, id2: number): Promise<Match | null>;
   abstract filterByBotIds(ids: number[]): Promise<Match[]>;
   abstract create(user: Match): Promise<number>;
+  abstract updateSequenceNumber(id: number, seq: number): Promise<void>;
 }

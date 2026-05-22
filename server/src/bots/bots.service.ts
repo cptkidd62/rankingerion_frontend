@@ -6,6 +6,7 @@ import { UserRepository } from 'src/data/user.repository';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { BenchmarkerService } from 'src/benchmarker/benchmarker.service';
+import { RatingService } from 'src/data/rating.service';
 import { BotUploadException } from 'src/errors/BotUploadExceptions';
 import {
   CompilationError,
@@ -22,6 +23,7 @@ export class BotsService {
     private readonly matchRepo: MatchRepository,
     private readonly userRepo: UserRepository,
     private readonly benchmarkerService: BenchmarkerService,
+    private readonly ratingService: RatingService,
   ) {}
 
   async findAll(): Promise<Bot[]> {
@@ -105,18 +107,26 @@ export class BotsService {
           username: 'undefined',
           password: '',
         };
-        this.matchRepo
-          .create({
-            id: 0,
-            bot_ids: [bot.id, id],
-            botnames: [bot.name, name],
-            user_ids: [user.id, user_id],
-            usernames: [user.username, this_user.username],
-            score: [randomInt(0, 1000), randomInt(0, 1000)],
-          })
-          .catch((err) => {
+        const match = {
+          id: -1,
+          bot_ids: [bot.id, id],
+          botnames: [bot.name, name],
+          user_ids: [user.id, user_id],
+          usernames: [user.username, this_user.username],
+          score: [randomInt(0, 1000), randomInt(0, 1000)],
+          sequence_number: -1,
+        };
+        this.matchRepo.create(match).then(
+          (id) => {
+            match.id = id;
+            this.ratingService
+              .processMatch(match)
+              .catch((err) => console.error(err));
+          },
+          (err) => {
             console.error('Błąd podczas create match:', err);
-          });
+          },
+        );
       }
     });
   }
@@ -200,18 +210,26 @@ export class BotsService {
             continue;
           }
           const scores = res.scores;
-          this.matchRepo
-            .create({
-              id: 0,
-              bot_ids: [bot.id, id],
-              botnames: [bot.name, name],
-              user_ids: [user.id, user_id],
-              usernames: [user.username, this_user.username],
-              score: scores,
-            })
-            .catch((err) => {
+          const match = {
+            id: -1,
+            bot_ids: [bot.id, id],
+            botnames: [bot.name, name],
+            user_ids: [user.id, user_id],
+            usernames: [user.username, this_user.username],
+            score: scores,
+            sequence_number: -1,
+          };
+          this.matchRepo.create(match).then(
+            (id) => {
+              match.id = id;
+              this.ratingService
+                .processMatch(match)
+                .catch((err) => console.error(err));
+            },
+            (err) => {
               console.error('Błąd podczas create match:', err);
-            });
+            },
+          );
           await this.botRepo.updateById(bot.id, {
             id: bot.id,
             name: bot.name,

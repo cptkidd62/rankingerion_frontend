@@ -102,4 +102,14 @@ export class FileMatchRepository
     this.mutex.release();
     return match.id;
   }
+
+  async updateSequenceNumber(id: number, seq: number) {
+    await this.mutex.acquire();
+    const idx = this.matches.findIndex((match) => match.id == id);
+    if (idx >= 0) {
+      this.matches[idx].sequence_number = seq;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
 }

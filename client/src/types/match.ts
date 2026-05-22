@@ -5,4 +5,5 @@ export interface Match {
   user_ids: number[];
   usernames: string[];
   score: number[];
+  sequence_number: number;
 }
