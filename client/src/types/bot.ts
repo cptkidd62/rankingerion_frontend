@@ -16,7 +16,7 @@ export interface Bot {
     id: number;
     name: string;
     language: string;
-    userId: number;
+    user_id: number;
     status: BotStatus;
     rating: number | undefined;
 }
