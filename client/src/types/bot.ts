@@ -18,4 +18,5 @@ export interface Bot {
     language: string;
     userId: number;
     status: BotStatus;
+    rating: number | undefined;
 }
