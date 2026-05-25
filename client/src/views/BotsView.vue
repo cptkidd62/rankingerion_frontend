@@ -3,24 +3,14 @@ import { onMounted, ref } from 'vue';
 import BotListItem from '../components/BotListItem.vue';
 import NewBotForm from '@/components/NewBotForm.vue';
 import axios from 'axios';
-import type { Bot } from '@/types/bot';
 import { useAuthStore } from '@/stores/auth';
+import { useBotsStore } from '@/stores/bots';
 
 const API_URL = 'http://localhost:3000/bots'
-const bots = ref<Bot[]>([]);
 const auth = useAuthStore()
+const botsStore = useBotsStore()
 const isOpen = ref(false)
 const errorMsg = ref('')
-
-const loadBots = async () => {
-  try {
-    const response = await axios.get(auth.token ? `${API_URL}?userId=${auth.user?.id}` : API_URL);
-    bots.value = response.data;
-    console.log(bots);
-  } catch (error) {
-    console.error('Błąd ładowania botów', error);
-  }
-};
 
 const createBot = async (payload: { name: string, file: any }) => {
   const formData = new FormData();
@@ -30,7 +20,7 @@ const createBot = async (payload: { name: string, file: any }) => {
     formData.append('userId', String(auth.user.id));
   axios.post(API_URL, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(function (_) {
     isOpen.value = false;
-    loadBots();
+    botsStore.fetchOwnBots();
     errorMsg.value = '';
   }).catch(function (error) {
     errorMsg.value = error.response.data.message;
@@ -40,24 +30,27 @@ const createBot = async (payload: { name: string, file: any }) => {
 
 const deleteBot = async (id: number) => {
   axios.delete(`${API_URL}/${id}`).then(function (_) {
-    loadBots();
+    botsStore.fetchOwnBots();
   }).catch(function (error) {
     console.error('Błąd usuwania bota', error);
   })
 }
 
-onMounted(loadBots);
+onMounted(() => { botsStore.fetchOwnBots() });
 </script>
 
 <template>
   <div class="bots">
     <h1>Moje boty</h1>
-    <BotListItem v-for="bot in bots" :bot="bot" @delete="deleteBot" />
-    <details :open="isOpen">
-      <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
-      <NewBotForm @submit="createBot" @input-change="errorMsg = ''" />
-      <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
-    </details>
+    <div v-if="botsStore.loading">Loading...</div>
+    <div v-else>
+      <BotListItem v-for="bot in botsStore.bots" :bot="bot" @delete="deleteBot" />
+      <details :open="isOpen">
+        <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
+        <NewBotForm @submit="createBot" @input-change="errorMsg = ''" />
+        <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
+      </details>
+    </div>
   </div>
 </template>
 

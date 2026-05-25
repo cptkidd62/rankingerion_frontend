@@ -1,31 +1,19 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import type { Bot } from '@/types/bot';
+import { onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useBotsStore } from '@/stores/bots';
 
-const API_URL = 'http://localhost:3000/bots'
-const bots = ref<Bot[]>([]);
 const auth = useAuthStore()
+const botsStore = useBotsStore()
 
-const loadBots = async () => {
-  try {
-    const response = await axios.get(API_URL);
-    bots.value = response.data;
-    bots.value.sort((bot1, bot2) => bot2.rating! - bot1.rating!);
-    console.log(bots);
-  } catch (error) {
-    console.error('Błąd ładowania botów', error);
-  }
-};
-
-onMounted(loadBots);
+onMounted(() => { botsStore.fetchAllBots() });
 </script>
 
 <template>
   <div class="results">
     <h1>Ranking</h1>
-    <div v-for="(bot, i) in bots">
+    <div v-if="botsStore.loading">Loading...</div>
+    <div v-else v-for="(bot, i) in botsStore.botsSorted">
       <h3 :class="{own: bot.user_id == auth.user?.id}">{{ i + 1 }} |  {{ bot.name }} | {{ bot.rating }}</h3>
     </div>
   </div>
