@@ -1,10 +1,9 @@
 import type { Bot } from "@/types/bot";
 import { defineStore } from "pinia";
 import { useAuthStore } from "./auth";
-import axios from "axios";
 import { computed, ref } from "vue";
+import { api } from "@/api";
 
-const API_URL = 'http://localhost:3000/bots';
 const auth = useAuthStore();
 
 export const useBotsStore = defineStore('bots', () => {
@@ -23,7 +22,7 @@ export const useBotsStore = defineStore('bots', () => {
   async function fetchBots(own: boolean) {
     loading.value = true
     try {
-      const response = await axios.get(own && auth.token ? `${API_URL}?userId=${auth.user?.id}` : API_URL);
+      const response = await api.bots.fetch(own && auth.token ? auth.user?.id : undefined);
       bots.value = response.data;
       console.log(bots.value);
       initialized.value = true
@@ -33,7 +32,6 @@ export const useBotsStore = defineStore('bots', () => {
       loading.value = false
     }
   }
-
 
   return {
     bots,
