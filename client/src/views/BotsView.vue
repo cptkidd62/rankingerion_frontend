@@ -16,7 +16,7 @@ const onCreateBot = async (payload: { name: string, file: any }) => {
   try {
     await api.bots.create(payload, auth.user?.id!)
     isOpen.value = false;
-    await botsStore.fetchOwnBots();
+    await botsStore.fetchBots();
     errorMsg.value = '';
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -34,7 +34,7 @@ const onDeleteBot = async (id: number) => {
   }
 }
 
-onMounted(() => { botsStore.fetchOwnBots() });
+onMounted(() => { botsStore.fetchBots() });
 </script>
 
 <template>
@@ -42,7 +42,7 @@ onMounted(() => { botsStore.fetchOwnBots() });
     <h1>Moje boty</h1>
     <div v-if="botsStore.loading">Loading...</div>
     <div v-else>
-      <BotListItem v-for="bot in botsStore.bots" :bot="bot" @delete="onDeleteBot" />
+      <BotListItem v-for="bot in botsStore.myBots" :bot="bot" @delete="onDeleteBot" />
       <details :open="isOpen">
         <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
         <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />

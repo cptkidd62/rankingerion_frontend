@@ -12,17 +12,12 @@ export const useBotsStore = defineStore('bots', () => {
   const initialized = ref(false)
 
   const botsSorted = computed(() => [...bots.value].sort((a, b) => b.rating! - a.rating!))
+  const myBots = computed(() => [...bots.value].filter((bot) => bot.user_id == auth.user?.id))
 
-  async function fetchAllBots() {
-    return fetchBots(false)
-  }
-  async function fetchOwnBots() {
-    return fetchBots(true)
-  }
-  async function fetchBots(own: boolean) {
+  async function fetchBots() {
     loading.value = true
     try {
-      const response = await api.bots.fetch(own && auth.token ? auth.user?.id : undefined);
+      const response = await api.bots.fetch();
       bots.value = response.data;
       console.log(bots.value);
       initialized.value = true
@@ -36,8 +31,8 @@ export const useBotsStore = defineStore('bots', () => {
   return {
     bots,
     botsSorted,
-    fetchAllBots,
-    fetchOwnBots,
+    myBots,
+    fetchBots,
     loading,
     initialized
   }

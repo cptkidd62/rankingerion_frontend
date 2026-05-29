@@ -15,8 +15,8 @@ export const botsApi = {
     const response = await axios.delete(`${API_URL}/${id}`)
     return response
   },
-  async fetch(userId?: number) {
-    const response = await axios.get(userId ? `${API_URL}?userId=${userId}` : API_URL)
+  async fetch() {
+    const response = await axios.get(API_URL)
     return response
   }
 }

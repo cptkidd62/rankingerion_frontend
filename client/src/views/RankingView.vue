@@ -6,7 +6,7 @@ import { useBotsStore } from '@/stores/bots';
 const auth = useAuthStore()
 const botsStore = useBotsStore()
 
-onMounted(() => { botsStore.fetchAllBots() });
+onMounted(() => { botsStore.fetchBots() });
 </script>
 
 <template>
