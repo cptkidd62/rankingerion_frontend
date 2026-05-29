@@ -1,10 +1,9 @@
 import type { Match } from "@/types/match";
 import { defineStore } from "pinia";
 import { useAuthStore } from "./auth";
-import axios from "axios";
 import { computed, ref } from "vue";
+import { api } from "@/api";
 
-const API_URL = 'http://localhost:3000/matches';
 const auth = useAuthStore();
 
 export type MatchesGroup = {
@@ -17,16 +16,12 @@ export const useMatchesStore = defineStore('matches', () => {
   const loading = ref(false)
   const initialized = ref(false)
 
-  async function fetchAllMatches() {
-    return fetchMatches(false)
-  }
-  async function fetchOwnMatches() {
-    return fetchMatches(true)
-  }
-  async function fetchMatches(own: boolean) {
+  const myMatches = computed(() => [...matches.value].filter((match) => match.user_ids.includes(auth.user?.id!)))
+
+  async function fetchMatches() {
     loading.value = true
     try {
-      const response = await axios.get(own && auth.token ? `${API_URL}?userId=${auth.user?.id}` : API_URL);
+      const response = await api.matches.fetch();
       matches.value = response.data;
       console.log(matches.value);
       initialized.value = true
@@ -69,8 +64,8 @@ export const useMatchesStore = defineStore('matches', () => {
   return {
     matches,
     groupedMatches,
-    fetchAllMatches,
-    fetchOwnMatches,
+    myMatches,
+    fetchMatches,
     loading,
     initialized
   }

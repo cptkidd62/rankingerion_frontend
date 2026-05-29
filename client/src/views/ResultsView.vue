@@ -5,7 +5,7 @@ import { useMatchesStore } from '@/stores/matches';
 
 const matchesStore = useMatchesStore()
 
-onMounted(() => { matchesStore.fetchOwnMatches() })
+onMounted(() => { matchesStore.fetchMatches() })
 </script>
 
 <template>
