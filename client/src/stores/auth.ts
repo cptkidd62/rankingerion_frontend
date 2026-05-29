@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { User } from "@/types/user";
-
-const API_URL = 'http://localhost:3000/auth'
+import { api } from "@/api";
 
 interface Credentials {
     username: string
@@ -15,8 +14,9 @@ export const useAuthStore = defineStore('auth', {
         token: localStorage.getItem('token') as string | null,
     }),
     actions: {
-        async login({ username, password }: Credentials): Promise<string | null> {
-            return axios.post(`${API_URL}/login`, { username, password }).then((response) => {
+        async login({ username, password }: Credentials): Promise<string | null | undefined> {
+            try {
+                const response = await api.auth.login({ username, password })
                 this.user = response.data.user;
                 this.token = response.data.token;
                 if (this.token)
@@ -25,10 +25,12 @@ export const useAuthStore = defineStore('auth', {
                 console.log('Sukces logowania');
                 console.log(this.user);
                 return null;
-            }).catch((error) => {
-                console.error('Błąd logowania', error);
-                return error.response.data.message;
-            })
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error('Błąd logowania', error);
+                    return String(error.response!.data.message);
+                }
+            }
         },
         logout() {
             this.token = null
@@ -41,7 +43,7 @@ export const useAuthStore = defineStore('auth', {
 
             try {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-                const response = await axios.get(`${API_URL}/me`);
+                const response = await api.auth.me();
                 this.user = response.data;
             } catch (error) {
                 console.error('Nie udało się pobrać użytkownika, wylogowano', error);
