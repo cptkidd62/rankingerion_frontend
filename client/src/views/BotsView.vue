@@ -29,6 +29,7 @@ const onCreateBot = async (payload: { name: string, file: any }) => {
 const onDeleteBot = async (id: number) => {
   try {
     await api.bots.delete(id)
+    botsStore.deleteBot(id)
   } catch (error) {
     console.error('Błąd usuwania bota', error);
   }
@@ -42,7 +43,7 @@ onMounted(() => { botsStore.fetchBots() });
     <h1>Moje boty</h1>
     <div v-if="botsStore.loading">Loading...</div>
     <div v-else>
-      <BotListItem v-for="bot in botsStore.myBots" :bot="bot" @delete="onDeleteBot" />
+      <BotListItem v-for="bot in botsStore.myBots" :key="bot.id" :bot="bot" @delete="onDeleteBot" />
       <details :open="isOpen">
         <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
         <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />

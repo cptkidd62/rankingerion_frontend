@@ -10,6 +10,9 @@ export type BotStatus =
     }
   | {
       type: 'ok';
+    }
+  | {
+      type: 'deleted';
     };
 
 export interface Bot {

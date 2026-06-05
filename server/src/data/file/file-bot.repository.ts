@@ -94,15 +94,18 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
 
   async deleteById(id: number): Promise<void> {
     await this.mutex.acquire();
-    this.bots = this.bots.filter((bot) => bot.id != id);
-    this.dirty = true;
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0 && this.bots[idx].status.type != 'deleted') {
+      this.bots[idx].status = { type: 'deleted' };
+      this.dirty = true;
+    }
     this.mutex.release();
   }
 
   async updateById(id: number, bot: Bot): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0) {
+    if (idx >= 0 && this.bots[idx].status.type != 'deleted') {
       const rating = this.bots[idx].rating;
       this.bots[idx] = bot;
       this.bots[idx].rating = rating;
