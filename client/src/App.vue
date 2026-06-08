@@ -19,12 +19,7 @@ onMounted(() => {
     <div class="wrapper">
 
       <nav>
-        <RouterLink to="/">
-          <span>
-            <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="25" height="25" />
-            Rankingerion
-          </span>
-        </RouterLink>
+        <RouterLink to="/">Rankingerion</RouterLink>
         <RouterLink v-if="auth.token" to="/wyniki">Wyniki</RouterLink>
         <RouterLink v-if="auth.token" to="/ranking">Ranking</RouterLink>
         <RouterLink v-if="auth.token" to="/boty">Moje boty</RouterLink>
