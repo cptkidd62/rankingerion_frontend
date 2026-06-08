@@ -2,6 +2,7 @@
   --color-background: #cfecea;
   --color-border: #2c3e505b;
   --color-text: #2c3e50;
+  --color-header: rgb(12, 141, 192);
 
   --section-gap: 160px;
 }
@@ -11,6 +12,7 @@
     --color-background: #0c243a;
     --color-border: #a1b9d15b;
     --color-text: #a1b9d1;
+    --color-header: rgb(12, 141, 192);
   }
 }
 

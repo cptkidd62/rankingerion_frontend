@@ -10,7 +10,7 @@
 a,
 .green {
   text-decoration: none;
-  color: rgb(12, 141, 192);
+  color: var(--color-header);
   transition: 0.4s;
   padding: 3px;
 }
@@ -25,4 +25,19 @@ a,
   body {
     display: flex;
   }
+}
+
+.button {
+  background-color: var(--color-text);
+  border-radius: 0.6em;
+  border: none;
+  color: var(--color-background);
+  font-weight: bolder;
+  padding: 0.3em;
+  font-size: 1em;
+}
+
+.button:hover {
+  scale: 103%;
+  background-color: var(--color-header);
 }

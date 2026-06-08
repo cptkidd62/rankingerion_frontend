@@ -57,10 +57,10 @@ const validateField = (field: string) => {
         <form @submit.prevent="handleSubmit">
             <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa" @blur="validateField('name')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
-            <input type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
+            <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
                 @blur="validateField('file')" placeholder="Tu wklej kod">
             <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
-            <input type="submit" value="Utwórz">
+            <input class="button" type="submit" value="Utwórz">
         </form>
     </div>
 </template>

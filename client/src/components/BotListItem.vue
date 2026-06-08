@@ -27,7 +27,7 @@ export default defineComponent({
     <div v-if="bot.status.type === 'compilation_error'" class="error">Błąd kompilacji!</div>
     <div v-else-if="bot.status.type === 'playtime_error'" class="error">Błąd rozgrywki!</div>
     <div v-else>Rating: {{ bot.rating }}</div>
-    <button @click="handleDelete(bot.id)">usuń</button>
+    <button class="button" @click="handleDelete(bot.id)">usuń</button>
   </div>
 </template>
 

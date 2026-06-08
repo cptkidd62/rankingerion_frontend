@@ -21,7 +21,7 @@ const handleSubmit = () => {
     <form @submit.prevent="handleSubmit">
       <input type="text" name="username" id="username" v-model="username" placeholder="Login">
       <input type="password" name="password" id="password" v-model="password" placeholder="Hasło">
-      <input type="submit" value="Zaloguj">
+      <input class="button" type="submit" value="Zaloguj">
     </form>
   </div>
 </template>
