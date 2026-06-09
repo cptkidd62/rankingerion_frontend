@@ -19,13 +19,11 @@ onMounted(() => {
     <div class="wrapper">
 
       <nav>
-        <RouterLink to="/">Rankingerion</RouterLink>
         <RouterLink v-if="auth.token" to="/wyniki">Wyniki</RouterLink>
         <RouterLink v-if="auth.token" to="/ranking">Ranking</RouterLink>
         <RouterLink v-if="auth.token" to="/boty">Moje boty</RouterLink>
         <RouterLink v-if="auth.token" to="/konto">Moje konto ({{ auth.user?.username }})</RouterLink>
-        <RouterLink v-if="!auth.token" to="/signin">Zaloguj</RouterLink>
-        <RouterLink v-if="auth.token" to="/" @click.prevent="auth.logout()">Wyloguj</RouterLink>
+        <RouterLink v-if="auth.token" to="/signin" @click.prevent="auth.logout()">Wyloguj</RouterLink>
       </nav>
     </div>
   </header>
