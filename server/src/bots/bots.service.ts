@@ -107,13 +107,20 @@ export class BotsService {
           username: 'undefined',
           password: '',
         };
+        const scores = [randomInt(0, 1000), randomInt(0, 1000)];
+        const results =
+          scores[0] > scores[1]
+            ? [1, -1]
+            : scores[0] < scores[1]
+              ? [-1, 1]
+              : [0, 0];
         const match = {
           id: -1,
           bot_ids: [bot.id, id],
           botnames: [bot.name, name],
           user_ids: [user.id, user_id],
           usernames: [user.username, this_user.username],
-          score: [randomInt(0, 1000), randomInt(0, 1000)],
+          score: results,
           sequence_number: -1,
         };
         this.matchRepo.create(match).then(
@@ -210,13 +217,19 @@ export class BotsService {
             continue;
           }
           const scores = res.scores;
+          const results =
+            scores[0] > scores[1]
+              ? [1, -1]
+              : scores[0] < scores[1]
+                ? [-1, 1]
+                : [0, 0];
           const match = {
             id: -1,
             bot_ids: [bot.id, id],
             botnames: [bot.name, name],
             user_ids: [user.id, user_id],
             usernames: [user.username, this_user.username],
-            score: scores,
+            score: results,
             sequence_number: -1,
           };
           this.matchRepo.create(match).then(

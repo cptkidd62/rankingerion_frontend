@@ -37,8 +37,8 @@ export class RatingService implements OnModuleInit {
         let rating1 = this.ratings.get(id1) ?? 0;
         let rating2 = this.ratings.get(id2) ?? 0;
 
-        rating1 += match.score[0] - match.score[1];
-        rating2 += match.score[1] - match.score[0];
+        rating1 += match.score[0];
+        rating2 += match.score[1];
 
         this.ratings.set(id1, rating1);
         this.ratings.set(id2, rating2);
@@ -64,8 +64,8 @@ export class RatingService implements OnModuleInit {
       let rating1 = this.ratings.get(id1) ?? 0;
       let rating2 = this.ratings.get(id2) ?? 0;
 
-      rating1 += match.score[0] - match.score[1];
-      rating2 += match.score[1] - match.score[0];
+      rating1 += match.score[0];
+      rating2 += match.score[1];
 
       this.ratings.set(id1, rating1);
       this.ratings.set(id2, rating2);
