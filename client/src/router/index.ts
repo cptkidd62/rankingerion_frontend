@@ -28,6 +28,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/boty/:id',
+      name: 'bot/:id',
+      component: () => import('../views/BotDetailsView.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
       path: '/konto',
       name: 'konto',
       component: () => import('../views/AccountView.vue'),
