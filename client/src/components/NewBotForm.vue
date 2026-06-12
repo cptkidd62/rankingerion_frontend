@@ -55,7 +55,7 @@ const validateField = (field: string) => {
 <template>
     <div class="new-bot-form">
         <form @submit.prevent="handleSubmit">
-            <input type="text" name="name" id="name" v-model="name" placeholder="Nazwa" @blur="validateField('name')">
+            <input class="text-input" :class="{error: errors.name != ''}" type="text" name="name" id="name" v-model="name" placeholder="Nazwa" @blur="validateField('name')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
             <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
                 @blur="validateField('file')" placeholder="Tu wklej kod">

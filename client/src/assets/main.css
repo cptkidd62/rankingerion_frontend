@@ -41,3 +41,22 @@ a,
   scale: 103%;
   background-color: var(--color-header);
 }
+
+.text-input {
+  background-color: var(--color-background);
+  border-radius: 0.6em;
+  border: solid var(--color-text) 0.15em;
+  color: var(--color-text);
+  font-weight: bolder;
+  padding: 0.5em;
+  font-size: 1em;
+}
+
+.text-input:focus {
+  background-color: var(--color-text);
+  color: var(--color-background);
+}
+
+.text-input.error {
+  border-color: red;
+}
