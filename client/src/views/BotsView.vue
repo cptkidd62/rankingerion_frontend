@@ -28,8 +28,10 @@ const onCreateBot = async (payload: { name: string, file: any }) => {
 
 const onDeleteBot = async (id: number) => {
   try {
-    await api.bots.delete(id)
-    botsStore.deleteBot(id)
+    if (confirm('Czy na pewno chcesz usunąć bota?')) {
+      await api.bots.delete(id)
+      botsStore.deleteBot(id)
+    }
   } catch (error) {
     console.error('Błąd usuwania bota', error);
   }
