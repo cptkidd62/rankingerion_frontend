@@ -21,6 +21,34 @@ function botOk(bot: Bot): boolean {
     return bot.status.type == 'ok' || bot.status.type == 'created'
 }
 
+const scoreCountOverall = computed(() => {
+    let count = { wins: 0, draws: 0, losses: 0 }
+    for (var match of matches.value) {
+        const idx = match.bot_ids.indexOf(bot.value!.id)
+        if (idx >= 0 && idx < match.score.length) {
+            switch (match.score[idx]) {
+                case 1:
+                    count.wins++
+                    break
+                case 0:
+                    count.draws++
+                    break
+                case -1:
+                    count.losses++
+                    break
+
+                default:
+                    throw new Error('wrong score value')
+            }
+        }
+    }
+    return count
+})
+
+const winRateOverall = computed(() => {
+    return scoreCountOverall.value.wins / matches.value.length
+})
+
 onMounted(async () => {
     await botsStore.ensureInitialized()
     await matchesStore.ensureInitialized()
@@ -33,6 +61,8 @@ onMounted(async () => {
         <p>Język: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
             <p>Rating: {{ bot.rating }}</p>
+            <p>Winrate: {{ Math.round(winRateOverall * 100) }}%</p>
+            <p>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</p>
             <div>
                 Wyniki:
                 <ResultListItem v-for="match in matches" :match="match" />
