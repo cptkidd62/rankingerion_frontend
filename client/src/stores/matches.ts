@@ -61,13 +61,20 @@ export const useMatchesStore = defineStore('matches', () => {
     groupMatchesByMyBots(matches.value, auth.user?.id ?? -1)
   )
 
+  async function ensureInitialized() {
+    if (!initialized.value && !loading.value) {
+      await fetchMatches();
+    }
+  }
+
   return {
     matches,
     groupedMatches,
     myMatches,
     fetchMatches,
     loading,
-    initialized
+    initialized,
+    ensureInitialized
   }
 }
 )

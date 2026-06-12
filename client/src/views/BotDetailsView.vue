@@ -3,7 +3,7 @@ import ResultListItem from '@/components/ResultListItem.vue';
 import { useBotsStore } from '@/stores/bots';
 import { useMatchesStore } from '@/stores/matches';
 import type { Bot } from '@/types/bot';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
@@ -20,6 +20,11 @@ const matches = computed(() => [...matchesStore.matches].filter((match) => match
 function botOk(bot: Bot): boolean {
     return bot.status.type == 'ok' || bot.status.type == 'created'
 }
+
+onMounted(async () => {
+    await botsStore.ensureInitialized()
+    await matchesStore.ensureInitialized()
+})
 </script>
 
 <template>
@@ -39,6 +44,6 @@ function botOk(bot: Bot): boolean {
 
 <style>
 .error {
-  color: red;
+    color: red;
 }
 </style>

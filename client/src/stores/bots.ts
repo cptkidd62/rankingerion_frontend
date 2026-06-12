@@ -35,6 +35,12 @@ export const useBotsStore = defineStore('bots', () => {
     }
   }
 
+  async function ensureInitialized() {
+    if (!initialized.value && !loading.value) {
+      await fetchBots();
+    }
+  }
+
   return {
     bots,
     botsSorted,
@@ -42,7 +48,8 @@ export const useBotsStore = defineStore('bots', () => {
     fetchBots,
     loading,
     initialized,
-    deleteBot
+    deleteBot,
+    ensureInitialized
   }
 }
 )
