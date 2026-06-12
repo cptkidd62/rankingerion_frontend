@@ -10,11 +10,6 @@ const router = createRouter({
       redirect: '/boty',
     },
     {
-      path: '/wyniki',
-      name: 'wyniki',
-      component: () => import('../views/ResultsView.vue'),
-    },
-    {
       path: '/ranking',
       name: 'ranking',
       component: () => import('../views/RankingView.vue'),

@@ -19,7 +19,6 @@ onMounted(() => {
     <div class="wrapper">
 
       <nav>
-        <RouterLink v-if="auth.token" to="/wyniki">Wyniki</RouterLink>
         <RouterLink v-if="auth.token" to="/ranking">Ranking</RouterLink>
         <RouterLink v-if="auth.token" to="/boty">Moje boty</RouterLink>
         <RouterLink v-if="auth.token" to="/konto">Moje konto ({{ auth.user?.username }})</RouterLink>
