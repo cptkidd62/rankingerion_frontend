@@ -1,13 +1,11 @@
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { type PropType } from 'vue'
 import type { Match } from '@/types/match';
 
-export default defineComponent({
-  props: {
-    match: {
-      type: Object as PropType<Match>,
-      required: true
-    }
+const props = defineProps({
+  match: {
+    type: Object as PropType<Match>,
+    required: true
   }
 })
 </script>

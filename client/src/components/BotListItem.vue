@@ -1,24 +1,21 @@
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { type PropType } from 'vue'
 import type { Bot } from '@/types/bot';
-export default defineComponent({
-  props: {
-    bot: {
-      type: Object as PropType<Bot>,
-      required: true
-    }
-  },
-  emits: {
-    delete(id: number) {
-      return typeof id === 'number';
-    }
-  },
-  methods: {
-    handleDelete(id: number) {
-      this.$emit('delete', id);
-    }
+
+const props = defineProps({
+  bot: {
+    type: Object as PropType<Bot>,
+    required: true
   }
 })
+
+const emits = defineEmits<{
+  (e: 'delete', id: number): void
+}>()
+
+function handleDelete(id: number) {
+  emits('delete', id);
+}
 </script>
 
 <template>
