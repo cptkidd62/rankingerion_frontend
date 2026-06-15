@@ -302,6 +302,7 @@ export class ClientService {
           }
           scores[i] = s;
         }
+        debugLog(3, 'scores:', scores);
         const logs: string[] = [];
         for (let i = 0; i < playTask.getAgents().length; i++) {
           const log = this.instream.peekNBytesString(
@@ -313,6 +314,7 @@ export class ClientService {
           }
           logs[i] = log;
         }
+        debugLog(3, 'logs:', logs);
         const summaries = this.instream.peekNBytesString(
           this.instream.peekInt() ?? 0,
         );
@@ -320,6 +322,7 @@ export class ClientService {
           this.instream.resetCursor();
           return false;
         }
+        debugLog(3, 'summaries:', summaries);
         const result = new PlayResult(time, scores, logs, summaries);
         this.taskPlayed(playTask, result);
         break;
