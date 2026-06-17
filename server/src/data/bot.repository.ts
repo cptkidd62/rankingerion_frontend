@@ -39,7 +39,6 @@ export abstract class BotRepository {
   abstract updateById(id: number, bot: Bot): Promise<void>;
   abstract updateRatingById(
     id: number,
-    rating: number,
-    ratingVersion: RatingVersion,
+    rating: Record<RatingVersion, RatingData>,
   ): Promise<void>;
 }

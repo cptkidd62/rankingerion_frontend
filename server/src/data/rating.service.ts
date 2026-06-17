@@ -23,15 +23,16 @@ export function createInitialRatings(): Record<RatingVersion, RatingData> {
 @Injectable()
 export class RatingService implements OnModuleInit {
   private nextSequenceNumber: number;
-  private ratings: Map<number, number>;
+  private ratings: Map<number, Record<RatingVersion, RatingData>>;
   private queue = Promise.resolve();
+  private newRating = createInitialRatings();
 
   constructor(
     private readonly botRepo: BotRepository,
     private readonly matchRepo: MatchRepository,
   ) {
     this.nextSequenceNumber = 0;
-    this.ratings = new Map<number, number>();
+    this.ratings = new Map<number, Record<RatingVersion, RatingData>>();
   }
 
   async onModuleInit() {
@@ -46,54 +47,40 @@ export class RatingService implements OnModuleInit {
         this.nextSequenceNumber =
           Math.max(...matches.map((match) => match.sequence_number)) + 1;
       }
-      this.ratings = new Map<number, number>();
+      this.ratings = new Map<number, Record<RatingVersion, RatingData>>();
       for (const match of matches) {
-        const id1 = match.bot_ids[0];
-        const id2 = match.bot_ids[1];
-
-        let rating1 = this.ratings.get(id1) ?? 0;
-        let rating2 = this.ratings.get(id2) ?? 0;
-
-        rating1 += match.score[0];
-        rating2 += match.score[1];
-
-        this.ratings.set(id1, rating1);
-        this.ratings.set(id2, rating2);
+        this.doMatch(match);
       }
       const bots = await this.botRepo.findAll();
       const ids = bots.map((bot) => bot.id);
       for (const id of ids) {
         if (!this.ratings.has(id)) {
-          this.ratings.set(id, 0);
+          this.ratings.set(id, structuredClone(this.newRating));
         }
       }
       for (const [id, rating] of this.ratings) {
-        await this.botRepo.updateRatingById(id, rating, 'simple');
+        await this.botRepo.updateRatingById(id, rating);
       }
     });
   }
 
   async processMatch(match: Match) {
     return this.serialize(async () => {
+      this.doMatch(match);
+
       const id1 = match.bot_ids[0];
       const id2 = match.bot_ids[1];
 
-      let rating1 = this.ratings.get(id1) ?? 0;
-      let rating2 = this.ratings.get(id2) ?? 0;
-
-      rating1 += match.score[0];
-      rating2 += match.score[1];
-
-      this.ratings.set(id1, rating1);
-      this.ratings.set(id2, rating2);
+      const rating1 = this.ratings.get(id1) ?? structuredClone(this.newRating);
+      const rating2 = this.ratings.get(id2) ?? structuredClone(this.newRating);
 
       await this.matchRepo.updateSequenceNumber(
         match.id,
         this.nextSequenceNumber++,
       );
 
-      await this.botRepo.updateRatingById(id1, rating1, 'simple');
-      await this.botRepo.updateRatingById(id2, rating2, 'simple');
+      await this.botRepo.updateRatingById(id1, rating1);
+      await this.botRepo.updateRatingById(id2, rating2);
     });
   }
 
@@ -104,5 +91,47 @@ export class RatingService implements OnModuleInit {
       () => {},
     );
     return res;
+  }
+
+  private doMatch(match: Match) {
+    const id1 = match.bot_ids[0];
+    const id2 = match.bot_ids[1];
+
+    const rating1 = this.ratings.get(id1) ?? structuredClone(this.newRating);
+    const rating2 = this.ratings.get(id2) ?? structuredClone(this.newRating);
+
+    for (const version of Object.keys(ratingSystems) as RatingVersion[]) {
+      const [r1, r2] = this.calculateRating(
+        version,
+        match.score,
+        rating1[version].value,
+        rating2[version].value,
+      );
+      rating1[version].value = r1;
+      rating2[version].value = r2;
+    }
+
+    this.ratings.set(id1, rating1);
+    this.ratings.set(id2, rating2);
+  }
+
+  private calculateRating(
+    version: RatingVersion,
+    matchScore: number[],
+    rating1: number,
+    rating2: number,
+  ): [number, number] {
+    switch (version) {
+      case 'simple':
+        return this.simpleRating(matchScore, rating1, rating2);
+    }
+  }
+
+  private simpleRating(
+    matchScore: number[],
+    rating1: number,
+    rating2: number,
+  ): [number, number] {
+    return [rating1 + matchScore[0], rating2 + matchScore[1]];
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { Bot, BotRepository } from '../bot.repository';
+import { Bot, BotRepository, RatingData } from '../bot.repository';
 import { Mutex } from 'async-mutex';
 import { createInitialRatings, RatingVersion } from '../rating.service';
 
@@ -120,13 +120,12 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
 
   async updateRatingById(
     id: number,
-    rating: number,
-    ratingVersion: RatingVersion,
+    rating: Record<RatingVersion, RatingData>,
   ): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
     if (idx >= 0) {
-      this.bots[idx].rating[ratingVersion].value = rating;
+      this.bots[idx].rating = rating;
       this.dirty = true;
     }
     this.mutex.release();
