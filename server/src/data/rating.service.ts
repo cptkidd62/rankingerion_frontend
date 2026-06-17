@@ -1,6 +1,23 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { BotRepository } from './bot.repository';
+import { BotRepository, RatingData } from './bot.repository';
 import { Match, MatchRepository } from './match.repository';
+
+export const ratingSystems = {
+  simple: { initialRating: 0 },
+} as const;
+
+export type RatingVersion = keyof typeof ratingSystems;
+
+export function createInitialRatings(): Record<RatingVersion, RatingData> {
+  return Object.fromEntries(
+    Object.entries(ratingSystems).map(([version, config]) => [
+      version,
+      {
+        value: config.initialRating,
+      },
+    ]),
+  ) as Record<RatingVersion, RatingData>;
+}
 
 // rating service jest jedyną klasą, która modyfikuje pole rating w bocie oraz sequence_number w match
 @Injectable()
@@ -51,7 +68,7 @@ export class RatingService implements OnModuleInit {
         }
       }
       for (const [id, rating] of this.ratings) {
-        await this.botRepo.updateRatingById(id, rating);
+        await this.botRepo.updateRatingById(id, rating, 'simple');
       }
     });
   }
@@ -75,8 +92,8 @@ export class RatingService implements OnModuleInit {
         this.nextSequenceNumber++,
       );
 
-      await this.botRepo.updateRatingById(id1, rating1);
-      await this.botRepo.updateRatingById(id2, rating2);
+      await this.botRepo.updateRatingById(id1, rating1, 'simple');
+      await this.botRepo.updateRatingById(id2, rating2, 'simple');
     });
   }
 

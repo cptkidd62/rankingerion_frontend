@@ -1,3 +1,5 @@
+import { RatingVersion } from './rating.service';
+
 export type BotStatus =
   | {
       type: 'created';
@@ -15,13 +17,17 @@ export type BotStatus =
       type: 'deleted';
     };
 
+export type RatingData = {
+  value: number;
+};
+
 export interface Bot {
   id: number;
   name: string;
   language: string;
   user_id: number;
   status: BotStatus;
-  rating: number | undefined;
+  rating: Record<RatingVersion, RatingData> | undefined;
 }
 
 export abstract class BotRepository {
@@ -31,5 +37,9 @@ export abstract class BotRepository {
   abstract create(bot: Bot): Promise<number>;
   abstract deleteById(id: number): Promise<void>;
   abstract updateById(id: number, bot: Bot): Promise<void>;
-  abstract updateRatingById(id: number, rating: number): Promise<void>;
+  abstract updateRatingById(
+    id: number,
+    rating: number,
+    ratingVersion: RatingVersion,
+  ): Promise<void>;
 }

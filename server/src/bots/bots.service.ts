@@ -6,7 +6,7 @@ import { UserRepository } from 'src/data/user.repository';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { BenchmarkerService } from 'src/benchmarker/benchmarker.service';
-import { RatingService } from 'src/data/rating.service';
+import { createInitialRatings, RatingService } from 'src/data/rating.service';
 import { BotUploadException } from 'src/errors/BotUploadExceptions';
 import {
   CompilationError,
@@ -56,7 +56,7 @@ export class BotsService {
       language: ext,
       user_id: user_id,
       status: { type: 'created' },
-      rating: 0,
+      rating: createInitialRatings(),
     });
     const filePath = path.join(
       process.env.BOTS_DIR ?? './',
@@ -182,7 +182,7 @@ export class BotsService {
                   language: player.language,
                   user_id: player.user_id,
                   status: { type: 'compilation_error' },
-                  rating: 0,
+                  rating: player.rating,
                 });
                 if (player.id === this_bot.id) {
                   // don't continue if own bot has error
@@ -204,7 +204,7 @@ export class BotsService {
                   language: player.language,
                   user_id: player.user_id,
                   status: { type: 'playtime_error' },
-                  rating: 0,
+                  rating: player.rating,
                 });
                 if (player.id === this_bot.id) {
                   // don't continue if own bot has error
@@ -249,7 +249,7 @@ export class BotsService {
             language: bot.language,
             user_id: bot.user_id,
             status: { type: 'ok' },
-            rating: 0,
+            rating: bot.rating,
           });
         }
       }
@@ -260,7 +260,7 @@ export class BotsService {
       language: this_bot.language,
       user_id: this_bot.user_id,
       status: { type: 'ok' },
-      rating: 0,
+      rating: this_bot.rating,
     });
   }
 

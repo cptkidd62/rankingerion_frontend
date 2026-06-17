@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Bot, BotRepository } from '../bot.repository';
 import { Mutex } from 'async-mutex';
+import { createInitialRatings, RatingVersion } from '../rating.service';
 
 interface BotFileData {
   next_id: number;
@@ -35,6 +36,9 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       const raw = await fs.readFile(filePath, 'utf-8');
       const data: BotFileData = JSON.parse(raw) as BotFileData;
       this.bots = data.bots;
+      for (const bot of this.bots) {
+        bot.rating = createInitialRatings();
+      }
       this.nextId = data.next_id;
     } catch (err) {
       console.error('Błąd wczytywania bots.json:', err);
@@ -114,11 +118,15 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     this.mutex.release();
   }
 
-  async updateRatingById(id: number, rating: number): Promise<void> {
+  async updateRatingById(
+    id: number,
+    rating: number,
+    ratingVersion: RatingVersion,
+  ): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
     if (idx >= 0) {
-      this.bots[idx].rating = rating;
+      this.bots[idx].rating![ratingVersion].value = rating;
       this.dirty = true;
     }
     this.mutex.release();
