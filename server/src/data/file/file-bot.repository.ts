@@ -126,7 +126,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
     if (idx >= 0) {
-      this.bots[idx].rating![ratingVersion].value = rating;
+      this.bots[idx].rating[ratingVersion].value = rating;
       this.dirty = true;
     }
     this.mutex.release();

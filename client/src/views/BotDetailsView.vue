@@ -60,7 +60,8 @@ onMounted(async () => {
         <h1>{{ bot.name }}</h1>
         <p>Język: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
-            <p>Rating: {{ bot.rating }}</p>
+            <p>Rating:</p>
+            <li v-for="[version, data] in Object.entries(bot.rating)">{{ version }}: {{ data.value }}</li>
             <p>Winrate: {{ Math.round(winRateOverall * 100) }}%</p>
             <p>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</p>
             <div>

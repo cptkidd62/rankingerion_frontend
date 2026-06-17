@@ -27,7 +27,7 @@ export interface Bot {
   language: string;
   user_id: number;
   status: BotStatus;
-  rating: Record<RatingVersion, RatingData> | undefined;
+  rating: Record<RatingVersion, RatingData>;
 }
 
 export abstract class BotRepository {

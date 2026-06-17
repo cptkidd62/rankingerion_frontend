@@ -15,11 +15,15 @@ export type BotStatus =
       type: 'deleted';
     };
 
+export type RatingData = {
+  value: number;
+};
+
 export interface Bot {
     id: number;
     name: string;
     language: string;
     user_id: number;
     status: BotStatus;
-    rating: number | undefined;
+    rating: Record<string, RatingData>;
 }
