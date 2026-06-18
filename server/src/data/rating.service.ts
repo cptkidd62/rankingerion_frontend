@@ -4,6 +4,8 @@ import { Match, MatchRepository } from './match.repository';
 
 export const ratingSystems = {
   simple: { initialRating: 0 },
+  elo16: { initialRating: 1000, k: 16 },
+  elo64: { initialRating: 1000, k: 64 },
 } as const;
 
 export type RatingVersion = keyof typeof ratingSystems;
@@ -124,6 +126,20 @@ export class RatingService implements OnModuleInit {
     switch (version) {
       case 'simple':
         return this.simpleRating(matchScore, rating1, rating2);
+      case 'elo16':
+        return this.eloRating(
+          matchScore,
+          rating1,
+          rating2,
+          ratingSystems.elo16.k,
+        );
+      case 'elo64':
+        return this.eloRating(
+          matchScore,
+          rating1,
+          rating2,
+          ratingSystems.elo64.k,
+        );
     }
   }
 
@@ -133,5 +149,23 @@ export class RatingService implements OnModuleInit {
     rating2: number,
   ): [number, number] {
     return [rating1 + matchScore[0], rating2 + matchScore[1]];
+  }
+
+  private eloRating(
+    matchScore: number[],
+    rating1: number,
+    rating2: number,
+    k: number,
+  ): [number, number] {
+    const e = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
+    const s = (matchScore[0] + 1) / 2;
+    return [
+      this.eloUpdate(rating1, k, s, e),
+      this.eloUpdate(rating2, k, 1 - s, 1 - e),
+    ];
+  }
+
+  private eloUpdate(old: number, k: number, s: number, e: number): number {
+    return Math.round(old + k * (s - e));
   }
 }
