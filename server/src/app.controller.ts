@@ -32,7 +32,7 @@ export class AppController {
   @Get('testapi')
   async testAPI() {
     const res = await this.benchmarkerService.playSingle([
-      'test_err_segfault#g1.cpp',
+      'test_bot#b2.cpp',
       'test_bot#b1.cpp',
     ]);
     console.log('HERE');
