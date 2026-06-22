@@ -4,6 +4,7 @@ import * as path from 'path';
 import { Bot, BotRepository, RatingData } from '../bot.repository';
 import { Mutex } from 'async-mutex';
 import { createInitialRatings, RatingVersion } from '../rating.service';
+import { AppConfigService } from 'src/config/appconfig.service';
 
 interface BotFileData {
   next_id: number;
@@ -17,7 +18,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
   private mutex: Mutex = new Mutex();
   private dirty: boolean = false;
 
-  constructor() {
+  constructor(private readonly appConfig: AppConfigService) {
     super();
   }
 
@@ -28,8 +29,8 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
   private async loadData() {
     console.log('typeof path:', typeof path); // powinna być 'object'
     console.log('path === undefined:', path === undefined);
-    const dataDir = process.env.DATA_DIR ?? './';
-    const fileName = process.env.BOTS_FILE ?? 'bots.json';
+    const dataDir = this.appConfig.config.dataDir;
+    const fileName = this.appConfig.config.botsFile;
     const filePath = path.join(dataDir, fileName);
 
     try {
@@ -59,8 +60,8 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       this.dirty = false;
       this.mutex.release();
 
-      const dataDir = process.env.DATA_DIR ?? './';
-      const fileName = process.env.BOTS_FILE ?? 'bots.json';
+      const dataDir = this.appConfig.config.dataDir;
+      const fileName = this.appConfig.config.botsFile;
       const filePath = path.join(dataDir, fileName);
       const tmpPath = filePath + '.tmp';
       const bakPath = filePath + '.bak';

@@ -12,9 +12,11 @@ const DevConfig = {
 export const BenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
   useBenchmarker: true,
+  botName: '_singlescore1',
 };
 
 export const NoBenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
   useBenchmarker: false,
+  botName: '_singlescore1',
 };

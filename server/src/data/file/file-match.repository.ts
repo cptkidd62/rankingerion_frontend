@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Match, MatchRepository } from '../match.repository';
 import { Mutex } from 'async-mutex';
+import { AppConfigService } from 'src/config/appconfig.service';
 
 interface MatchesFileData {
   next_id: number;
@@ -19,7 +20,7 @@ export class FileMatchRepository
   private mutex: Mutex = new Mutex();
   private dirty: boolean = false;
 
-  constructor() {
+  constructor(private readonly appConfig: AppConfigService) {
     super();
   }
 
@@ -28,8 +29,8 @@ export class FileMatchRepository
   }
 
   private async loadData() {
-    const dataDir = process.env.DATA_DIR ?? './';
-    const fileName = process.env.MATCHES_FILE ?? 'matches.json';
+    const dataDir = this.appConfig.config.dataDir;
+    const fileName = this.appConfig.config.matchesFile;
     const filePath = path.join(dataDir, fileName);
     console.log(filePath);
 
@@ -56,8 +57,8 @@ export class FileMatchRepository
       this.dirty = false;
       this.mutex.release();
 
-      const dataDir = process.env.DATA_DIR ?? './';
-      const fileName = process.env.MATCHES_FILE ?? 'matches.json';
+      const dataDir = this.appConfig.config.dataDir;
+      const fileName = this.appConfig.config.matchesFile;
       const filePath = path.join(dataDir, fileName);
       const tmpPath = filePath + '.tmp';
       const bakPath = filePath + '.bak';

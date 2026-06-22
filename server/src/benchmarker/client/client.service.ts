@@ -16,6 +16,7 @@ import { PlayTask } from '../tasks/playtask';
 import { PlayResult } from '../tasks/playresult';
 import { ok } from 'assert';
 import { Agent } from '../models/agent';
+import { AppConfigService } from 'src/config/appconfig.service';
 // import { CompileResult } from '../tasks/compileresult';
 
 @Injectable()
@@ -47,7 +48,10 @@ export class ClientService {
   private sentTasks: Array<TaskContainer> = [];
   private acceptedPlayTasks: Map<number, PlayTaskContainer> = new Map();
 
-  constructor(private connectorService: ConnectorService) {
+  constructor(
+    private connectorService: ConnectorService,
+    private readonly appConfig: AppConfigService,
+  ) {
     this.socket = connectorService.getSocket(
       process.env.BENCHMARKER_SERVER!,
       Number(process.env.BENCHMARKER_PORT_CLIENTS!),
@@ -102,7 +106,7 @@ export class ClientService {
   }
 
   private sendSource(sourceName: string) {
-    const botsDir = process.env.BOTS_DIR ?? './';
+    const botsDir = this.appConfig.config.botsDir;
     const filePath = path.join(botsDir, sourceName);
     try {
       const code_buf = fs.readFileSync(filePath);

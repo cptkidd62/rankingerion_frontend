@@ -13,6 +13,7 @@ import {
   PlayTaskError,
   PlaytimeError,
 } from 'src/errors/PlayErrors';
+import { AppConfigService } from 'src/config/appconfig.service';
 
 @Injectable()
 export class BotsService {
@@ -24,6 +25,7 @@ export class BotsService {
     private readonly userRepo: UserRepository,
     private readonly benchmarkerService: BenchmarkerService,
     private readonly ratingService: RatingService,
+    private readonly appConfig: AppConfigService,
   ) {}
 
   async findAll(): Promise<Bot[]> {
@@ -59,8 +61,8 @@ export class BotsService {
       rating: createInitialRatings(),
     });
     const filePath = path.join(
-      process.env.BOTS_DIR ?? './',
-      id + '_singlescore1' + ext,
+      this.appConfig.config.botsDir,
+      id + this.appConfig.config.botName + ext,
     );
     await fs.writeFile(filePath, file.buffer, 'utf-8');
     return id;
@@ -76,7 +78,7 @@ export class BotsService {
     if (id === undefined) {
       return id;
     }
-    if (process.env.USE_BENCHMARKER == 'true') {
+    if (this.appConfig.config.useBenchmarker) {
       this.generateBenchmarkerMatches(name, id, user_id).catch((error) => {
         console.error(error);
       });
@@ -265,7 +267,7 @@ export class BotsService {
   }
 
   private botFile(bot: Bot): string {
-    return String(bot.id) + '_singlescore' + bot.language;
+    return String(bot.id) + this.appConfig.config.botName + bot.language;
   }
 
   async deleteById(id: number): Promise<void> {

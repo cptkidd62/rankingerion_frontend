@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { User, UserRepository } from '../user.repository';
+import { AppConfigService } from 'src/config/appconfig.service';
 
 interface UserFileData {
   next_id: number;
@@ -13,7 +14,7 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
   private users: User[] = [];
   private nextId = 0;
 
-  constructor() {
+  constructor(private readonly appConfig: AppConfigService) {
     super();
   }
 
@@ -22,8 +23,8 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
   }
 
   private async loadData() {
-    const dataDir = process.env.DATA_DIR ?? './';
-    const fileName = process.env.USERS_FILE ?? 'users.json';
+    const dataDir = this.appConfig.config.dataDir;
+    const fileName = this.appConfig.config.usersFile;
     const filePath = path.join(dataDir, fileName);
 
     try {
