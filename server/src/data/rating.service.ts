@@ -166,6 +166,6 @@ export class RatingService implements OnModuleInit {
   }
 
   private eloUpdate(old: number, k: number, s: number, e: number): number {
-    return Math.round(old + k * (s - e));
+    return old + k * (s - e);
   }
 }
