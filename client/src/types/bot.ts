@@ -17,6 +17,7 @@ export type BotStatus =
 
 export type RatingData = {
   value: number;
+  RD: number,
 };
 
 export interface Bot {

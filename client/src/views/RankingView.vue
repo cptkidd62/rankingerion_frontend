@@ -14,7 +14,7 @@ onMounted(() => { botsStore.fetchBots() });
     <h1>Ranking</h1>
     <div v-if="botsStore.loading">Loading...</div>
     <div v-else v-for="(bot, i) in botsStore.botsSorted">
-      <h3 :class="{own: bot.user_id == auth.user?.id}">{{ i + 1 }} |  {{ bot.name }} | {{ bot.rating['elo64'].value }}</h3>
+      <h3 :class="{own: bot.user_id == auth.user?.id}">{{ i + 1 }} |  {{ bot.name }} | {{ bot.rating['glicko'].value }}</h3>
     </div>
   </div>
 </template>

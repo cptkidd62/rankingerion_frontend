@@ -1,11 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { BotRepository, RatingData } from './bot.repository';
 import { Match, MatchRepository } from './match.repository';
+import { glicko } from './glicko';
 
 export const ratingSystems = {
-  simple: { initialRating: 0 },
-  elo16: { initialRating: 1000, k: 16 },
-  elo64: { initialRating: 1000, k: 64 },
+  glicko: { initialRating: 1500, RD: 350 },
 } as const;
 
 export type RatingVersion = keyof typeof ratingSystems;
@@ -16,6 +15,7 @@ export function createInitialRatings(): Record<RatingVersion, RatingData> {
       version,
       {
         value: config.initialRating,
+        RD: config.RD,
       },
     ]),
   ) as Record<RatingVersion, RatingData>;
@@ -106,11 +106,11 @@ export class RatingService implements OnModuleInit {
       const [r1, r2] = this.calculateRating(
         version,
         match.score,
-        rating1[version].value,
-        rating2[version].value,
+        rating1[version],
+        rating2[version],
       );
-      rating1[version].value = r1;
-      rating2[version].value = r2;
+      rating1[version] = r1;
+      rating2[version] = r2;
     }
 
     this.ratings.set(id1, rating1);
@@ -120,52 +120,12 @@ export class RatingService implements OnModuleInit {
   private calculateRating(
     version: RatingVersion,
     matchScore: number[],
-    rating1: number,
-    rating2: number,
-  ): [number, number] {
+    rating1: RatingData,
+    rating2: RatingData,
+  ): [RatingData, RatingData] {
     switch (version) {
-      case 'simple':
-        return this.simpleRating(matchScore, rating1, rating2);
-      case 'elo16':
-        return this.eloRating(
-          matchScore,
-          rating1,
-          rating2,
-          ratingSystems.elo16.k,
-        );
-      case 'elo64':
-        return this.eloRating(
-          matchScore,
-          rating1,
-          rating2,
-          ratingSystems.elo64.k,
-        );
+      case 'glicko':
+        return glicko(matchScore, rating1, rating2);
     }
-  }
-
-  private simpleRating(
-    matchScore: number[],
-    rating1: number,
-    rating2: number,
-  ): [number, number] {
-    return [rating1 + matchScore[0], rating2 + matchScore[1]];
-  }
-
-  private eloRating(
-    matchScore: number[],
-    rating1: number,
-    rating2: number,
-    k: number,
-  ): [number, number] {
-    const e = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
-    const s = (matchScore[0] + 1) / 2;
-    return [
-      this.eloUpdate(rating1, k, s, e),
-      this.eloUpdate(rating2, k, 1 - s, 1 - e),
-    ];
-  }
-
-  private eloUpdate(old: number, k: number, s: number, e: number): number {
-    return old + k * (s - e);
   }
 }

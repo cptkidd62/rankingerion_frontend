@@ -11,7 +11,7 @@ export const useBotsStore = defineStore('bots', () => {
   const loading = ref(false)
   const initialized = ref(false)
 
-  const botsSorted = computed(() => [...bots.value].filter((bot) => bot.status.type != 'deleted').sort((a, b) => b.rating['elo64'].value - a.rating['elo64'].value))
+  const botsSorted = computed(() => [...bots.value].filter((bot) => bot.status.type != 'deleted').sort((a, b) => b.rating['glicko'].value - a.rating['glicko'].value))
   const myBots = computed(() => [...bots.value].filter((bot) => bot.user_id == auth.user?.id && bot.status.type != 'deleted'))
 
   async function fetchBots() {
