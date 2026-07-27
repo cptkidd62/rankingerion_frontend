@@ -18,6 +18,7 @@ const bot = computed(() => botsStore.bots.find((b) => b.id === Number(route.para
 const matches = computed(() => [...matchesStore.matches].filter((match) => match.bot_ids.includes(bot.value!.id)))
 
 function botOk(bot: Bot): boolean {
+    console.log(bot.status)
     return bot.status.type == 'ok' || bot.status.type == 'created'
 }
 
