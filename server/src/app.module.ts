@@ -13,6 +13,7 @@ import { AuthService } from './auth/auth.service';
 import { ConfigModule } from '@nestjs/config';
 import { BenchmarkerModule } from './benchmarker/benchmarker.module';
 import { AppConfigService } from './config/appconfig.service';
+import { MatchmakerService } from './matchmaker/matchmaker.service';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AppConfigService } from './config/appconfig.service';
     UsersService,
     AuthService,
     AppConfigService,
+    MatchmakerService,
   ],
 })
 export class AppModule {}

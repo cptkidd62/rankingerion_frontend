@@ -14,6 +14,7 @@ import {
   PlaytimeError,
 } from 'src/errors/PlayErrors';
 import { AppConfigService } from 'src/config/appconfig.service';
+import { MatchmakerService } from 'src/matchmaker/matchmaker.service';
 
 @Injectable()
 export class BotsService {
@@ -26,6 +27,7 @@ export class BotsService {
     private readonly benchmarkerService: BenchmarkerService,
     private readonly ratingService: RatingService,
     private readonly appConfig: AppConfigService,
+    private readonly matchmakerService: MatchmakerService,
   ) {}
 
   async findAll(): Promise<Bot[]> {
@@ -102,42 +104,42 @@ export class BotsService {
       username: 'undefined',
       password: '',
     };
-    bots.forEach((bot) => {
-      if (bot.user_id != user_id) {
-        const user = users.find((u) => u.id == bot.user_id) ?? {
-          id: -1,
-          username: 'undefined',
-          password: '',
-        };
-        const scores = [randomInt(0, 1000), randomInt(0, 1000)];
-        const results =
-          scores[0] > scores[1]
-            ? [1, -1]
-            : scores[0] < scores[1]
-              ? [-1, 1]
-              : [0, 0];
-        const match = {
-          id: -1,
-          bot_ids: [bot.id, id],
-          botnames: [bot.name, name],
-          user_ids: [user.id, user_id],
-          usernames: [user.username, this_user.username],
-          score: results,
-          sequence_number: -1,
-        };
-        this.matchRepo.create(match).then(
-          (id) => {
-            match.id = id;
-            this.ratingService
-              .processMatch(match)
-              .catch((err) => console.error(err));
-          },
-          (err) => {
-            console.error('Błąd podczas create match:', err);
-          },
-        );
-      }
-    });
+    let i: number | null;
+    while ((i = await this.matchmakerService.getNextOpponent(id)) != null) {
+      const bot = bots[i];
+      const user = users.find((u) => u.id == bot.user_id) ?? {
+        id: -1,
+        username: 'undefined',
+        password: '',
+      };
+      const scores = [randomInt(0, 1000), randomInt(0, 1000)];
+      const results =
+        scores[0] > scores[1]
+          ? [1, -1]
+          : scores[0] < scores[1]
+            ? [-1, 1]
+            : [0, 0];
+      const match = {
+        id: -1,
+        bot_ids: [bot.id, id],
+        botnames: [bot.name, name],
+        user_ids: [user.id, user_id],
+        usernames: [user.username, this_user.username],
+        score: results,
+        sequence_number: -1,
+      };
+      this.matchRepo.create(match).then(
+        (id) => {
+          match.id = id;
+          this.ratingService
+            .processMatch(match)
+            .catch((err) => console.error(err));
+        },
+        (err) => {
+          console.error('Błąd podczas create match:', err);
+        },
+      );
+    }
   }
 
   private async generateBenchmarkerMatches(
@@ -155,106 +157,102 @@ export class BotsService {
       password: '',
     };
     const this_bot = bots.find((b) => b.id == id)!;
-    for (const bot of bots) {
-      // allow only other users' bots
-      if (bot.user_id != user_id) {
-        // don't allow bots with errors
-        if (bot.status.type === 'created' || bot.status.type === 'ok') {
-          const user = users.find((u) => u.id == bot.user_id) ?? {
-            id: -1,
-            username: 'undefined',
-            password: '',
-          };
-          const players = [bot, this_bot];
-          const res = await this.benchmarkerService.playSingle(
-            players.map((player) => this.botFile(player)),
+    let i: number | null;
+    while ((i = await this.matchmakerService.getNextOpponent(id)) != null) {
+      const bot = bots[i];
+      const user = users.find((u) => u.id == bot.user_id) ?? {
+        id: -1,
+        username: 'undefined',
+        password: '',
+      };
+      const players = [bot, this_bot];
+      const res = await this.benchmarkerService.playSingle(
+        players.map((player) => this.botFile(player)),
+      );
+      if (res instanceof PlayTaskError) {
+        if (res instanceof CompilationError) {
+          console.error(
+            'compilation error of bot %s on index %d',
+            res.agentName,
+            res.agentIndex,
           );
-          if (res instanceof PlayTaskError) {
-            if (res instanceof CompilationError) {
-              console.error(
-                'compilation error of bot %s on index %d',
-                res.agentName,
-                res.agentIndex,
-              );
-              const player = players.at(res.agentIndex!);
-              if (player) {
-                await this.botRepo.updateById(player.id, {
-                  id: player.id,
-                  name: player.name,
-                  language: player.language,
-                  user_id: player.user_id,
-                  status: { type: 'compilation_error' },
-                  rating: player.rating,
-                });
-                if (player.id === this_bot.id) {
-                  // don't continue if own bot has error
-                  return;
-                }
-              }
-            } else if (res instanceof PlaytimeError) {
-              console.error(
-                'playtime error of bot %s on index %d: %s',
-                res.agentName,
-                res.agentIndex,
-                res.message,
-              );
-              const player = players.at(res.agentIndex!);
-              if (player) {
-                await this.botRepo.updateById(player.id, {
-                  id: player.id,
-                  name: player.name,
-                  language: player.language,
-                  user_id: player.user_id,
-                  status: { type: 'playtime_error' },
-                  rating: player.rating,
-                });
-                if (player.id === this_bot.id) {
-                  // don't continue if own bot has error
-                  return;
-                }
-              }
-            } else {
-              console.error('PlayTaskError');
+          const player = players.at(res.agentIndex!);
+          if (player) {
+            await this.botRepo.updateById(player.id, {
+              id: player.id,
+              name: player.name,
+              language: player.language,
+              user_id: player.user_id,
+              status: { type: 'compilation_error' },
+              rating: player.rating,
+            });
+            if (player.id === this_bot.id) {
+              // don't continue if own bot has error
+              return;
             }
-            continue;
           }
-          const scores = res.scores;
-          const results =
-            scores[0] > scores[1]
-              ? [1, -1]
-              : scores[0] < scores[1]
-                ? [-1, 1]
-                : [0, 0];
-          const match = {
-            id: -1,
-            bot_ids: [bot.id, id],
-            botnames: [bot.name, name],
-            user_ids: [user.id, user_id],
-            usernames: [user.username, this_user.username],
-            score: results,
-            sequence_number: -1,
-          };
-          this.matchRepo.create(match).then(
-            (id) => {
-              match.id = id;
-              this.ratingService
-                .processMatch(match)
-                .catch((err) => console.error(err));
-            },
-            (err) => {
-              console.error('Błąd podczas create match:', err);
-            },
+        } else if (res instanceof PlaytimeError) {
+          console.error(
+            'playtime error of bot %s on index %d: %s',
+            res.agentName,
+            res.agentIndex,
+            res.message,
           );
-          await this.botRepo.updateById(bot.id, {
-            id: bot.id,
-            name: bot.name,
-            language: bot.language,
-            user_id: bot.user_id,
-            status: { type: 'ok' },
-            rating: bot.rating,
-          });
+          const player = players.at(res.agentIndex!);
+          if (player) {
+            await this.botRepo.updateById(player.id, {
+              id: player.id,
+              name: player.name,
+              language: player.language,
+              user_id: player.user_id,
+              status: { type: 'playtime_error' },
+              rating: player.rating,
+            });
+            if (player.id === this_bot.id) {
+              // don't continue if own bot has error
+              return;
+            }
+          }
+        } else {
+          console.error('PlayTaskError');
         }
+        continue;
       }
+      const scores = res.scores;
+      const results =
+        scores[0] > scores[1]
+          ? [1, -1]
+          : scores[0] < scores[1]
+            ? [-1, 1]
+            : [0, 0];
+      const match = {
+        id: -1,
+        bot_ids: [bot.id, id],
+        botnames: [bot.name, name],
+        user_ids: [user.id, user_id],
+        usernames: [user.username, this_user.username],
+        score: results,
+        sequence_number: -1,
+      };
+      this.matchRepo.create(match).then(
+        (id) => {
+          match.id = id;
+          this.ratingService
+            .processMatch(match)
+            .catch((err) => console.error(err));
+        },
+        (err) => {
+          console.error('Błąd podczas create match:', err);
+        },
+      );
+      await this.botRepo.updateById(bot.id, {
+        id: bot.id,
+        name: bot.name,
+        language: bot.language,
+        user_id: bot.user_id,
+        status: { type: 'ok' },
+        rating: bot.rating,
+      });
     }
     await this.botRepo.updateById(this_bot.id, {
       id: this_bot.id,
