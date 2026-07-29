@@ -19,6 +19,7 @@ export type RatingData = {
   value: number;
   RD: number;
   lastMatchId: number;
+  matchesPlayed: number;
   opponentsPlayed: Map<number, number>;
 };
 

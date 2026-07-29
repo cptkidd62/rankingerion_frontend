@@ -9,6 +9,7 @@ export const initialRating = {
   value: glickoData.initialRating,
   RD: glickoData.RD,
   lastMatchId: -1,
+  matchesPlayed: 0,
   opponentsPlayed: new Map<number, number>(),
 } as RatingData;
 
@@ -62,6 +63,8 @@ export class RatingService implements OnModuleInit {
 
         rating1.lastMatchId = this.nextSequenceNumber;
         rating2.lastMatchId = this.nextSequenceNumber;
+        rating1.matchesPlayed++;
+        rating2.matchesPlayed++;
       }
       const bots = await this.botRepo.findAll();
       const ids = bots.map((bot) => bot.id);
@@ -98,6 +101,8 @@ export class RatingService implements OnModuleInit {
 
       rating1.lastMatchId = this.nextSequenceNumber;
       rating2.lastMatchId = this.nextSequenceNumber;
+      rating1.matchesPlayed++;
+      rating2.matchesPlayed++;
 
       await this.matchRepo.updateSequenceNumber(
         match.id,
