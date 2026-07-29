@@ -18,6 +18,8 @@ export type BotStatus =
 export type RatingData = {
   value: number;
   RD: number,
+  lastMatchId: number,
+  opponentsPlayed: Map<number, number>,
 };
 
 export interface Bot {
@@ -26,5 +28,5 @@ export interface Bot {
     language: string;
     user_id: number;
     status: BotStatus;
-    rating: Record<string, RatingData>;
+    rating: RatingData;
 }

@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Bot, BotRepository, RatingData } from '../bot.repository';
 import { Mutex } from 'async-mutex';
-import { createInitialRatings, RatingVersion } from '../rating.service';
+import { initialRating } from '../rating.service';
 import { AppConfigService } from 'src/config/appconfig.service';
 
 interface BotFileData {
@@ -38,7 +38,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       const data: BotFileData = JSON.parse(raw) as BotFileData;
       this.bots = data.bots;
       for (const bot of this.bots) {
-        bot.rating = createInitialRatings();
+        bot.rating = initialRating;
       }
       this.nextId = data.next_id;
     } catch (err) {
@@ -56,7 +56,16 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     };
     if (this.dirty) {
       await this.mutex.acquire();
-      const json = JSON.stringify(data, null, 2);
+      const json = JSON.stringify(
+        data,
+        (_, value: unknown) => {
+          if (value instanceof Map) {
+            return [...value];
+          }
+          return value;
+        },
+        2,
+      );
       this.dirty = false;
       this.mutex.release();
 
@@ -119,10 +128,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     this.mutex.release();
   }
 
-  async updateRatingById(
-    id: number,
-    rating: Record<RatingVersion, RatingData>,
-  ): Promise<void> {
+  async updateRatingById(id: number, rating: RatingData): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
     if (idx >= 0) {

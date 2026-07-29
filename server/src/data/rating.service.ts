@@ -3,38 +3,29 @@ import { BotRepository, RatingData } from './bot.repository';
 import { Match, MatchRepository } from './match.repository';
 import { glicko } from './glicko';
 
-export const ratingSystems = {
-  glicko: { initialRating: 1500, RD: 350 },
-} as const;
+export const glickoData = { initialRating: 1500, RD: 350 } as const;
 
-export type RatingVersion = keyof typeof ratingSystems;
-
-export function createInitialRatings(): Record<RatingVersion, RatingData> {
-  return Object.fromEntries(
-    Object.entries(ratingSystems).map(([version, config]) => [
-      version,
-      {
-        value: config.initialRating,
-        RD: config.RD,
-      },
-    ]),
-  ) as Record<RatingVersion, RatingData>;
-}
+export const initialRating = {
+  value: glickoData.initialRating,
+  RD: glickoData.RD,
+  lastMatchId: -1,
+  opponentsPlayed: new Map<number, number>(),
+} as RatingData;
 
 // rating service jest jedyną klasą, która modyfikuje pole rating w bocie oraz sequence_number w match
 @Injectable()
 export class RatingService implements OnModuleInit {
   private nextSequenceNumber: number;
-  private ratings: Map<number, Record<RatingVersion, RatingData>>;
+  private ratings: Map<number, RatingData>;
   private queue = Promise.resolve();
-  private newRating = createInitialRatings();
+  private newRating = structuredClone(initialRating);
 
   constructor(
     private readonly botRepo: BotRepository,
     private readonly matchRepo: MatchRepository,
   ) {
     this.nextSequenceNumber = 0;
-    this.ratings = new Map<number, Record<RatingVersion, RatingData>>();
+    this.ratings = new Map<number, RatingData>();
   }
 
   async onModuleInit() {
@@ -49,9 +40,28 @@ export class RatingService implements OnModuleInit {
         this.nextSequenceNumber =
           Math.max(...matches.map((match) => match.sequence_number)) + 1;
       }
-      this.ratings = new Map<number, Record<RatingVersion, RatingData>>();
+      this.ratings = new Map<number, RatingData>();
       for (const match of matches) {
         this.doMatch(match);
+
+        const id1 = match.bot_ids[0];
+        const id2 = match.bot_ids[1];
+
+        const rating1 = this.ratings.get(id1)!;
+        const rating2 = this.ratings.get(id2)!;
+
+        rating1.opponentsPlayed.set(
+          id2,
+          rating1.opponentsPlayed.get(id2) ?? 0 + 1,
+        );
+
+        rating2.opponentsPlayed.set(
+          id1,
+          rating2.opponentsPlayed.get(id1) ?? 0 + 1,
+        );
+
+        rating1.lastMatchId = this.nextSequenceNumber;
+        rating2.lastMatchId = this.nextSequenceNumber;
       }
       const bots = await this.botRepo.findAll();
       const ids = bots.map((bot) => bot.id);
@@ -73,8 +83,21 @@ export class RatingService implements OnModuleInit {
       const id1 = match.bot_ids[0];
       const id2 = match.bot_ids[1];
 
-      const rating1 = this.ratings.get(id1) ?? structuredClone(this.newRating);
-      const rating2 = this.ratings.get(id2) ?? structuredClone(this.newRating);
+      const rating1 = this.ratings.get(id1)!;
+      const rating2 = this.ratings.get(id2)!;
+
+      rating1.opponentsPlayed.set(
+        id2,
+        rating1.opponentsPlayed.get(id2) ?? 0 + 1,
+      );
+
+      rating2.opponentsPlayed.set(
+        id1,
+        rating2.opponentsPlayed.get(id1) ?? 0 + 1,
+      );
+
+      rating1.lastMatchId = this.nextSequenceNumber;
+      rating2.lastMatchId = this.nextSequenceNumber;
 
       await this.matchRepo.updateSequenceNumber(
         match.id,
@@ -102,30 +125,9 @@ export class RatingService implements OnModuleInit {
     const rating1 = this.ratings.get(id1) ?? structuredClone(this.newRating);
     const rating2 = this.ratings.get(id2) ?? structuredClone(this.newRating);
 
-    for (const version of Object.keys(ratingSystems) as RatingVersion[]) {
-      const [r1, r2] = this.calculateRating(
-        version,
-        match.score,
-        rating1[version],
-        rating2[version],
-      );
-      rating1[version] = r1;
-      rating2[version] = r2;
-    }
+    const [r1, r2] = glicko(match.score, rating1, rating2);
 
-    this.ratings.set(id1, rating1);
-    this.ratings.set(id2, rating2);
-  }
-
-  private calculateRating(
-    version: RatingVersion,
-    matchScore: number[],
-    rating1: RatingData,
-    rating2: RatingData,
-  ): [RatingData, RatingData] {
-    switch (version) {
-      case 'glicko':
-        return glicko(matchScore, rating1, rating2);
-    }
+    this.ratings.set(id1, r1);
+    this.ratings.set(id2, r2);
   }
 }

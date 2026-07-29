@@ -6,7 +6,7 @@ import { UserRepository } from 'src/data/user.repository';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { BenchmarkerService } from 'src/benchmarker/benchmarker.service';
-import { createInitialRatings, RatingService } from 'src/data/rating.service';
+import { initialRating, RatingService } from 'src/data/rating.service';
 import { BotUploadException } from 'src/errors/BotUploadExceptions';
 import {
   CompilationError,
@@ -60,7 +60,7 @@ export class BotsService {
       language: ext,
       user_id: user_id,
       status: { type: 'created' },
-      rating: createInitialRatings(),
+      rating: initialRating,
     });
     const filePath = path.join(
       this.appConfig.config.botsDir,
