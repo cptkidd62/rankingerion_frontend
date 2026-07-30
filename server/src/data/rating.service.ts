@@ -53,12 +53,12 @@ export class RatingService implements OnModuleInit {
 
         rating1.opponentsPlayed.set(
           id2,
-          rating1.opponentsPlayed.get(id2) ?? 0 + 1,
+          (rating1.opponentsPlayed.get(id2) ?? 0) + 1,
         );
 
         rating2.opponentsPlayed.set(
           id1,
-          rating2.opponentsPlayed.get(id1) ?? 0 + 1,
+          (rating2.opponentsPlayed.get(id1) ?? 0) + 1,
         );
 
         rating1.lastMatchId = this.nextSequenceNumber;
@@ -91,12 +91,12 @@ export class RatingService implements OnModuleInit {
 
       rating1.opponentsPlayed.set(
         id2,
-        rating1.opponentsPlayed.get(id2) ?? 0 + 1,
+        (rating1.opponentsPlayed.get(id2) ?? 0) + 1,
       );
 
       rating2.opponentsPlayed.set(
         id1,
-        rating2.opponentsPlayed.get(id1) ?? 0 + 1,
+        (rating2.opponentsPlayed.get(id1) ?? 0) + 1,
       );
 
       rating1.lastMatchId = this.nextSequenceNumber;

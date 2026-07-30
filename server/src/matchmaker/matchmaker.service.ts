@@ -4,13 +4,16 @@ import { Bot, BotRepository, RatingData } from 'src/data/bot.repository';
 @Injectable()
 export class MatchmakerService {
   bots: Bot[];
+  matchesPlanned: Map<number, number>;
 
   private readonly noise: number = 25;
   private readonly M1 = 10;
   private readonly M2 = 3;
   private readonly M3 = 2;
 
-  constructor(private readonly botRepository: BotRepository) {}
+  constructor(private readonly botRepository: BotRepository) {
+    this.matchesPlanned = new Map();
+  }
 
   private randomNoise(): number {
     return (Math.random() * 2 - 1) * this.noise;
@@ -39,33 +42,34 @@ export class MatchmakerService {
 
   async getNextOpponent(id: number): Promise<number | null> {
     this.bots = await this.botRepository.findAll();
-    const bot_p = this.bots[id];
-    console.log(bot_p.rating.matchesPlayed);
-    if (bot_p.rating.matchesPlayed < this.M1) {
-      const queue1 = this.generateQueue(this.bots, id, this.scoreOpponent1);
-      for (const id2 of queue1) {
-        // check if match can happan
-        if (this.isMatchOK(this.bots, id, id2)) {
-          return id2;
-        }
-      }
-    } else if (bot_p.rating.matchesPlayed < this.M1 + this.M2) {
-      const queue1 = this.generateQueue(this.bots, id, this.scoreOpponent2);
-      for (const id2 of queue1) {
-        // check if match can happan
-        if (this.isMatchOK(this.bots, id, id2)) {
-          return id2;
-        }
-      }
-    } else if (bot_p.rating.matchesPlayed < this.M1 + this.M2 + this.M3) {
-      const queue1 = this.generateQueue(this.bots, id, this.scoreOpponent3);
-      for (const id2 of queue1) {
-        // check if match can happan
-        if (this.isMatchOK(this.bots, id, id2)) {
-          return id2;
-        }
+    const matches =
+      this.matchesPlanned.get(id) ?? this.bots[id].rating.matchesPlayed;
+
+    let score: {
+      (rating_opp: RatingData, rating_own: RatingData): number;
+      (_rating_opp: RatingData, _rating_own: RatingData): number;
+      (rating_opp: RatingData, _rating_own: RatingData): number;
+      (rating_opp: RatingData, rating_own: RatingData): number;
+    };
+    if (matches < this.M1) {
+      score = this.scoreOpponent1;
+    } else if (matches < this.M1 + this.M2) {
+      score = this.scoreOpponent2;
+    } else if (matches < this.M1 + this.M2 + this.M3) {
+      score = this.scoreOpponent3;
+    } else {
+      this.matchesPlanned.delete(id);
+      return null;
+    }
+    const queue = this.generateQueue(this.bots, id, score);
+    for (const id2 of queue) {
+      // check if match can happan
+      if (this.isMatchOK(this.bots, id, id2)) {
+        this.matchesPlanned.set(id, matches + 1);
+        return id2;
       }
     }
+    this.matchesPlanned.delete(id);
     return null;
   }
 
