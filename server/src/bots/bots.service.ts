@@ -129,13 +129,18 @@ export class BotsService {
         sequence_number: -1,
       };
       this.matchRepo.create(match).then(
-        (id) => {
-          match.id = id;
+        (matchid) => {
+          match.id = matchid;
           this.ratingService
             .processMatch(match)
-            .catch((err) => console.error(err));
+            .then(() => this.matchmakerService.removeFromCache(bot.id, id))
+            .catch((err) => {
+              console.error(err);
+              this.matchmakerService.removeFromCache(bot.id, id);
+            });
         },
         (err) => {
+          this.matchmakerService.removeFromCache(bot.id, id);
           console.error('Błąd podczas create match:', err);
         },
       );
@@ -188,6 +193,7 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
+              this.matchmakerService.removeFromCache(bot.id, id);
               return;
             }
           }
@@ -210,11 +216,13 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
+              this.matchmakerService.removeFromCache(bot.id, id);
               return;
             }
           }
         } else {
           console.error('PlayTaskError');
+          this.matchmakerService.removeFromCache(bot.id, id);
         }
         continue;
       }
@@ -235,13 +243,18 @@ export class BotsService {
         sequence_number: -1,
       };
       this.matchRepo.create(match).then(
-        (id) => {
-          match.id = id;
+        (matchid) => {
+          match.id = matchid;
           this.ratingService
             .processMatch(match)
-            .catch((err) => console.error(err));
+            .then(() => this.matchmakerService.removeFromCache(bot.id, id))
+            .catch((err) => {
+              console.error(err);
+              this.matchmakerService.removeFromCache(bot.id, id);
+            });
         },
         (err) => {
+          this.matchmakerService.removeFromCache(bot.id, id);
           console.error('Błąd podczas create match:', err);
         },
       );
