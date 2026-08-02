@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 const bot = computed(() => botsStore.bots.find((b) => b.id === Number(route.params.id)))
-const matches = computed(() => [...matchesStore.matches].filter((match) => match.bot_ids.includes(bot.value!.id)))
+const matches = computed(() => matchesStore.getSummaryForBot(Number(route.params.id)))
 
 function botOk(bot: Bot): boolean {
     console.log(bot.status)
@@ -24,30 +24,16 @@ function botOk(bot: Bot): boolean {
 
 const scoreCountOverall = computed(() => {
     let count = { wins: 0, draws: 0, losses: 0 }
-    for (var match of matches.value) {
-        const idx = match.bot_ids.indexOf(bot.value!.id)
-        if (idx >= 0 && idx < match.score.length) {
-            switch (match.score[idx]) {
-                case 1:
-                    count.wins++
-                    break
-                case 0:
-                    count.draws++
-                    break
-                case -1:
-                    count.losses++
-                    break
-
-                default:
-                    throw new Error('wrong score value')
-            }
-        }
+    for (var [_, summary] of matches.value) {
+        count.wins += summary.wins;
+        count.losses += summary.losses;
+        count.draws += summary.draws;
     }
     return count
 })
 
 const winRateOverall = computed(() => {
-    return scoreCountOverall.value.wins / matches.value.length
+    return scoreCountOverall.value.wins / (scoreCountOverall.value.wins + scoreCountOverall.value.draws + scoreCountOverall.value.losses)
 })
 
 onMounted(async () => {
@@ -66,7 +52,7 @@ onMounted(async () => {
             <p>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</p>
             <div>
                 Wyniki:
-                <ResultListItem v-for="match in matches" :match="match" />
+                <ResultListItem v-for="oppsummary in matches" :oppsummary="oppsummary" />
             </div>
         </div>
         <div v-else-if="bot.status.type == 'compilation_error'" class="error">Błąd kompilacji!</div>

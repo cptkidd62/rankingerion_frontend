@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { useAuthStore } from "./auth";
 import { computed, ref } from "vue";
 import { api } from "@/api";
+import type { OpponentSummary, Summary } from "@/types/stats";
 
 const auth = useAuthStore();
 
@@ -61,6 +62,35 @@ export const useMatchesStore = defineStore('matches', () => {
     groupMatchesByMyBots(matches.value, auth.user?.id ?? -1)
   )
 
+  function getSummaryForBot(botId: number): Summary {
+    const summary = new Map<number, OpponentSummary>();
+    const count: OpponentSummary = { wins: 0, draws: 0, losses: 0 };
+    for (var match of matches.value) {
+      const idx = match.bot_ids.indexOf(botId);
+      if (idx < 0) continue;
+      const opp = 1 - idx;
+      const ido = match.bot_ids[opp];
+      if (!summary.has(ido)) {
+        summary.set(ido, structuredClone(count));
+      }
+      switch (match.score[idx]) {
+        case 1:
+          summary.get(ido)!.wins++;
+          break;
+        case 0:
+          summary.get(ido)!.draws++;
+          break;
+        case -1:
+          summary.get(ido)!.losses++;
+          break;
+
+        default:
+          throw new Error('wrong score value ' + match.score[idx]);
+      }
+    }
+    return summary;
+  }
+
   async function ensureInitialized() {
     if (!initialized.value && !loading.value) {
       await fetchMatches();
@@ -74,6 +104,7 @@ export const useMatchesStore = defineStore('matches', () => {
     fetchMatches,
     loading,
     initialized,
+    getSummaryForBot,
     ensureInitialized
   }
 }

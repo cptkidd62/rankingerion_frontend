@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
-import type { Match } from '@/types/match';
+import type { OpponentSummary } from '@/types/stats';
 
 const props = defineProps({
-  match: {
-    type: Object as PropType<Match>,
+  oppsummary: {
+    type: Object as PropType<[number, OpponentSummary]>,
     required: true
   }
 })
@@ -12,8 +12,8 @@ const props = defineProps({
 
 <template>
   <div class="result-list-item">
-    <h3 class="name">{{ match.botnames[0] }} - {{ match.botnames[1] }}</h3>
-    <span>{{ match.score[0] }} : {{ match.score[1] }}; </span>
+    <h3 class="name">vs {{ oppsummary[0] }}</h3>
+    <span>{{ oppsummary[1].wins }} - {{ oppsummary[1].draws }} - {{ oppsummary[1].losses }} </span>
   </div>
 </template>
 
