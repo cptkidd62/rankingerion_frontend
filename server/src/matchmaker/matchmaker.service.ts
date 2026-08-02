@@ -20,6 +20,7 @@ export class MatchmakerService implements OnModuleInit {
 
   private readonly noise: number = 25;
   private readonly MATCHES = 100;
+  private readonly MATCHES_PER_OPPONENT = 10;
 
   constructor(private readonly botRepository: BotRepository) {
     this.pendingCache = new Map();
@@ -119,7 +120,7 @@ export class MatchmakerService implements OnModuleInit {
       bots[id1].user_id != bots[id2].user_id && //don't allow own bots
       (bots[id1].status.type == 'created' || bots[id1].status.type == 'ok') &&
       (bots[id2].status.type == 'created' || bots[id2].status.type == 'ok') &&
-      played == 0 // check if already played
+      played < this.MATCHES_PER_OPPONENT // check if not max with this opponent
     );
   }
 
