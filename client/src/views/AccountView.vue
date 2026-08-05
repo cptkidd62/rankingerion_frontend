@@ -6,8 +6,8 @@ const auth = useAuthStore()
 
 <template>
   <div class="account">
-    <h1>Moje konto</h1>
-    <p>Nazwa użytkownika: {{ auth.user?.username }}</p>
+    <h1>My account</h1>
+    <p>Username: {{ auth.user?.username }}</p>
   </div>
 </template>
 

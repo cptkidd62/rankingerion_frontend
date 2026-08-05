@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: '/boty',
+      redirect: '/bots',
       meta: {
         requiresAuth: true
       }
@@ -21,24 +21,24 @@ const router = createRouter({
       }
     },
     {
-      path: '/boty',
-      name: 'boty',
+      path: '/bots',
+      name: 'bots',
       component: () => import('../views/BotsView.vue'),
       meta: {
         requiresAuth: true
       }
     },
     {
-      path: '/boty/:id',
-      name: 'bot/:id',
+      path: '/bots/:id',
+      name: 'bots/:id',
       component: () => import('../views/BotDetailsView.vue'),
       meta: {
         requiresAuth: true
       }
     },
     {
-      path: '/konto',
-      name: 'konto',
+      path: '/account',
+      name: 'account',
       component: () => import('../views/AccountView.vue'),
       meta: {
         requiresAuth: true

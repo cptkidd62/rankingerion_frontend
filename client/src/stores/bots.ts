@@ -22,7 +22,7 @@ export const useBotsStore = defineStore('bots', () => {
       console.log(bots.value);
       initialized.value = true
     } catch (error) {
-      console.error('Błąd ładowania botów', error);
+      console.error('Bot loading error', error);
     } finally {
       loading.value = false
     }

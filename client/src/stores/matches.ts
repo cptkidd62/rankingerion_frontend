@@ -27,7 +27,7 @@ export const useMatchesStore = defineStore('matches', () => {
       console.log(matches.value);
       initialized.value = true
     } catch (error) {
-      console.error('Błąd ładowania meczy', error);
+      console.error('Matches loading error', error);
     } finally {
       loading.value = false
     }

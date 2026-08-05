@@ -38,16 +38,16 @@ const validateAll = () => {
         return true;
     }
     else {
-        console.error('Błąd walidacji formularza: ' + (errors.name ?? errors.file));
+        console.error('Form validation error: ' + (errors.name ?? errors.file));
         return false;
     }
 }
 
 const validateField = (field: string) => {
     if (field === "name")
-        errors.name = name.value != '' ? '' : 'Nazwa nie może być pusta!';
+        errors.name = name.value != '' ? '' : 'Bot name cannot be empty!';
     if (field === "file") {
-        errors.file = file.value != null ? '' : 'Wybierz plik do wysłania';
+        errors.file = file.value != null ? '' : 'Choose file to send';
     }
 }
 </script>
@@ -55,12 +55,12 @@ const validateField = (field: string) => {
 <template>
     <div class="new-bot-form">
         <form @submit.prevent="handleSubmit">
-            <input class="text-input" :class="{error: errors.name != ''}" type="text" name="name" id="name" v-model="name" placeholder="Nazwa" @blur="validateField('name')">
+            <input class="text-input" :class="{error: errors.name != ''}" type="text" name="name" id="name" v-model="name" placeholder="Name" @blur="validateField('name')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
             <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
-                @blur="validateField('file')" placeholder="Tu wklej kod">
+                @blur="validateField('file')" placeholder="Paste code here">
             <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
-            <input class="button" type="submit" value="Utwórz">
+            <input class="button" type="submit" value="Create">
         </form>
     </div>
 </template>

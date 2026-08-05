@@ -23,12 +23,12 @@ export const useAuthStore = defineStore('auth', {
                 if (this.token)
                     localStorage.setItem('token', this.token)
                 axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-                console.log('Sukces logowania');
+                console.log('Sign in success');
                 console.log(this.user);
                 return null;
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    console.error('Błąd logowania', error);
+                    console.error('Sign in error', error);
                     return String(error.response!.data.message);
                 }
             }
@@ -48,7 +48,7 @@ export const useAuthStore = defineStore('auth', {
                 const response = await api.auth.me();
                 this.user = response.data;
             } catch (error) {
-                console.error('Nie udało się pobrać użytkownika, wylogowano', error);
+                console.error('Failed fetching user, logged out', error);
                 await this.logout(); // token nieprawidłowy / wygasł / użytkownik nie istnieje
             }
         },

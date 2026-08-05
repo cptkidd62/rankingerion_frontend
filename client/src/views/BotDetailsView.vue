@@ -45,17 +45,17 @@ onMounted(async () => {
 <template>
     <div v-if="bot">
         <h1>{{ bot.name }}</h1>
-        <p>Język: {{ bot.language }}</p>
+        <p>Language: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
             <p>Rating: {{ bot.rating.value }}</p>
             <p>Winrate: {{ Math.round(winRateOverall * 100) }}%</p>
             <p>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</p>
             <div>
-                Wyniki:
+                Scores:
                 <ResultListItem v-for="oppsummary in matches" :oppsummary="oppsummary" />
             </div>
         </div>
-        <div v-else-if="bot.status.type == 'compilation_error'" class="error">Błąd kompilacji!</div>
+        <div v-else-if="bot.status.type == 'compilation_error'" class="error">Compilation error!</div>
     </div>
 </template>
 

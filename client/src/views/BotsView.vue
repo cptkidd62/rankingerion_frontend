@@ -21,19 +21,19 @@ const onCreateBot = async (payload: { name: string, file: any }) => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       errorMsg.value = error.response?.data.message;
-      console.error('Błąd tworzenia bota', error);
+      console.error('Bot creation error', error);
     }
   }
 }
 
 const onDeleteBot = async (id: number) => {
   try {
-    if (confirm('Czy na pewno chcesz usunąć bota?')) {
+    if (confirm('Do you really want to delete this bot?')) {
       await api.bots.delete(id)
       botsStore.deleteBot(id)
     }
   } catch (error) {
-    console.error('Błąd usuwania bota', error);
+    console.error('Bot deletion error', error);
   }
 }
 
@@ -42,12 +42,12 @@ onMounted(() => { botsStore.fetchBots() });
 
 <template>
   <div class="bots">
-    <h1>Moje boty</h1>
+    <h1>My bots</h1>
     <div v-if="botsStore.loading">Loading...</div>
     <div v-else>
       <BotListItem v-for="bot in botsStore.myBots" :key="bot.id" :bot="bot" @delete="onDeleteBot" />
       <details :open="isOpen">
-        <summary @click.prevent="isOpen = !isOpen">Dodaj bota</summary>
+        <summary @click.prevent="isOpen = !isOpen">Add bot</summary>
         <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />
         <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
       </details>

@@ -26,7 +26,7 @@ const handleLogin = async (payload: { username: string; password: string }) => {
 
 <template>
   <div class="login">
-    <h1>Strona logowania</h1>
+    <h1>Sign in</h1>
     <LoginForm @submit="handleLogin" />
     <p v-if="error" style="color:red;">{{ error }}</p>
   </div>

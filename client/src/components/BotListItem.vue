@@ -20,13 +20,13 @@ function handleDelete(id: number) {
 
 <template>
   <div class="bot-list-item">
-    <RouterLink :to="`/boty/${bot.id}`">
+    <RouterLink :to="`/bots/${bot.id}`">
       <h3 class="name">{{ bot.name }}</h3>
-      <div v-if="bot.status.type === 'compilation_error'" class="error">Błąd kompilacji!</div>
-      <div v-else-if="bot.status.type === 'playtime_error'" class="error">Błąd rozgrywki!</div>
+      <div v-if="bot.status.type === 'compilation_error'" class="error">Compilation error!</div>
+      <div v-else-if="bot.status.type === 'playtime_error'" class="error">Playtime error!</div>
       <div v-else>Rating: {{ bot.rating.value }}</div>
     </RouterLink>
-    <button class="button" @click="handleDelete(bot.id)">usuń</button>
+    <button class="button" @click="handleDelete(bot.id)">delete</button>
   </div>
 </template>
 

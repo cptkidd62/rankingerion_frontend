@@ -20,9 +20,9 @@ onMounted(() => {
 
       <nav>
         <RouterLink v-if="auth.token" to="/ranking">Ranking</RouterLink>
-        <RouterLink v-if="auth.token" to="/boty">Moje boty</RouterLink>
-        <RouterLink v-if="auth.token" to="/konto">Moje konto ({{ auth.user?.username }})</RouterLink>
-        <RouterLink v-if="auth.token" to="/signin" @click.prevent="auth.logout()">Wyloguj</RouterLink>
+        <RouterLink v-if="auth.token" to="/bots">My bots</RouterLink>
+        <RouterLink v-if="auth.token" to="/account">My account ({{ auth.user?.username }})</RouterLink>
+        <RouterLink v-if="auth.token" to="/signin" @click.prevent="auth.logout()">Log out</RouterLink>
       </nav>
     </div>
   </header>
