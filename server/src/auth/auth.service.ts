@@ -14,12 +14,12 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<AuthUser> {
     const user = await this.userRepo.findByUsername(username);
     if (!user) {
-      throw new UnauthorizedException('Nieprawidłowy login');
+      throw new UnauthorizedException('Invalid username');
     }
 
     const passwordsMatch = password == user.password;
     if (!passwordsMatch) {
-      throw new UnauthorizedException('Nieprawidłowe hasło');
+      throw new UnauthorizedException('Invalid password');
     }
 
     return { id: user.id, username: user.username };

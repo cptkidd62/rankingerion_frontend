@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
       request.user = user;
       return true;
     } catch (err) {
-      console.log('błąd weryfikacji tokenu: ', err);
+      console.log('error verifying token: ', err);
       throw new UnauthorizedException();
     }
   }

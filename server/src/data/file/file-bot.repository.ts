@@ -42,7 +42,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       }
       this.nextId = data.next_id;
     } catch (err) {
-      console.error('Błąd wczytywania bots.json:', err);
+      console.error('Error reading bots.json:', err);
       // jeśli plik nie istnieje — inicjuj puste dane
       this.bots = [];
       this.nextId = 0;
@@ -78,7 +78,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       await fs.writeFile(tmpPath, json, 'utf-8');
       await fs.rename(filePath, bakPath).catch(() => {});
       await fs.rename(tmpPath, filePath);
-      console.log('Zapisano bot repo');
+      console.log('Saved bot repo');
     }
   }
 

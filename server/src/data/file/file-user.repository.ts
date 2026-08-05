@@ -33,7 +33,7 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
       this.users = data.users;
       this.nextId = data.next_id;
     } catch (err) {
-      console.error('Błąd wczytywania users.json:', err);
+      console.error('Error reading users.json:', err);
       // jeśli plik nie istnieje — inicjuj puste dane
       this.users = [];
       this.nextId = 0;

@@ -40,7 +40,7 @@ export class FileMatchRepository
       this.matches = data.matches;
       this.nextId = data.next_id;
     } catch (err) {
-      console.error('Błąd wczytywania matches.json:', err);
+      console.error('Error reading matches.json:', err);
       // jeśli plik nie istnieje — inicjuj puste dane
       this.matches = [];
     }
@@ -66,7 +66,7 @@ export class FileMatchRepository
       await fs.writeFile(tmpPath, json, 'utf-8');
       await fs.rename(filePath, bakPath).catch(() => {});
       await fs.rename(tmpPath, filePath);
-      console.log('Zapisano match repo');
+      console.log('Saved match repo');
     }
   }
 

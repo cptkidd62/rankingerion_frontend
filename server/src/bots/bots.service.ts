@@ -49,10 +49,10 @@ export class BotsService {
   ): Promise<number> {
     const ext = this.getExtention(file.originalname);
     if (ext === '') {
-      throw new BotUploadException('Brak rozszerzenia pliku');
+      throw new BotUploadException('Missing file extention');
     }
     if (!this.validateExtention(ext)) {
-      throw new BotUploadException('Nieobsługiwane rozszerzenie pliku');
+      throw new BotUploadException('Unsupported file extention');
     }
     const id = await this.botRepo.create({
       id: 0,
@@ -141,7 +141,7 @@ export class BotsService {
         },
         (err) => {
           this.matchmakerService.removeFromCache(bot.id, id);
-          console.error('Błąd podczas create match:', err);
+          console.error('Error during create match:', err);
         },
       );
     }
@@ -255,7 +255,7 @@ export class BotsService {
         },
         (err) => {
           this.matchmakerService.removeFromCache(bot.id, id);
-          console.error('Błąd podczas create match:', err);
+          console.error('Error during create match:', err);
         },
       );
       await this.botRepo.updateById(bot.id, {
