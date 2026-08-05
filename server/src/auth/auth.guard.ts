@@ -24,13 +24,13 @@ export class AuthGuard implements CanActivate {
       const id = Number(payload.sub);
       const user = await this.userRepo.findById(id);
       if (!user) {
-        return false;
+        throw new UnauthorizedException();
       }
       request.user = user;
       return true;
     } catch (err) {
       console.log('błąd weryfikacji tokenu: ', err);
-      return false;
+      throw new UnauthorizedException();
     }
   }
 

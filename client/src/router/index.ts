@@ -8,11 +8,17 @@ const router = createRouter({
       path: '/',
       name: 'home',
       redirect: '/boty',
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/ranking',
       name: 'ranking',
       component: () => import('../views/RankingView.vue'),
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/boty',

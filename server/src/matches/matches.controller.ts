@@ -1,11 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { Match } from 'src/data/match.repository';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('matches')
 export class MatchesController {
   constructor(private matchesService: MatchesService) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query('userId') id?: number): Promise<Match[]> {
     return id
@@ -13,6 +15,7 @@ export class MatchesController {
       : this.matchesService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id1-:id2')
   async findById(
     @Param('id1') id1: number,

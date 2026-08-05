@@ -27,7 +27,7 @@ export class AuthService {
 
   generateToken(userId: number): string {
     return jwt.sign({ sub: userId }, process.env.JWT_SECRET ?? '', {
-      expiresIn: '1h',
+      expiresIn: '14d',
     });
   }
 }

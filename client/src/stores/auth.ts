@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import type { User } from "@/types/user";
 import { api } from "@/api";
+import router from "@/router";
 
 interface Credentials {
     username: string
@@ -32,11 +33,12 @@ export const useAuthStore = defineStore('auth', {
                 }
             }
         },
-        logout() {
+        async logout() {
             this.token = null
             this.user = null
             localStorage.removeItem('token')
             delete axios.defaults.headers.common['Authorization']
+            await router.replace('/signin')
         },
         async fetchUser() {
             if (!this.token) return;
@@ -47,7 +49,7 @@ export const useAuthStore = defineStore('auth', {
                 this.user = response.data;
             } catch (error) {
                 console.error('Nie udało się pobrać użytkownika, wylogowano', error);
-                this.logout(); // token nieprawidłowy / wygasł / użytkownik nie istnieje
+                await this.logout(); // token nieprawidłowy / wygasł / użytkownik nie istnieje
             }
         },
     }
