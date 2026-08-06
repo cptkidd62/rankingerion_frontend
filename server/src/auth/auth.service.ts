@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from 'src/data/user.repository';
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 
 export interface AuthUser {
   id: number;
@@ -17,7 +18,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username');
     }
 
-    const passwordsMatch = password == user.password;
+    const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) {
       throw new UnauthorizedException('Invalid password');
     }
