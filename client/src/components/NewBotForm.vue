@@ -9,6 +9,8 @@ const emit = defineEmits<{
 const name = ref('')
 const fileInput = ref<HTMLInputElement | null>()
 const file = ref<File | null>()
+const isDragging = ref(false);
+const dragCounter = ref(0);
 
 const errors = reactive({
     name: '',
@@ -50,18 +52,59 @@ const validateField = (field: string) => {
         errors.file = file.value != null ? '' : 'Choose file to send';
     }
 }
+
+document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+document.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    dragCounter.value++;
+    isDragging.value = true;
+});
+
+document.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dragCounter.value--;
+
+    if (dragCounter.value === 0) {
+        isDragging.value = false;
+    }
+});
+
+window.addEventListener('blur', (e) => {
+    dragCounter.value = 0;
+    isDragging.value = false;
+})
+
+document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const fileInput = document.getElementById('file') as HTMLInputElement;
+    if (fileInput && e.dataTransfer) {
+        fileInput.files = e.dataTransfer.files;
+        onFileChanged();
+    }
+    dragCounter.value = 0;
+    isDragging.value = false;
+});
 </script>
 
 <template>
     <div class="new-bot-form">
         <form @submit.prevent="handleSubmit">
-            <input class="text-input" :class="{error: errors.name != ''}" type="text" name="name" id="name" v-model="name" placeholder="Name" @blur="validateField('name')">
+            <input class="text-input" :class="{ error: errors.name != '' }" type="text" name="name" id="name"
+                v-model="name" placeholder="Name" @blur="validateField('name')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
             <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
                 @blur="validateField('file')" placeholder="Paste code here">
             <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
             <input class="button" type="submit" value="Create">
         </form>
+    </div>
+    <div v-if="isDragging" class="drop-overlay">
+        <div class="drop-message">
+            Drop file here
+        </div>
     </div>
 </template>
 
@@ -82,7 +125,9 @@ const validateField = (field: string) => {
     margin-top: 2em;
 }
 
-.new-bot-form input, select, textarea {
+.new-bot-form input,
+select,
+textarea {
     margin-bottom: 1em;
     margin-left: auto;
     margin-right: auto;
@@ -102,5 +147,28 @@ const validateField = (field: string) => {
 .new-bot-form textarea:focus {
     width: 100%;
     height: 70%;
+}
+
+.drop-overlay {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(4px);
+    background: rgba(var(--color-background), 0.99);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.drop-message {
+    padding: 2rem 3rem;
+    border: 2px dashed var(--color-text);
+    border-radius: 12px;
+    color: var(--color-text);
+    font-size: 2rem;
+    font-weight: bold;
 }
 </style>
