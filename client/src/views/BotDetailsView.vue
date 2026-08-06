@@ -47,12 +47,34 @@ onMounted(async () => {
         <h1>{{ bot.name }}</h1>
         <p>Language: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
-            <p>Rating: {{ bot.rating.value }}</p>
-            <p>Winrate: {{ Math.round(winRateOverall * 100) }}%</p>
-            <p>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Rating</th>
+                        <td>{{ bot.rating.value }}</td>
+                    </tr>
+                    <tr>
+                        <th>Winrate</th>
+                        <td>{{ Math.round(winRateOverall * 100) }}%</td>
+                    </tr>
+                    <tr>
+                        <th>W / D / L</th>
+                        <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</td>
+                    </tr>
+                </tbody>
+            </table>
             <div>
-                Scores:
-                <ResultListItem v-for="oppsummary in matches" :oppsummary="oppsummary" />
+                <h2>Scores:</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Opponent</th>
+                            <th>Wins / Draws / Losses</th>
+                            <th>Winrate</th>
+                        </tr>
+                        <ResultListItem v-for="oppsummary in matches" :oppsummary="oppsummary" />
+                    </tbody>
+                </table>
             </div>
         </div>
         <div v-else-if="bot.status.type == 'compilation_error'" class="error">Compilation error!</div>
@@ -62,5 +84,23 @@ onMounted(async () => {
 <style>
 .error {
     color: red;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+  border: 2px solid var(--color-border);
+}
+
+th, td {
+    padding: 0.5em;
+}
+
+th {
+    background-color: var(--color-border);
+    color: var(--color-text);
+    font-weight: bold;
 }
 </style>
