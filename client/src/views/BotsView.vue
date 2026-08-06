@@ -11,6 +11,7 @@ const auth = useAuthStore()
 const botsStore = useBotsStore()
 const isOpen = ref(false)
 const errorMsg = ref('')
+const showDeleted = ref(false)
 
 const onCreateBot = async (payload: { name: string, file: any }) => {
   try {
@@ -43,9 +44,14 @@ onMounted(() => { botsStore.fetchBots() });
 <template>
   <div class="bots">
     <h1>My bots</h1>
+    <span>
+      <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
+      <label for="showDeleted">Show deleted bots</label>
+    </span>
     <div v-if="botsStore.loading">Loading...</div>
     <div v-else>
-      <BotListItem v-for="bot in botsStore.myBots" :key="bot.id" :bot="bot" @delete="onDeleteBot" />
+      <BotListItem v-for="bot in botsStore.myBots" :key="bot.id" :bot="bot" :show-deleted="showDeleted"
+        @delete="onDeleteBot" />
       <details :open="isOpen">
         <summary @click.prevent="isOpen = !isOpen">Add bot</summary>
         <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />
@@ -65,5 +71,10 @@ onMounted(() => { botsStore.fetchBots() });
     width: 100%;
     height: 100%;
   }
+}
+
+#showDeleted {
+  margin-right: 0.5em;
+  margin-bottom: 2rem;
 }
 </style>
