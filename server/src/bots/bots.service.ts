@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { BotRepository, Bot } from 'src/data/bot.repository';
 import { MatchRepository } from 'src/data/match.repository';
@@ -54,11 +54,16 @@ export class BotsService {
     if (!this.validateExtention(ext)) {
       throw new BotUploadException('Unsupported file extention');
     }
+    const user = await this.userRepo.findById(user_id);
+    if (user === null) {
+      throw new BadRequestException('User not found');
+    }
     const id = await this.botRepo.create({
       id: 0,
       name: name,
       language: ext,
       user_id: user_id,
+      username: user.username,
       status: { type: 'created' },
       rating: initialRating,
     });
@@ -188,6 +193,7 @@ export class BotsService {
               name: player.name,
               language: player.language,
               user_id: player.user_id,
+              username: player.username,
               status: { type: 'compilation_error' },
               rating: player.rating,
             });
@@ -211,6 +217,7 @@ export class BotsService {
               name: player.name,
               language: player.language,
               user_id: player.user_id,
+              username: player.username,
               status: { type: 'playtime_error' },
               rating: player.rating,
             });
@@ -263,6 +270,7 @@ export class BotsService {
         name: bot.name,
         language: bot.language,
         user_id: bot.user_id,
+        username: bot.username,
         status: { type: 'ok' },
         rating: bot.rating,
       });
@@ -272,6 +280,7 @@ export class BotsService {
       name: this_bot.name,
       language: this_bot.language,
       user_id: this_bot.user_id,
+      username: this_bot.username,
       status: { type: 'ok' },
       rating: this_bot.rating,
     });
