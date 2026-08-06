@@ -71,7 +71,10 @@ export const useMatchesStore = defineStore('matches', () => {
       const opp = 1 - idx;
       const ido = match.bot_ids[opp];
       if (!summary.has(ido)) {
-        summary.set(ido, structuredClone(count));
+        const c = structuredClone(count);
+        c.botname = match.botnames[opp];
+        c.username = match.usernames[opp];
+        summary.set(ido, c);
       }
       switch (match.score[idx]) {
         case 1:

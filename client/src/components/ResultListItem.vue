@@ -12,7 +12,7 @@ const props = defineProps({
 
 <template>
   <tr class="result-list-item">
-    <td>vs {{ oppsummary[0] }}</td>
+    <td>{{ oppsummary[1].botname }}@{{ oppsummary[1].username }}</td>
     <td>{{ oppsummary[1].wins }} / {{ oppsummary[1].draws }} / {{ oppsummary[1].losses }}</td>
     <td>{{ Math.round(oppsummary[1].wins / (oppsummary[1].wins + oppsummary[1].draws + oppsummary[1].losses) * 100) }}%</td>
   </tr>

@@ -1,4 +1,6 @@
 export type OpponentSummary = {
+  botname: string;
+  username: string;
   wins: number;
   losses: number;
   draws: number;
