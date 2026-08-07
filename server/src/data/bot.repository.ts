@@ -1,19 +1,19 @@
 export type BotStatus =
   | {
-      type: 'created';
-    }
+    type: 'created';
+  }
   | {
-      type: 'compilation_error';
-    }
+    type: 'compilation_error';
+  }
   | {
-      type: 'playtime_error';
-    }
+    type: 'playtime_error';
+  }
   | {
-      type: 'ok';
-    }
+    type: 'ok';
+  }
   | {
-      type: 'deleted';
-    };
+    type: 'deleted';
+  };
 
 export type RatingData = {
   value: number;
@@ -42,6 +42,12 @@ export interface BotDTO {
   username: string;
   status: BotStatus;
   rating: RatingData;
+}
+
+export interface BotFileData {
+  filename: string;
+  mimeType: string;
+  contents: Buffer;
 }
 
 export abstract class BotRepository {

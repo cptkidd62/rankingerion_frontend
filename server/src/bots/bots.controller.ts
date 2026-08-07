@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -19,13 +20,14 @@ import { Match } from 'src/data/match.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthenticatedRequest } from 'src/auth/types';
+import { Response } from 'express';
 
 @Controller('bots')
 export class BotsController {
   constructor(
     private botsService: BotsService,
     private matchesService: MatchesService,
-  ) {}
+  ) { }
 
   @UseGuards(AuthGuard)
   @Get()
@@ -76,5 +78,17 @@ export class BotsController {
   ): Promise<void> {
     if (req.user?.id != id) throw new ForbiddenException();
     return this.botsService.deleteById(id);
+  }
+
+  @Get(':id/file')
+  async getFile(
+    @Param('id') id: number,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+  ): Promise<void> {
+    const botData = await this.botsService.getFile(id);
+    res.setHeader('Content-Type', botData.mimeType);
+    res.setHeader('Content-Disposition', `inline; filename=${botData.filename}`);
+    res.send(botData.contents);
   }
 }

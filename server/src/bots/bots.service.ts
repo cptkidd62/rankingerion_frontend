@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
-import { BotRepository, Bot, BotDTO } from 'src/data/bot.repository';
+import { BotRepository, Bot, BotDTO, BotFileData } from 'src/data/bot.repository';
 import { MatchRepository } from 'src/data/match.repository';
 import { UserRepository } from 'src/data/user.repository';
 import { promises as fs } from 'fs';
@@ -28,7 +28,7 @@ export class BotsService {
     private readonly ratingService: RatingService,
     private readonly appConfig: AppConfigService,
     private readonly matchmakerService: MatchmakerService,
-  ) {}
+  ) { }
 
   async findAll(): Promise<BotDTO[]> {
     return (await this.botRepo.findAll()).map((bot) => {
@@ -73,7 +73,7 @@ export class BotsService {
       );
     }
     const uuid = crypto.randomUUID();
-    const filePath = path.join(this.appConfig.config.botsDir, uuid + ext);
+    const filePath = this.makeBotFullPath(uuid + ext);
     await fs.writeFile(filePath, file.buffer, 'utf-8');
     const id = await this.botRepo.create({
       id: 0,
@@ -303,8 +303,28 @@ export class BotsService {
     });
   }
 
+  async getFile(botId: number): Promise<BotFileData> {
+    const bot = await this.botRepo.findById(botId);
+    if (bot == null) throw new BadRequestException('Bot ID invalid');
+    const contents = await fs.readFile(this.makeBotFullPath(this.botFile(bot)));
+    const mimeType =
+      {
+        '.cpp': 'text/plain',
+      }[bot.language] ?? 'application/octet-stream';
+    const filename = bot.name + bot.language;
+    return {
+      filename,
+      mimeType,
+      contents
+    };
+  }
+
   private botFile(bot: Bot): string {
     return bot.filename + bot.language;
+  }
+
+  private makeBotFullPath(filename: string): string {
+    return path.join(this.appConfig.config.botsDir, filename);
   }
 
   async deleteById(id: number): Promise<void> {
