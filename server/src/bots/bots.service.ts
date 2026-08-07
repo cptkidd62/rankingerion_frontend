@@ -58,6 +58,11 @@ export class BotsService {
     if (user === null) {
       throw new BadRequestException('User not found');
     }
+    if (!(await this.botNameUnique(name, user_id))) {
+      throw new BadRequestException(
+        'You already use this bot name (checks deleted too)',
+      );
+    }
     const id = await this.botRepo.create({
       id: 0,
       name: name,
@@ -300,5 +305,10 @@ export class BotsService {
 
   private validateExtention(extention: string): boolean {
     return this.acceptedExtentions.includes(extention);
+  }
+
+  private async botNameUnique(name: string, userId: number): Promise<boolean> {
+    const bots = await this.botRepo.filterByUserId(userId);
+    return bots.find((bot) => bot.name == name) == undefined;
   }
 }

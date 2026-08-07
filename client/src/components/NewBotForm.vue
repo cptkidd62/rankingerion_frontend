@@ -93,7 +93,7 @@ document.addEventListener('drop', (e) => {
     <div class="new-bot-form">
         <form @submit.prevent="handleSubmit">
             <input class="text-input" :class="{ error: errors.name != '' }" type="text" name="name" id="name"
-                v-model="name" placeholder="Name" @blur="validateField('name')">
+                v-model="name" placeholder="Name" @blur="validateField('name')" @input="emit('input-change')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
             <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
                 @blur="validateField('file')" placeholder="Paste code here">
