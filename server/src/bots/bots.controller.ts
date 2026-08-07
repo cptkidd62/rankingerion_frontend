@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -16,6 +18,7 @@ import { MatchesService } from 'src/matches/matches.service';
 import { Match } from 'src/data/match.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthenticatedRequest } from 'src/auth/types';
 
 @Controller('bots')
 export class BotsController {
@@ -57,15 +60,21 @@ export class BotsController {
       userId: number;
     },
     @UploadedFile() file: Express.Multer.File,
+    @Req() req: AuthenticatedRequest,
   ) {
     console.log(name, userId);
     console.log('file', file);
+    if (req.user?.id != userId) throw new ForbiddenException();
     return this.botsService.createWithMatches(name, file, userId);
   }
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  async deleteById(@Param('id') id: number): Promise<void> {
+  async deleteById(
+    @Param('id') id: number,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<void> {
+    if (req.user?.id != id) throw new ForbiddenException();
     return this.botsService.deleteById(id);
   }
 }
