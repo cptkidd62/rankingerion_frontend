@@ -12,6 +12,7 @@ export const useBotsStore = defineStore('bots', () => {
   const initialized = ref(false)
 
   const botsSorted = computed(() => [...bots.value].filter((bot) => bot.status.type != 'deleted').sort((a, b) => b.rating.value - a.rating.value))
+  const botsSortedAll = computed(() => [...bots.value].sort((a, b) => b.rating.value - a.rating.value))
   const myBots = computed(() => [...bots.value].filter((bot) => bot.user_id == auth.user?.id))
 
   async function fetchBots() {
@@ -44,6 +45,7 @@ export const useBotsStore = defineStore('bots', () => {
   return {
     bots,
     botsSorted,
+    botsSortedAll,
     myBots,
     fetchBots,
     loading,
