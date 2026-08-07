@@ -58,7 +58,7 @@ onMounted(async () => {
         <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
         <p>Language: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
-            <button @click="openBotFile()">Show code</button>
+            <button v-if="bot.user_id == useAuthStore().user?.id" @click="openBotFile()">Show code</button>
             <table>
                 <tbody>
                     <tr>
