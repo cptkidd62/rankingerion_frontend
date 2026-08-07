@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { api } from '@/api';
 import ResultListItem from '@/components/ResultListItem.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
@@ -39,6 +40,13 @@ const winRateOverall = computed(() => {
     return scoreCountOverall.value.wins / (scoreCountOverall.value.wins + scoreCountOverall.value.draws + scoreCountOverall.value.losses)
 })
 
+async function openBotFile() {
+  const response = await api.bots.getFile(bot.value!.id);
+  const url = URL.createObjectURL(response.data);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 onMounted(async () => {
     await botsStore.ensureInitialized()
     await matchesStore.ensureInitialized()
@@ -50,6 +58,7 @@ onMounted(async () => {
         <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
         <p>Language: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
+            <button @click="openBotFile()">Show code</button>
             <table>
                 <tbody>
                     <tr>

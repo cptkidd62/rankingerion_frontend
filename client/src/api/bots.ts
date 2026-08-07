@@ -18,5 +18,11 @@ export const botsApi = {
   async fetch() {
     const response = await axios.get(API_URL)
     return response
+  },
+  async getFile(id: number) {
+    const response = await axios.get(`${API_URL}/${id}/file`, {
+      responseType: 'blob',
+    })
+    return response
   }
 }
