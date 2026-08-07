@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ResultListItem from '@/components/ResultListItem.vue';
+import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
 import { useMatchesStore } from '@/stores/matches';
 import type { Bot } from '@/types/bot';
@@ -46,7 +47,7 @@ onMounted(async () => {
 
 <template>
     <div v-if="bot">
-        <h1>{{ bot.name }}</h1>
+        <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
         <p>Language: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
             <table>
