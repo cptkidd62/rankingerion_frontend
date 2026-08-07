@@ -92,25 +92,4 @@ onMounted(async () => {
 .error {
     color: red;
 }
-
-table {
-    border-collapse: collapse;
-}
-
-table,
-th,
-td {
-    border: 2px solid var(--color-border);
-}
-
-th,
-td {
-    padding: 0.5em;
-}
-
-th {
-    background-color: var(--color-border);
-    color: var(--color-text);
-    font-weight: bold;
-}
 </style>

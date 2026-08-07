@@ -20,10 +20,20 @@ onMounted(() => { botsStore.fetchBots() });
         <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
         <label for="showDeleted">Show deleted bots</label>
       </span>
-      <div v-for="(bot, i) in (showDeleted ? botsStore.botsSortedAll : botsStore.botsSorted)">
-        <h3 :class="{ own: bot.user_id == auth.user?.id }">{{ i + 1 }} | {{ bot.name }}@{{ bot.username }} | {{
-          bot.rating.value }}</h3>
-      </div>
+      <table>
+        <tbody>
+          <tr>
+            <th>#</th>
+            <th>Bot</th>
+            <th>Rating</th>
+          </tr>
+          <tr v-for="(bot, i) in (showDeleted ? botsStore.botsSortedAll : botsStore.botsSorted)" :class="{ own: bot.user_id == auth.user?.id }">
+            <td>{{ i + 1 }}</td>
+            <td>{{ bot.name }}@{{ bot.username }}</td>
+            <td>{{ bot.rating.value }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -39,7 +49,8 @@ onMounted(() => { botsStore.fetchBots() });
 }
 
 .own {
-  color:coral
+  background-color: var(--color-text);
+  color: var(--color-background);
 }
 
 #showDeleted {
