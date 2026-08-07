@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -80,12 +81,16 @@ export class BotsController {
     return this.botsService.deleteById(id);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id/file')
   async getFile(
     @Param('id') id: number,
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
   ): Promise<void> {
+    const bot = await this.botsService.findById(id);
+    if (bot == null) throw new BadRequestException('Bot ID invalid');
+    if (req.user?.id != bot.user_id) throw new ForbiddenException();
     const botData = await this.botsService.getFile(id);
     res.setHeader('Content-Type', botData.mimeType);
     res.setHeader('Content-Disposition', `inline; filename=${botData.filename}`);
