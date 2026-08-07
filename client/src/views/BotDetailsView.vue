@@ -3,7 +3,7 @@ import ResultListItem from '@/components/ResultListItem.vue';
 import { useBotsStore } from '@/stores/bots';
 import { useMatchesStore } from '@/stores/matches';
 import type { Bot } from '@/types/bot';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
@@ -13,6 +13,8 @@ const matchesStore = useMatchesStore()
 const props = defineProps({
     botId: Number
 })
+
+const showDeleted = ref(false)
 
 const bot = computed(() => botsStore.bots.find((b) => b.id === Number(route.params.id)))
 const matches = computed(() => matchesStore.getSummaryForBot(Number(route.params.id)))
@@ -25,9 +27,9 @@ function botOk(bot: Bot): boolean {
 const scoreCountOverall = computed(() => {
     let count = { wins: 0, draws: 0, losses: 0 }
     for (var [_, summary] of matches.value) {
-        count.wins += summary.wins;
-        count.losses += summary.losses;
-        count.draws += summary.draws;
+        count.wins += summary[0].wins;
+        count.losses += summary[0].losses;
+        count.draws += summary[0].draws;
     }
     return count
 })
@@ -59,12 +61,17 @@ onMounted(async () => {
                     </tr>
                     <tr>
                         <th>W / D / L</th>
-                        <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses }}</td>
+                        <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses
+                            }}</td>
                     </tr>
                 </tbody>
             </table>
             <div>
                 <h2>Scores:</h2>
+                <span>
+                    <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
+                    <label for="showDeleted">Show deleted bots</label>
+                </span>
                 <table>
                     <tbody>
                         <tr>
@@ -72,7 +79,7 @@ onMounted(async () => {
                             <th>Wins / Draws / Losses</th>
                             <th>Winrate</th>
                         </tr>
-                        <ResultListItem v-for="oppsummary in matches" :oppsummary="oppsummary" />
+                        <ResultListItem v-for="oppsummary in matches" :oppsummary="oppsummary" :show-deleted="showDeleted" />
                     </tbody>
                 </table>
             </div>
@@ -90,11 +97,14 @@ table {
     border-collapse: collapse;
 }
 
-table, th, td {
-  border: 2px solid var(--color-border);
+table,
+th,
+td {
+    border: 2px solid var(--color-border);
 }
 
-th, td {
+th,
+td {
     padding: 0.5em;
 }
 

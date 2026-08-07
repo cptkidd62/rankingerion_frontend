@@ -6,4 +6,4 @@ export type OpponentSummary = {
   draws: number;
 }
 
-export type Summary = Map<number, OpponentSummary>
+export type Summary = Map<number, [OpponentSummary, boolean]>

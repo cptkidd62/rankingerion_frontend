@@ -4,8 +4,10 @@ import { useAuthStore } from "./auth";
 import { computed, ref } from "vue";
 import { api } from "@/api";
 import type { OpponentSummary, Summary } from "@/types/stats";
+import { useBotsStore } from "./bots";
 
 const auth = useAuthStore();
+const bots = useBotsStore();
 
 export type MatchesGroup = {
   botName: string;
@@ -63,8 +65,12 @@ export const useMatchesStore = defineStore('matches', () => {
   )
 
   function getSummaryForBot(botId: number): Summary {
-    const summary = new Map<number, OpponentSummary>();
-    const count: OpponentSummary = { wins: 0, draws: 0, losses: 0 };
+    const summary = new Map<number, [OpponentSummary, boolean]>();
+    const count: OpponentSummary = {
+      wins: 0, draws: 0, losses: 0,
+      botname: "",
+      username: ""
+    };
     for (var match of matches.value) {
       const idx = match.bot_ids.indexOf(botId);
       if (idx < 0) continue;
@@ -74,17 +80,17 @@ export const useMatchesStore = defineStore('matches', () => {
         const c = structuredClone(count);
         c.botname = match.botnames[opp];
         c.username = match.usernames[opp];
-        summary.set(ido, c);
+        summary.set(ido, [c, bots.bots[ido].status.type === 'deleted']);
       }
       switch (match.score[idx]) {
         case 1:
-          summary.get(ido)!.wins++;
+          summary.get(ido)![0].wins++;
           break;
         case 0:
-          summary.get(ido)!.draws++;
+          summary.get(ido)![0].draws++;
           break;
         case -1:
-          summary.get(ido)!.losses++;
+          summary.get(ido)![0].losses++;
           break;
 
         default:
