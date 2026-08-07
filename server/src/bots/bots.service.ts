@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
-import { BotRepository, Bot } from 'src/data/bot.repository';
+import { BotRepository, Bot, BotDTO } from 'src/data/bot.repository';
 import { MatchRepository } from 'src/data/match.repository';
 import { UserRepository } from 'src/data/user.repository';
 import { promises as fs } from 'fs';
@@ -30,16 +30,25 @@ export class BotsService {
     private readonly matchmakerService: MatchmakerService,
   ) {}
 
-  async findAll(): Promise<Bot[]> {
-    return this.botRepo.findAll();
+  async findAll(): Promise<BotDTO[]> {
+    return (await this.botRepo.findAll()).map((bot) => {
+      const { filename: _, ...dto } = bot;
+      return dto;
+    });
   }
 
-  async findById(id: number): Promise<Bot | null> {
-    return this.botRepo.findById(id);
+  async findById(id: number): Promise<BotDTO | null> {
+    const bot = await this.botRepo.findById(id);
+    if (bot == null) return null;
+    const { filename: _, ...dto } = bot;
+    return dto;
   }
 
-  async filterByUserId(id: number): Promise<Bot[]> {
-    return this.botRepo.filterByUserId(id);
+  async filterByUserId(id: number): Promise<BotDTO[]> {
+    return (await this.botRepo.filterByUserId(id)).map((bot) => {
+      const { filename: _, ...dto } = bot;
+      return dto;
+    });
   }
 
   async create(
@@ -63,20 +72,19 @@ export class BotsService {
         'You already use this bot name (checks deleted too)',
       );
     }
+    const uuid = crypto.randomUUID();
+    const filePath = path.join(this.appConfig.config.botsDir, uuid + ext);
+    await fs.writeFile(filePath, file.buffer, 'utf-8');
     const id = await this.botRepo.create({
       id: 0,
       name: name,
       language: ext,
       user_id: user_id,
       username: user.username,
+      filename: uuid,
       status: { type: 'created' },
       rating: initialRating,
     });
-    const filePath = path.join(
-      this.appConfig.config.botsDir,
-      id + this.appConfig.config.botName + ext,
-    );
-    await fs.writeFile(filePath, file.buffer, 'utf-8');
     return id;
   }
 
@@ -199,6 +207,7 @@ export class BotsService {
               language: player.language,
               user_id: player.user_id,
               username: player.username,
+              filename: player.filename,
               status: { type: 'compilation_error' },
               rating: player.rating,
             });
@@ -223,6 +232,7 @@ export class BotsService {
               language: player.language,
               user_id: player.user_id,
               username: player.username,
+              filename: player.filename,
               status: { type: 'playtime_error' },
               rating: player.rating,
             });
@@ -276,6 +286,7 @@ export class BotsService {
         language: bot.language,
         user_id: bot.user_id,
         username: bot.username,
+        filename: bot.filename,
         status: { type: 'ok' },
         rating: bot.rating,
       });
@@ -286,13 +297,14 @@ export class BotsService {
       language: this_bot.language,
       user_id: this_bot.user_id,
       username: this_bot.username,
+      filename: this_bot.filename,
       status: { type: 'ok' },
       rating: this_bot.rating,
     });
   }
 
   private botFile(bot: Bot): string {
-    return String(bot.id) + this.appConfig.config.botName + bot.language;
+    return bot.filename + bot.language;
   }
 
   async deleteById(id: number): Promise<void> {

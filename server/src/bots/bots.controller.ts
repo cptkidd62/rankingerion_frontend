@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { BotsService } from './bots.service';
-import { Bot } from 'src/data/bot.repository';
+import { BotDTO } from 'src/data/bot.repository';
 import { MatchesService } from 'src/matches/matches.service';
 import { Match } from 'src/data/match.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -29,7 +29,7 @@ export class BotsController {
 
   @UseGuards(AuthGuard)
   @Get()
-  async findAll(@Query('userId') id?: number): Promise<Bot[]> {
+  async findAll(@Query('userId') id?: number): Promise<BotDTO[]> {
     return id
       ? this.botsService.filterByUserId(id)
       : this.botsService.findAll();
@@ -37,7 +37,7 @@ export class BotsController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  async findById(@Param('id') id: number): Promise<Bot | null> {
+  async findById(@Param('id') id: number): Promise<BotDTO | null> {
     return this.botsService.findById(id);
   }
 

@@ -29,6 +29,17 @@ export interface Bot {
   language: string;
   user_id: number;
   username: string;
+  filename: string;
+  status: BotStatus;
+  rating: RatingData;
+}
+
+export interface BotDTO {
+  id: number;
+  name: string;
+  language: string;
+  user_id: number;
+  username: string;
   status: BotStatus;
   rating: RatingData;
 }
