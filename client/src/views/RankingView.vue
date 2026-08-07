@@ -27,10 +27,23 @@ onMounted(() => { botsStore.fetchBots() });
             <th>Bot</th>
             <th>Rating</th>
           </tr>
-          <tr v-for="(bot, i) in (showDeleted ? botsStore.botsSortedAll : botsStore.botsSorted)" :class="{ own: bot.user_id == auth.user?.id }">
-            <td>{{ i + 1 }}</td>
-            <td>{{ bot.name }}@{{ bot.username }}</td>
-            <td>{{ bot.rating.value }}</td>
+          <tr v-for="(bot, i) in (showDeleted ? botsStore.botsSortedAll : botsStore.botsSorted)"
+            :class="{ own: bot.user_id == auth.user?.id }" class="ranking-row">
+            <td>
+              <RouterLink class="table-link" :to="`/bots/${bot.id}`">
+                {{ i + 1 }}
+              </RouterLink>
+            </td>
+            <td>
+              <RouterLink class="table-link" :to="`/bots/${bot.id}`">
+                {{ bot.name }}@{{ bot.username }}
+              </RouterLink>
+            </td>
+            <td>
+              <RouterLink class="table-link" :to="`/bots/${bot.id}`">
+                {{ bot.rating.value }}
+              </RouterLink>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -56,5 +69,31 @@ onMounted(() => { botsStore.fetchBots() });
 #showDeleted {
   margin-right: 0.5em;
   margin-bottom: 1rem;
+}
+
+a.table-link {
+  color: inherit;
+  background-color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+a.table-link:hover {
+  color: inherit;
+  background-color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+tr.ranking-row:hover {
+  color: var(--color-header)
 }
 </style>
