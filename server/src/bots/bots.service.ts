@@ -18,7 +18,6 @@ import { MatchmakerService } from 'src/matchmaker/matchmaker.service';
 
 @Injectable()
 export class BotsService {
-  private acceptedExtentions: string[] = ['.cpp', '.exe'];
 
   constructor(
     private readonly botRepo: BotRepository,
@@ -56,6 +55,9 @@ export class BotsService {
     file: Express.Multer.File,
     user_id: number,
   ): Promise<number> {
+    if ((await this.botRepo.filterByUserId(user_id)).filter((bot) => bot.status.type != 'deleted').length >= this.appConfig.config.maxBotsPerUser) {
+      throw new BadRequestException('Reached max active bot number, delete any bot first');
+    }
     const ext = this.getExtention(file.originalname);
     if (ext === '') {
       throw new BotUploadException('Missing file extention');
@@ -336,7 +338,7 @@ export class BotsService {
   }
 
   private validateExtention(extention: string): boolean {
-    return this.acceptedExtentions.includes(extention);
+    return this.appConfig.config.acceptedExtentions.includes(extention);
   }
 
   private async botNameUnique(name: string, userId: number): Promise<boolean> {

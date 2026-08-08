@@ -77,7 +77,8 @@ export class BotsController {
     @Param('id') id: number,
     @Req() req: AuthenticatedRequest,
   ): Promise<void> {
-    if (req.user?.id != id) throw new ForbiddenException();
+    const bot = await this.botsService.findById(id);
+    if (req.user?.id != bot?.user_id) throw new ForbiddenException();
     return this.botsService.deleteById(id);
   }
 
