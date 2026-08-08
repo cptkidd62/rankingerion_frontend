@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { AppConfigService } from 'src/config/appconfig.service';
 import { Bot, BotRepository, RatingData } from 'src/data/bot.repository';
 
 interface PendingData {
@@ -18,11 +19,7 @@ export class MatchmakerService implements OnModuleInit {
   bots: Bot[];
   pendingCache: Map<number, PendingData>;
 
-  private readonly noise: number = 25;
-  private readonly MATCHES = 100;
-  private readonly MATCHES_PER_OPPONENT = 10;
-
-  constructor(private readonly botRepository: BotRepository) {
+  constructor(private readonly botRepository: BotRepository, private readonly appConfig: AppConfigService) {
     this.pendingCache = new Map();
   }
 
@@ -34,7 +31,7 @@ export class MatchmakerService implements OnModuleInit {
   }
 
   private randomNoise(): number {
-    return (Math.random() * 2 - 1) * this.noise;
+    return (Math.random() * 2 - 1) * this.appConfig.config.noise;
   }
 
   private scoreOpponent1 = (rating_opp: RatingData, rating_own: RatingData) => {
@@ -65,7 +62,7 @@ export class MatchmakerService implements OnModuleInit {
     }
     const matches =
       this.pendingCache.get(id)!.matches + this.bots[id].rating.matchesPlayed;
-    if (matches >= this.MATCHES) {
+    if (matches >= this.appConfig.config.matchesToPlay) {
       console.log('saturated', matches);
       return null;
     }
@@ -120,7 +117,7 @@ export class MatchmakerService implements OnModuleInit {
       bots[id1].user_id != bots[id2].user_id && //don't allow own bots
       (bots[id1].status.type == 'created' || bots[id1].status.type == 'ok') &&
       (bots[id2].status.type == 'created' || bots[id2].status.type == 'ok') &&
-      played < this.MATCHES_PER_OPPONENT // check if not max with this opponent
+      played < this.appConfig.config.maxMatchesPerOpponent // check if not max with this opponent
     );
   }
 

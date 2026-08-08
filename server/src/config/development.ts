@@ -7,16 +7,19 @@ const DevConfig = {
   dataDir: './mock_data',
   botsDir: './mock_data/bots',
   autoSave: true,
+  acceptedExtentions: ['.cpp', '.exe'],
+  matchesToPlay: 100,
+  maxMatchesPerOpponent: 10,
+  maxBotsPerUser: 10,
+  noise: 25
 };
 
 export const BenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
   useBenchmarker: true,
-  botName: '_singlescore1',
 };
 
 export const NoBenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
   useBenchmarker: false,
-  botName: '_singlescore1',
 };

@@ -8,5 +8,9 @@ export const DataTestConfig: AppConfig = {
   botsDir: './mock_data/tests/bots',
   autoSave: true,
   useBenchmarker: false,
-  botName: '_test',
+  acceptedExtentions: ['.cpp', '.exe'],
+  matchesToPlay: 0,
+  maxMatchesPerOpponent: 0,
+  maxBotsPerUser: 0,
+  noise: 25
 };

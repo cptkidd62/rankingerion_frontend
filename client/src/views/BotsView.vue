@@ -6,9 +6,11 @@ import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
 import { api } from '@/api/index.ts';
+import { useConfigStore } from '@/stores/config.ts';
 
 const auth = useAuthStore()
 const botsStore = useBotsStore()
+const configStore = useConfigStore()
 const isOpen = ref(false)
 const errorMsg = ref('')
 const showDeleted = ref(false)
@@ -43,7 +45,7 @@ onMounted(() => { botsStore.fetchBots() });
 
 <template>
   <div class="bots">
-    <h1>My bots</h1>
+    <h1>My bots ({{ botsStore.myBots.filter((bot) => bot.status.type != 'deleted').length }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
     <span>
       <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
       <label for="showDeleted">Show deleted bots</label>

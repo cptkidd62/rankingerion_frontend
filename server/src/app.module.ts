@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BenchmarkerModule } from './benchmarker/benchmarker.module';
 import { AppConfigService } from './config/appconfig.service';
 import { MatchmakerService } from './matchmaker/matchmaker.service';
+import { AppConfigController } from './config/appconfig.controller';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MatchmakerService } from './matchmaker/matchmaker.service';
     BotsController,
     UsersController,
     AuthController,
+    AppConfigController,
   ],
   providers: [
     AppService,

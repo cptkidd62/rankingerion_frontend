@@ -4,9 +4,22 @@ export type AppConfig = {
   matchesFile: string;
   dataDir: string;
   botsDir: string;
-  botName: string;
 
   useBenchmarker: boolean;
 
   autoSave: boolean;
+
+  // matchmaking
+  acceptedExtentions: string[];
+  matchesToPlay: number;
+  maxMatchesPerOpponent: number;
+  noise: number;
+
+  // bots
+  maxBotsPerUser: number;
 };
+
+export type PublicConfig = {
+  matchesToPlay: number;
+  maxBotsPerUser: number;
+}
