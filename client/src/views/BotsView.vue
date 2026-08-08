@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import BotListItem from '../components/BotListItem.vue';
 import NewBotForm from '@/components/NewBotForm.vue';
 import axios from 'axios';
@@ -43,13 +43,25 @@ const onDeleteBot = async (id: number) => {
   }
 }
 
-onMounted(() => {
-  botsStore.ensureInitialized();
+function setPollingInterval() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  const interval = botsStore.hasBotsInProgress ? 2000 : 15000;
+
   intervalId = setInterval(() => {
     botsStore.fetchBots();
     console.log('fetch bots');
-  }, 15000)
+  }, interval);
+}
+
+onMounted(async () => {
+  await botsStore.ensureInitialized();
+  setPollingInterval();
 });
+
+watch(() => botsStore.hasBotsInProgress, () => { setPollingInterval(); });
 
 onUnmounted(() => {
   clearInterval(intervalId);

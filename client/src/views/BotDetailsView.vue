@@ -6,7 +6,7 @@ import { useBotsStore } from '@/stores/bots';
 import { useMatchesStore } from '@/stores/matches';
 import type { Bot } from '@/types/bot';
 import axios from 'axios';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
@@ -74,15 +74,27 @@ function toggleEditName() {
 
 let intervalId: ReturnType<typeof setInterval>
 
-onMounted(() => {
-  botsStore.ensureInitialized();
-  matchesStore.ensureInitialized();
+function setPollingInterval() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  const interval = botsStore.hasBotsInProgress ? 2000 : 15000;
+
   intervalId = setInterval(() => {
     botsStore.fetchBots();
     matchesStore.fetchMatches();
     console.log('fetch bots & matches');
-  }, 15000)
+  }, interval);
+}
+
+onMounted(async () => {
+  await botsStore.ensureInitialized();
+  await matchesStore.ensureInitialized();
+  setPollingInterval();
 });
+
+watch(() => botsStore.hasBotsInProgress, () => { setPollingInterval(); });
 
 onUnmounted(() => {
   clearInterval(intervalId);

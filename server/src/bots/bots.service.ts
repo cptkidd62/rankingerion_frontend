@@ -84,7 +84,7 @@ export class BotsService {
       user_id: user_id,
       username: user.username,
       filename: uuid,
-      status: { type: 'created' },
+      status: { type: 'created', progress: 'in_progress' },
       rating: initialRating,
     });
     return id;
@@ -210,7 +210,7 @@ export class BotsService {
               user_id: player.user_id,
               username: player.username,
               filename: player.filename,
-              status: { type: 'compilation_error' },
+              status: { type: 'compilation_error', progress: 'failed' },
               rating: player.rating,
             });
             if (player.id === this_bot.id) {
@@ -235,7 +235,7 @@ export class BotsService {
               user_id: player.user_id,
               username: player.username,
               filename: player.filename,
-              status: { type: 'playtime_error' },
+              status: { type: 'playtime_error', progress: 'failed' },
               rating: player.rating,
             });
             if (player.id === this_bot.id) {
@@ -289,7 +289,7 @@ export class BotsService {
         user_id: bot.user_id,
         username: bot.username,
         filename: bot.filename,
-        status: { type: 'ok' },
+        status: { type: 'ok', progress: bot.status.progress },
         rating: bot.rating,
       });
     }
@@ -300,7 +300,7 @@ export class BotsService {
       user_id: this_bot.user_id,
       username: this_bot.username,
       filename: this_bot.filename,
-      status: { type: 'ok' },
+      status: { type: 'ok', progress: (this_bot.rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
       rating: this_bot.rating,
     });
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
 
@@ -10,13 +10,25 @@ const showDeleted = ref(false)
 
 let intervalId: ReturnType<typeof setInterval>
 
-onMounted(() => {
-  botsStore.ensureInitialized();
+function setPollingInterval() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  const interval = botsStore.hasBotsInProgress ? 2000 : 15000;
+
   intervalId = setInterval(() => {
     botsStore.fetchBots();
     console.log('fetch bots');
-  }, 15000)
+  }, interval);
+}
+
+onMounted(async () => {
+  await botsStore.ensureInitialized();
+  setPollingInterval();
 });
+
+watch(() => botsStore.hasBotsInProgress, () => { setPollingInterval(); });
 
 onUnmounted(() => {
   clearInterval(intervalId);
