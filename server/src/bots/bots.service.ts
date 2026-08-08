@@ -333,6 +333,16 @@ export class BotsService {
     return this.botRepo.deleteById(id);
   }
 
+  async updateNameById(id: number, name: string, userId: number): Promise<void> {
+    if (!(await this.botNameUnique(name, userId))) {
+      throw new BadRequestException('Name already used');
+    }
+    if (name == '') {
+      throw new BadRequestException('Name cannot be empty');
+    }
+    return this.botRepo.updateNameById(id, name);
+  }
+
   private getExtention(filepath: string): string {
     return path.extname(filepath);
   }

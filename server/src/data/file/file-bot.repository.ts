@@ -128,6 +128,16 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     this.mutex.release();
   }
 
+  async updateNameById(id: number, name: string): Promise<void> {
+    await this.mutex.acquire();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0) {
+      this.bots[idx].name = name;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
+
   async updateRatingById(id: number, rating: RatingData): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);

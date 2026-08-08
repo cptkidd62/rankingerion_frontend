@@ -24,5 +24,9 @@ export const botsApi = {
       responseType: 'blob',
     })
     return response
+  },
+  async updateName(id: number, name: string) {
+    const response = await axios.patch(`${API_URL}/${id}`, { name })
+    return response
   }
 }

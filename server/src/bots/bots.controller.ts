@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -80,6 +81,18 @@ export class BotsController {
     const bot = await this.botsService.findById(id);
     if (req.user?.id != bot?.user_id) throw new ForbiddenException();
     return this.botsService.deleteById(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch(':id')
+  async updateById(
+    @Param('id') id: number,
+    @Req() req: AuthenticatedRequest,
+    @Body() { name }: { name: string },
+  ) {
+    const bot = await this.botsService.findById(id);
+    if (req.user?.id != bot?.user_id) throw new ForbiddenException();
+    return this.botsService.updateNameById(id, name, bot!.user_id);
   }
 
   @UseGuards(AuthGuard)
