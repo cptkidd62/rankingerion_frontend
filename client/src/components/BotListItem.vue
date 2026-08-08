@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
 import type { Bot } from '@/types/bot';
+import { useConfigStore } from '@/stores/config';
 
 const props = defineProps({
   bot: {
@@ -25,7 +26,7 @@ function handleDelete(id: number) {
 <template>
   <div v-if="showDeleted || bot.status.type !== 'deleted'" class="bot-list-item">
     <RouterLink :to="`/bots/${bot.id}`">
-      <h3 class="name">{{ bot.name }} {{ bot.status.type === 'deleted' ? '(deleted)' : '' }}</h3>
+      <h3 class="name">{{ bot.name }}{{ bot.status.progress == 'in_progress' ? ` (In progress: ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : ''}} {{ bot.status.type === 'deleted' ? '(deleted)' : '' }}</h3>
       <div v-if="bot.status.type === 'compilation_error'" class="error">Compilation error!</div>
       <div v-else-if="bot.status.type === 'playtime_error'" class="error">Playtime error!</div>
       <div v-else>Rating: {{ bot.rating.value }}</div>

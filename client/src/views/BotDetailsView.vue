@@ -3,6 +3,7 @@ import { api } from '@/api';
 import ResultListItem from '@/components/ResultListItem.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
+import { useConfigStore } from '@/stores/config';
 import { useMatchesStore } from '@/stores/matches';
 import type { Bot } from '@/types/bot';
 import axios from 'axios';
@@ -103,7 +104,7 @@ onUnmounted(() => {
 
 <template>
     <div v-if="bot">
-        <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
+        <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}{{ bot.status.progress == 'in_progress' ? ` (In progress: ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : ''}}</h1>
         <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="toggleEditName()">{{ editingName ? 'Cancel' : 'Edit name'}}</button>
         <span v-if="bot.user_id == useAuthStore().user?.id && editingName">
             <input class="text-input edit" type="text" name="editname" id="editname" placeholder="New bot name" v-model="newName">
