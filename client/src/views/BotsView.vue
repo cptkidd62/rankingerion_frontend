@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import BotListItem from '../components/BotListItem.vue';
 import NewBotForm from '@/components/NewBotForm.vue';
 import axios from 'axios';
@@ -14,6 +14,7 @@ const configStore = useConfigStore()
 const isOpen = ref(false)
 const errorMsg = ref('')
 const showDeleted = ref(false)
+let intervalId: ReturnType<typeof setInterval>
 
 const botscount = computed(() => botsStore.myBots.filter((bot) => bot.status.type != 'deleted').length)
 
@@ -42,7 +43,17 @@ const onDeleteBot = async (id: number) => {
   }
 }
 
-onMounted(() => { botsStore.fetchBots() });
+onMounted(() => {
+  botsStore.ensureInitialized();
+  intervalId = setInterval(() => {
+    botsStore.fetchBots();
+    console.log('fetch bots');
+  }, 15000)
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId);
+})
 </script>
 
 <template>
@@ -52,7 +63,7 @@ onMounted(() => { botsStore.fetchBots() });
       <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
       <label for="showDeleted">Show deleted bots</label>
     </span>
-    <div v-if="botsStore.loading">Loading...</div>
+    <div v-if="botsStore.loading && !botsStore.initialized">Loading...</div>
     <div v-else>
       <BotListItem v-for="bot in botsStore.myBots" :key="bot.id" :bot="bot" :show-deleted="showDeleted"
         @delete="onDeleteBot" />

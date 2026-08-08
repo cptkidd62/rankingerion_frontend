@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
 
@@ -8,7 +8,19 @@ const botsStore = useBotsStore()
 
 const showDeleted = ref(false)
 
-onMounted(() => { botsStore.fetchBots() });
+let intervalId: ReturnType<typeof setInterval>
+
+onMounted(() => {
+  botsStore.ensureInitialized();
+  intervalId = setInterval(() => {
+    botsStore.fetchBots();
+    console.log('fetch bots');
+  }, 15000)
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId);
+})
 </script>
 
 <template>
