@@ -13,6 +13,7 @@ interface UserFileData {
 export class FileUserRepository extends UserRepository implements OnModuleInit {
   private users: User[] = [];
   private nextId = 0;
+  private dirty: boolean = false;
 
   constructor(private readonly appConfig: AppConfigService) {
     super();
@@ -37,6 +38,37 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
       // jeśli plik nie istnieje — inicjuj puste dane
       this.users = [];
       this.nextId = 0;
+    }
+  }
+
+  async saveData() {
+    const data: UserFileData = {
+      next_id: this.nextId,
+      users: this.users,
+    };
+    if (this.dirty) {
+      const json = JSON.stringify(
+        data,
+        (_, value: unknown) => {
+          if (value instanceof Map) {
+            return [...value];
+          }
+          return value;
+        },
+        2,
+      );
+      this.dirty = false;
+
+      const dataDir = this.appConfig.config.dataDir;
+      const fileName = this.appConfig.config.usersFile;
+      const filePath = path.join(dataDir, fileName);
+      const tmpPath = filePath + '.tmp';
+      const bakPath = filePath + '.bak';
+
+      await fs.writeFile(tmpPath, json, 'utf-8');
+      await fs.rename(filePath, bakPath).catch(() => { });
+      await fs.rename(tmpPath, filePath);
+      console.log('Saved user repo');
     }
   }
 
@@ -68,5 +100,10 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
   async deleteById(id: number): Promise<void> {
     await Promise.resolve();
     this.users = this.users.filter((user) => user.id != id);
+  }
+
+  async updatePassword(id: number, password: string): Promise<void> {
+    this.users[id].password = password;
+    this.dirty = true;
   }
 }

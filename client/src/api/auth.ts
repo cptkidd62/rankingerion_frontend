@@ -15,5 +15,9 @@ export const authApi = {
   async me() {
     const response = await axios.get(`${API_URL}/me`);
     return response
+  },
+  async password(password: string) {
+    const response = await axios.patch(`${API_URL}/me/password`, { password });
+    return response
   }
 }

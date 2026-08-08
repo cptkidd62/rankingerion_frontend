@@ -10,4 +10,5 @@ export abstract class UserRepository {
   abstract findByUsername(username: string): Promise<User | null>;
   abstract create(user: User): Promise<User | null>;
   abstract deleteById(id: number): Promise<void>;
+  abstract updatePassword(id: number, password: string): Promise<void>;
 }
