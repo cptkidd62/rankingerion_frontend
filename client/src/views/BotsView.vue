@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import BotListItem from '../components/BotListItem.vue';
 import NewBotForm from '@/components/NewBotForm.vue';
 import axios from 'axios';
@@ -14,6 +14,8 @@ const configStore = useConfigStore()
 const isOpen = ref(false)
 const errorMsg = ref('')
 const showDeleted = ref(false)
+
+const botscount = computed(() => botsStore.myBots.filter((bot) => bot.status.type != 'deleted').length)
 
 const onCreateBot = async (payload: { name: string, file: any }) => {
   try {
@@ -45,7 +47,7 @@ onMounted(() => { botsStore.fetchBots() });
 
 <template>
   <div class="bots">
-    <h1>My bots ({{ botsStore.myBots.filter((bot) => bot.status.type != 'deleted').length }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
+    <h1>My bots ({{ botscount }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
     <span>
       <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
       <label for="showDeleted">Show deleted bots</label>
@@ -54,7 +56,7 @@ onMounted(() => { botsStore.fetchBots() });
     <div v-else>
       <BotListItem v-for="bot in botsStore.myBots" :key="bot.id" :bot="bot" :show-deleted="showDeleted"
         @delete="onDeleteBot" />
-      <details :open="isOpen">
+      <details v-if="botscount < configStore.config!.maxBotsPerUser" :open="isOpen">
         <summary @click.prevent="isOpen = !isOpen">Add bot</summary>
         <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />
         <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
