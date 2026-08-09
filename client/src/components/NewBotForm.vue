@@ -1,21 +1,26 @@
 <script setup lang="ts">
+import { useConfigStore } from '@/stores/config';
 import { reactive, ref } from 'vue'
 
 const emit = defineEmits<{
-    (e: 'submit', payload: { name: string, file: any }): void,
+    (e: 'submit', payload: { name: string, file: any, language: string, code: string }): void,
     (e: 'input-change'): void,
 }>()
 
 const name = ref('')
 const fileInput = ref<HTMLInputElement | null>()
 const file = ref<File | null>()
+const language = ref('')
+const code = ref('')
 const isDragging = ref(false);
 const dragCounter = ref(0);
 const codeInput = ref('file');
 
 const errors = reactive({
     name: '',
-    file: ''
+    file: '',
+    language: '',
+    code: ''
 })
 
 const handleSubmit = () => {
@@ -23,6 +28,8 @@ const handleSubmit = () => {
         emit('submit', {
             name: name.value,
             file: file.value,
+            language: language.value,
+            code: code.value
         })
     }
 }
@@ -37,11 +44,11 @@ const validateAll = () => {
     validateField("name");
     validateField("file");
 
-    if (!errors.name && !errors.file) {
+    if (!errors.name && (codeInput.value == 'file' && !errors.file) || (codeInput.value == 'text' && !errors.language && !errors.code)) {
         return true;
     }
     else {
-        console.error('Form validation error: ' + (errors.name ?? errors.file));
+        console.error('Form validation error: ' + (errors.name ?? errors.file ?? errors.language ?? errors.code));
         return false;
     }
 }
@@ -51,6 +58,13 @@ const validateField = (field: string) => {
         errors.name = name.value != '' ? '' : 'Bot name cannot be empty!';
     if (field === "file") {
         errors.file = file.value != null ? '' : 'Choose file to send';
+    }
+    if (field === "language") {
+        errors.language = language.value != '' ? '' : 'Choose language';
+    }
+    if (field === "code") {
+        errors.code = code.value != '' ? '' : 'Code cannot be empty!';
+        errors.code = code.value.length > 50000 ? 'Code cannot be longer than 50 000 characters!' : errors.code;
     }
 }
 
@@ -102,13 +116,26 @@ document.addEventListener('drop', (e) => {
                 <input type="radio" id="code-text" value="text" v-model="codeInput">
                 <label for="code-text">Paste code as text</label>
             </div>
-            <input v-if="codeInput == 'file'" class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
-                @blur="validateField('file')" placeholder="Paste code here">
-            <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
+            <div v-if="codeInput == 'file'">
+                <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
+                    @blur="validateField('file')" placeholder="Paste code here">
+                <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
+            </div>
+            <div v-else class="textcode">
+                <select name="language" id="language" v-model="language" placeholder="Język"
+                    @blur="validateField('language')">
+                    <option disabled value="">Select language</option>
+                    <option v-for="language in useConfigStore().config!.acceptedTextExtentions" :value="language">{{ language }}</option>
+                </select>
+                <p v-if="errors.language" style="color:red;">{{ errors.language }}</p>
+                <textarea class="text-input" :class="{ error: errors.code != '' }" type="text" name="code" id="code" v-model="code" @blur="validateField('code')"
+                    placeholder="Paste code here"></textarea>
+                <p v-if="errors.code" style="color:red;">{{ errors.code }}</p>
+            </div>
             <input class="button" type="submit" value="Create">
         </form>
     </div>
-    <div v-if="isDragging" class="drop-overlay">
+    <div v-if="codeInput == 'file' && isDragging" class="drop-overlay">
         <div class="drop-message">
             Drop file here
         </div>
@@ -133,8 +160,8 @@ document.addEventListener('drop', (e) => {
 }
 
 .new-bot-form input,
-select,
-textarea {
+.new-bot-form select,
+.new-bot-form textarea {
     margin-bottom: 1em;
     margin-left: auto;
     margin-right: auto;
@@ -143,7 +170,8 @@ textarea {
     width: 20em;
 }
 
-.new-bot-form p {
+.new-bot-form div,
+p {
     margin-bottom: 1em;
     margin-left: auto;
     margin-right: auto;
@@ -151,9 +179,8 @@ textarea {
     align-items: center;
 }
 
-.new-bot-form textarea:focus {
-    width: 100%;
-    height: 70%;
+.new-bot-form textarea {
+    height: 400px;
 }
 
 .drop-overlay {
@@ -179,15 +206,14 @@ textarea {
     font-weight: bold;
 }
 
-.select-code-input {
-    justify-content: center;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .select-code-input input {
     margin-left: 1em;
     margin-right: 1em;
     width: min-content;
+}
+
+.textcode {
+    display: flex;
+    flex-flow: column;
 }
 </style>

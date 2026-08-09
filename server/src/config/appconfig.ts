@@ -10,7 +10,8 @@ export type AppConfig = {
   autoSave: boolean;
 
   // matchmaking
-  acceptedExtentions: string[];
+  acceptedTextExtentions: string[];
+  acceptedBinExtentions: string[];
   matchesToPlay: number;
   maxMatchesPerOpponent: number;
   noise: number;
@@ -20,6 +21,7 @@ export type AppConfig = {
 };
 
 export type PublicConfig = {
+  acceptedTextExtentions: string[];
   matchesToPlay: number;
   maxBotsPerUser: number;
 }

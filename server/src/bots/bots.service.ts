@@ -53,49 +53,90 @@ export class BotsService {
   async create(
     name: string,
     file: Express.Multer.File,
+    language: string,
+    code: string,
     user_id: number,
   ): Promise<number> {
     if ((await this.botRepo.filterByUserId(user_id)).filter((bot) => bot.status.type != 'deleted').length >= this.appConfig.config.maxBotsPerUser) {
       throw new BadRequestException('Reached max active bot number, delete any bot first');
     }
-    const ext = this.getExtention(file.originalname);
-    if (ext === '') {
-      throw new BotUploadException('Missing file extention');
+    if (file != undefined) {
+      const ext = this.getExtention(file.originalname);
+      if (ext === '') {
+        throw new BotUploadException('Missing file extention');
+      }
+      if (!this.validateExtention(ext)) {
+        throw new BotUploadException('Unsupported file extention');
+      }
+      const user = await this.userRepo.findById(user_id);
+      if (user === null) {
+        throw new BadRequestException('User not found');
+      }
+      if (!(await this.botNameUnique(name, user_id))) {
+        throw new BadRequestException(
+          'You already use this bot name (checks deleted too)',
+        );
+      }
+      const uuid = crypto.randomUUID();
+      const filePath = this.makeBotFullPath(uuid + ext);
+      await fs.writeFile(filePath, file.buffer, 'utf-8');
+      const id = await this.botRepo.create({
+        id: 0,
+        name: name,
+        language: ext,
+        user_id: user_id,
+        username: user.username,
+        filename: uuid,
+        status: { type: 'created', progress: 'in_progress' },
+        rating: initialRating,
+      });
+      return id;
     }
-    if (!this.validateExtention(ext)) {
-      throw new BotUploadException('Unsupported file extention');
+    else {
+      const ext = language;
+      if (ext === '') {
+        throw new BotUploadException('Missing file extention');
+      }
+      if (!this.validateExtention(ext)) {
+        throw new BotUploadException('Unsupported file extention');
+      }
+      const user = await this.userRepo.findById(user_id);
+      if (user === null) {
+        throw new BadRequestException('User not found');
+      }
+      if (!(await this.botNameUnique(name, user_id))) {
+        throw new BadRequestException(
+          'You already use this bot name (checks deleted too)',
+        );
+      }
+      if (code == '') {
+        throw new BadRequestException('Code cannot be empty');
+      }
+      const uuid = crypto.randomUUID();
+      const filePath = this.makeBotFullPath(uuid + ext);
+      await fs.writeFile(filePath, code, 'utf-8');
+      const id = await this.botRepo.create({
+        id: 0,
+        name: name,
+        language: ext,
+        user_id: user_id,
+        username: user.username,
+        filename: uuid,
+        status: { type: 'created', progress: 'in_progress' },
+        rating: initialRating,
+      });
+      return id;
     }
-    const user = await this.userRepo.findById(user_id);
-    if (user === null) {
-      throw new BadRequestException('User not found');
-    }
-    if (!(await this.botNameUnique(name, user_id))) {
-      throw new BadRequestException(
-        'You already use this bot name (checks deleted too)',
-      );
-    }
-    const uuid = crypto.randomUUID();
-    const filePath = this.makeBotFullPath(uuid + ext);
-    await fs.writeFile(filePath, file.buffer, 'utf-8');
-    const id = await this.botRepo.create({
-      id: 0,
-      name: name,
-      language: ext,
-      user_id: user_id,
-      username: user.username,
-      filename: uuid,
-      status: { type: 'created', progress: 'in_progress' },
-      rating: initialRating,
-    });
-    return id;
   }
 
   async createWithMatches(
     name: string,
     file: Express.Multer.File,
+    language: string,
+    code: string,
     user_id: number,
   ): Promise<number> {
-    const id = await this.create(name, file, user_id);
+    const id = await this.create(name, file, language, code, user_id);
 
     if (id === undefined) {
       return id;
@@ -165,6 +206,16 @@ export class BotsService {
         },
       );
     }
+    await this.botRepo.updateById(bots[id].id, {
+      id: bots[id].id,
+      name: bots[id].name,
+      language: bots[id].language,
+      user_id: bots[id].user_id,
+      username: bots[id].username,
+      filename: bots[id].filename,
+      status: { type: 'ok', progress: (bots[id].rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      rating: bots[id].rating,
+    });
   }
 
   private async generateBenchmarkerMatches(
@@ -348,7 +399,7 @@ export class BotsService {
   }
 
   private validateExtention(extention: string): boolean {
-    return this.appConfig.config.acceptedExtentions.includes(extention);
+    return this.appConfig.config.acceptedTextExtentions.includes(extention) || this.appConfig.config.acceptedBinExtentions.includes(extention);
   }
 
   private async botNameUnique(name: string, userId: number): Promise<boolean> {

@@ -58,9 +58,13 @@ export class BotsController {
     @Body()
     {
       name,
+      language,
+      code,
       userId,
     }: {
       name: string;
+      language: string;
+      code: string;
       userId: number;
     },
     @UploadedFile() file: Express.Multer.File,
@@ -69,7 +73,7 @@ export class BotsController {
     console.log(name, userId);
     console.log('file', file);
     if (req.user?.id != userId) throw new ForbiddenException();
-    return this.botsService.createWithMatches(name, file, userId);
+    return this.botsService.createWithMatches(name, file, language, code, userId);
   }
 
   @UseGuards(AuthGuard)

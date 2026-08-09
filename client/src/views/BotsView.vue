@@ -18,7 +18,7 @@ let intervalId: ReturnType<typeof setInterval>
 
 const botscount = computed(() => botsStore.myBots.filter((bot) => bot.status.type != 'deleted').length)
 
-const onCreateBot = async (payload: { name: string, file: any }) => {
+const onCreateBot = async (payload: { name: string, file: any, language: string, code: string }) => {
   try {
     await api.bots.create(payload, auth.user?.id!)
     isOpen.value = false;

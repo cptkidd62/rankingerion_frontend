@@ -3,10 +3,12 @@ import axios from "axios";
 const API_URL = 'http://localhost:3000/bots'
 
 export const botsApi = {
-  async create(payload: { name: string, file: any }, userId: number) {
+  async create(payload: { name: string, file: any, language: string, code: string }, userId: number) {
     const formData = new FormData();
     formData.append('name', payload.name);
     formData.append('file', payload.file);
+    formData.append('language', payload.language);
+    formData.append('code', payload.code);
     formData.append('userId', String(userId));
     const response = await axios.post(API_URL, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
     return response

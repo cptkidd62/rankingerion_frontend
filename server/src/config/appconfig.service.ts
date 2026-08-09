@@ -13,6 +13,7 @@ export class AppConfigService {
 
   getPublicConfig(): PublicConfig {
     return {
+      acceptedTextExtentions: this.config.acceptedTextExtentions,
       matchesToPlay: this.config.matchesToPlay,
       maxBotsPerUser: this.config.maxBotsPerUser
     }
