@@ -11,6 +11,7 @@ const fileInput = ref<HTMLInputElement | null>()
 const file = ref<File | null>()
 const isDragging = ref(false);
 const dragCounter = ref(0);
+const codeInput = ref('file');
 
 const errors = reactive({
     name: '',
@@ -95,7 +96,13 @@ document.addEventListener('drop', (e) => {
             <input class="text-input" :class="{ error: errors.name != '' }" type="text" name="name" id="name"
                 v-model="name" placeholder="Name" @blur="validateField('name')" @input="emit('input-change')">
             <p v-if="errors.name" style="color:red;">{{ errors.name }}</p>
-            <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
+            <div class="select-code-input">
+                <input type="radio" id="code-file" value="file" v-model="codeInput">
+                <label for="code-file">Upload file</label>
+                <input type="radio" id="code-text" value="text" v-model="codeInput">
+                <label for="code-text">Paste code as text</label>
+            </div>
+            <input v-if="codeInput == 'file'" class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
                 @blur="validateField('file')" placeholder="Paste code here">
             <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
             <input class="button" type="submit" value="Create">
@@ -170,5 +177,17 @@ textarea {
     color: var(--color-text);
     font-size: 2rem;
     font-weight: bold;
+}
+
+.select-code-input {
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.select-code-input input {
+    margin-left: 1em;
+    margin-right: 1em;
+    width: min-content;
 }
 </style>
