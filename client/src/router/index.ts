@@ -9,7 +9,8 @@ const router = createRouter({
       name: 'home',
       redirect: '/bots',
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: 'Rankingerion'
       }
     },
     {
@@ -17,7 +18,8 @@ const router = createRouter({
       name: 'ranking',
       component: () => import('../views/RankingView.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: 'Ranking - Rankingerion'
       }
     },
     {
@@ -25,7 +27,8 @@ const router = createRouter({
       name: 'bots',
       component: () => import('../views/BotsView.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: 'My bots - Rankingerion'
       }
     },
     {
@@ -33,7 +36,8 @@ const router = createRouter({
       name: 'bots/:id',
       component: () => import('../views/BotDetailsView.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: 'Bot details - Rankingerion'
       }
     },
     {
@@ -41,18 +45,23 @@ const router = createRouter({
       name: 'account',
       component: () => import('../views/AccountView.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: 'My account - Rankingerion'
       }
     },
     {
       path: '/signin',
       name: 'signin',
       component: () => import('../views/LoginView.vue'),
+      meta: {
+        title: 'Sign in - Rankingerion'
+      }
     },
   ],
 })
 
 router.beforeEach((to, from, next) => {
+  document.title = to.meta.title as string;
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.token) {
     next('/signin')
