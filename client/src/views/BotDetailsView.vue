@@ -138,7 +138,7 @@ onUnmounted(() => {
                     </tr>
                 </tbody>
             </table>
-            <div v-if="matchesStore.loading">Loading...</div>
+            <div v-if="!matchesStore.initialized && matchesStore.loading">Loading...</div>
             <div v-else>
                 <h2>Scores:</h2>
                 <span>

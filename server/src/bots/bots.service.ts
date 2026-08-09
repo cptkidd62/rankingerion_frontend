@@ -210,7 +210,6 @@ export class BotsService {
         },
       );
     }
-    const b = await this.botRepo.findById(bots[id].id);
     await this.botRepo.updateById(bots[id].id, {
       id: bots[id].id,
       name: bots[id].name,
@@ -218,7 +217,7 @@ export class BotsService {
       user_id: bots[id].user_id,
       username: bots[id].username,
       filename: bots[id].filename,
-      status: { type: 'ok', progress: (b!.rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      status: { type: 'ok', progress: 'no_more_opponents' },
       errorsCount: bots[id].errorsCount,
       lastErrorMsg: bots[id].lastErrorMsg,
       rating: bots[id].rating,
@@ -369,7 +368,6 @@ export class BotsService {
         rating: this_bot.rating,
       });
     }
-    const b = await this.botRepo.findById(this_bot.id);
     await this.botRepo.updateById(this_bot.id, {
       id: this_bot.id,
       name: this_bot.name,
@@ -377,7 +375,7 @@ export class BotsService {
       user_id: this_bot.user_id,
       username: this_bot.username,
       filename: this_bot.filename,
-      status: { type: 'ok', progress: (b!.rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      status: { type: 'ok', progress: 'no_more_opponents' },
       errorsCount: this_bot.errorsCount,
       lastErrorMsg: this_bot.lastErrorMsg,
       rating: this_bot.rating,
