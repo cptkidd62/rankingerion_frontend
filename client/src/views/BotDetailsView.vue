@@ -128,6 +128,14 @@ onUnmounted(() => {
                         <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses
                             }}</td>
                     </tr>
+                    <tr>
+                        <th>Errors</th>
+                        <td>{{ bot.errorsCount }}</td>
+                    </tr>
+                    <tr v-if="bot.lastErrorMsg != ''">
+                        <th>Last log</th>
+                        <td>{{ bot.lastErrorMsg }}</td>
+                    </tr>
                 </tbody>
             </table>
             <div v-if="matchesStore.loading">Loading...</div>

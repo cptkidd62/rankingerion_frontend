@@ -18,5 +18,7 @@ export interface Bot {
     user_id: number;
     username: string;
     status: BotStatus;
+    errorsCount: number;
+    lastErrorMsg: string;
     rating: RatingData;
 }

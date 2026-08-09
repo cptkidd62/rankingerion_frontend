@@ -88,6 +88,8 @@ export class BotsService {
         username: user.username,
         filename: uuid,
         status: { type: 'created', progress: 'in_progress' },
+        errorsCount: 0,
+        lastErrorMsg: '',
         rating: initialRating,
       });
       return id;
@@ -123,6 +125,8 @@ export class BotsService {
         username: user.username,
         filename: uuid,
         status: { type: 'created', progress: 'in_progress' },
+        errorsCount: 0,
+        lastErrorMsg: '',
         rating: initialRating,
       });
       return id;
@@ -206,6 +210,7 @@ export class BotsService {
         },
       );
     }
+    const b = await this.botRepo.findById(bots[id].id);
     await this.botRepo.updateById(bots[id].id, {
       id: bots[id].id,
       name: bots[id].name,
@@ -213,7 +218,9 @@ export class BotsService {
       user_id: bots[id].user_id,
       username: bots[id].username,
       filename: bots[id].filename,
-      status: { type: 'ok', progress: (bots[id].rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      status: { type: 'ok', progress: (b!.rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      errorsCount: bots[id].errorsCount,
+      lastErrorMsg: bots[id].lastErrorMsg,
       rating: bots[id].rating,
     });
   }
@@ -262,6 +269,8 @@ export class BotsService {
               username: player.username,
               filename: player.filename,
               status: { type: 'compilation_error', progress: 'failed' },
+              errorsCount: player.errorsCount,
+              lastErrorMsg: player.lastErrorMsg,
               rating: player.rating,
             });
             if (player.id === this_bot.id) {
@@ -287,6 +296,8 @@ export class BotsService {
               username: player.username,
               filename: player.filename,
               status: { type: 'playtime_error', progress: 'failed' },
+              errorsCount: player.errorsCount,
+              lastErrorMsg: player.lastErrorMsg,
               rating: player.rating,
             });
             if (player.id === this_bot.id) {
@@ -341,9 +352,24 @@ export class BotsService {
         username: bot.username,
         filename: bot.filename,
         status: { type: 'ok', progress: bot.status.progress },
+        errorsCount: bot.errorsCount += (scores[0] == -1 ? 1 : 0),
+        lastErrorMsg: scores[0] == -1 ? res.logs[0] : bot.lastErrorMsg,
         rating: bot.rating,
       });
+      await this.botRepo.updateById(this_bot.id, {
+        id: this_bot.id,
+        name: this_bot.name,
+        language: this_bot.language,
+        user_id: this_bot.user_id,
+        username: this_bot.username,
+        filename: this_bot.filename,
+        status: { type: 'ok', progress: this_bot.status.progress },
+        errorsCount: this_bot.errorsCount += (scores[1] == -1 ? 1 : 0),
+        lastErrorMsg: scores[1] == -1 ? res.logs[1] : this_bot.lastErrorMsg,
+        rating: this_bot.rating,
+      });
     }
+    const b = await this.botRepo.findById(this_bot.id);
     await this.botRepo.updateById(this_bot.id, {
       id: this_bot.id,
       name: this_bot.name,
@@ -351,7 +377,9 @@ export class BotsService {
       user_id: this_bot.user_id,
       username: this_bot.username,
       filename: this_bot.filename,
-      status: { type: 'ok', progress: (this_bot.rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      status: { type: 'ok', progress: (b!.rating.matchesPlayed >= this.appConfig.config.matchesToPlay ? 'saturated' : 'no_more_opponents') },
+      errorsCount: this_bot.errorsCount,
+      lastErrorMsg: this_bot.lastErrorMsg,
       rating: this_bot.rating,
     });
   }

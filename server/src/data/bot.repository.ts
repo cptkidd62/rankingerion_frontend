@@ -19,6 +19,8 @@ export interface Bot {
   username: string;
   filename: string;
   status: BotStatus;
+  errorsCount: number;
+  lastErrorMsg: string;
   rating: RatingData;
 }
 
@@ -29,6 +31,8 @@ export interface BotDTO {
   user_id: number;
   username: string;
   status: BotStatus;
+  errorsCount: number;
+  lastErrorMsg: string;
   rating: RatingData;
 }
 
