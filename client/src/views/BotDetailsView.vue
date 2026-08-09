@@ -27,7 +27,6 @@ const bot = computed(() => botsStore.bots.find((b) => b.id === Number(route.para
 const matches = computed(() => matchesStore.getSummaryForBot(Number(route.params.id)))
 
 function botOk(bot: Bot): boolean {
-    console.log(bot.status)
     return bot.status.type == 'ok' || bot.status.type == 'created'
 }
 
@@ -131,7 +130,8 @@ onUnmounted(() => {
                     </tr>
                 </tbody>
             </table>
-            <div>
+            <div v-if="matchesStore.loading">Loading...</div>
+            <div v-else>
                 <h2>Scores:</h2>
                 <span>
                     <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">

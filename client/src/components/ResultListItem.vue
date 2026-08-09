@@ -8,7 +8,7 @@ const props = defineProps({
     required: true
   },
   showDeleted: {
-    type: Object as PropType<boolean>,
+    type: Boolean,
     required: true
   }
 })

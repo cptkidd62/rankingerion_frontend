@@ -26,7 +26,6 @@ export const useMatchesStore = defineStore('matches', () => {
     try {
       const response = await api.matches.fetch();
       matches.value = response.data;
-      console.log(matches.value);
       initialized.value = true
     } catch (error) {
       console.error('Matches loading error', error);

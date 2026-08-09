@@ -21,7 +21,6 @@ export const useBotsStore = defineStore('bots', () => {
     try {
       const response = await api.bots.fetch();
       bots.value = response.data;
-      console.log(bots.value);
       initialized.value = true
     } catch (error) {
       console.error('Bot loading error', error);
