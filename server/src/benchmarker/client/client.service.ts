@@ -17,6 +17,7 @@ import { PlayResult } from '../tasks/playresult';
 import { ok } from 'assert';
 import { Agent } from '../models/agent';
 import { AppConfigService } from 'src/config/appconfig.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 // import { CompileResult } from '../tasks/compileresult';
 
 @Injectable()
@@ -56,6 +57,7 @@ export class ClientService {
   constructor(
     private connectorService: ConnectorService,
     private readonly appConfig: AppConfigService,
+    private readonly eventEmiter: EventEmitter2
   ) {
     this.isConnected = false;
     this.isReconnecting = false;
@@ -91,6 +93,7 @@ export class ClientService {
       this.disconnectHandled = false;
       clearInterval(this.intervalID);
       this.register();
+      this.eventEmiter.emit('client_connected');
     });
     this.socket.on('error', (err) => {
       debugError(1, '!! socket error:', err);

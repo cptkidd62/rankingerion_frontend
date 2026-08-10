@@ -16,6 +16,7 @@ import {
 } from 'src/errors/PlayErrors';
 import { AppConfigService } from 'src/config/appconfig.service';
 import { MatchmakerService } from 'src/matchmaker/matchmaker.service';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class BotsService {
@@ -436,5 +437,21 @@ export class BotsService {
   private async botNameUnique(name: string, userId: number): Promise<boolean> {
     const bots = await this.botRepo.filterByUserId(userId);
     return bots.find((bot) => bot.name == name) == undefined;
+  }
+
+  private async restartBenchmarkerGeneration() {
+    const bots = await this.botRepo.findAll();
+    for (const bot of bots) {
+      if (bot.status.progress == 'in_progress') {
+        this.generateBenchmarkerMatches(bot.name, bot.id, bot.user_id);
+      }
+    }
+  }
+
+  @OnEvent('client_connected')
+  private handleClientConnectedEvent() {
+    if (this.appConfig.config.useBenchmarker) {
+      this.restartBenchmarkerGeneration()
+    }
   }
 }

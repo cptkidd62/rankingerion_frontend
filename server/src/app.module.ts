@@ -15,6 +15,7 @@ import { BenchmarkerModule } from './benchmarker/benchmarker.module';
 import { AppConfigService } from './config/appconfig.service';
 import { MatchmakerService } from './matchmaker/matchmaker.service';
 import { AppConfigController } from './config/appconfig.controller';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AppConfigController } from './config/appconfig.controller';
       envFilePath: ['.env.local', '.env'],
     }),
     BenchmarkerModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [
     AppController,
