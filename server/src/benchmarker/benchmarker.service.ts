@@ -6,6 +6,7 @@ import { PlayResult } from './tasks/playresult';
 import { randomInt } from 'crypto';
 import {
   CompilationError,
+  ConnectionError,
   PlayTaskError,
   PlaytimeError,
 } from 'src/errors/PlayErrors';
@@ -17,6 +18,7 @@ export class BenchmarkerService {
   constructor(private clientService: ClientService) {}
 
   async playSingle(bots: string[]): Promise<PlayResult | PlayTaskError> {
+    if (!this.clientService.isConnected) return new ConnectionError();
     const agents: Agent[] = [];
     bots.forEach((bot) => agents.push(new Agent(bot)));
     try {
@@ -32,6 +34,9 @@ export class BenchmarkerService {
     } catch (error) {
       console.error(error);
       if (typeof error === 'string') {
+        if (error == 'connectionError') {
+          return new ConnectionError();
+        }
         const match = error.match(/^(.+) is not compiled$/);
         if (match) {
           const [, name] = match;

@@ -48,35 +48,83 @@ export class ClientService {
   private sentTasks: Array<TaskContainer> = [];
   private acceptedPlayTasks: Map<number, PlayTaskContainer> = new Map();
 
+  isConnected: boolean;
+  isReconnecting: boolean;
+  disconnectHandled: boolean;
+  private intervalID: NodeJS.Timeout;
+
   constructor(
     private connectorService: ConnectorService,
     private readonly appConfig: AppConfigService,
   ) {
-    this.socket = connectorService.getSocket(
+    this.isConnected = false;
+    this.isReconnecting = false;
+    this.disconnectHandled = false;
+    this.outstream = new OutputStream();
+    this.instream = new InputStream();
+    this.reconnect();
+  }
+
+  private reconnect() {
+    if (this.isReconnecting || this.isConnected) return;
+    this.isReconnecting = true;
+    clearInterval(this.intervalID);
+    this.intervalID = setInterval(() => {
+      this.connect();
+    }, 10000);
+  }
+
+  private connect() {
+    if (this.isConnected) return;
+    this.socket = this.connectorService.getSocket(
       process.env.BENCHMARKER_SERVER!,
       Number(process.env.BENCHMARKER_PORT_CLIENTS!),
     );
-    this.outstream = new OutputStream();
-    this.instream = new InputStream();
     this.socket.on('data', (chunk: Buffer) => {
       this.instream.addToBuffer(chunk);
       while (this.parseBuffer());
     });
+    this.socket.on('connect', () => {
+      debugLog(1, 'client connected', this.socket.authorized ? 'authorized' : 'unauthorized');
+      this.isConnected = true;
+      this.isReconnecting = false;
+      this.disconnectHandled = false;
+      clearInterval(this.intervalID);
+      this.register();
+    });
     this.socket.on('error', (err) => {
       debugError(1, '!! socket error:', err);
+      this.handleDisconnecting();
     });
     this.socket.on('close', (err) => {
       debugLog(1, 'socket closed, error?', err);
+      this.handleDisconnecting();
     });
     this.socket.on('timeout', () => {
       debugLog(1, 'socket timeout');
+      this.socket.destroy();
+      this.handleDisconnecting();
     });
+  }
+
+  private register() {
     this.outstream.writeUTF(os.hostname());
     this.outstream.writeUTF(''); // referee
     this.outstream.writeInt(10);
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.trySend();
+  }
+
+  private handleDisconnecting() {
+    if (this.disconnectHandled) return;
+    this.disconnectHandled = true;
+    this.isConnected = false;
+    this.batches.forEach((batch) => batch.fail('connectionError'));
+    this.batches = [];
+    this.sentTasks = [];
+    this.acceptedPlayTasks.clear();
+    this.reconnect();
   }
 
   private sendCompileTask(compileTask: CompileContainer) {
@@ -221,9 +269,9 @@ export class ClientService {
     debugLog(
       1,
       'Compilation error on agent: ' +
-        agent.toString() +
-        ' with msg: ' +
-        errorMsg,
+      agent.toString() +
+      ' with msg: ' +
+      errorMsg,
     );
     // const task = this.sentTasks.shift();
     // if (task instanceof CompileContainer) {

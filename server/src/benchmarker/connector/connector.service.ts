@@ -14,15 +14,11 @@ export class ConnectorService {
       ),
     ],
     checkServerIdentity: () => undefined,
+    timeout: Number(process.env.PING_TIMEOUT!)
   };
 
   getSocket(host: string, port: number): TLSSocket {
-    const socket = connect(port, host, this.options, () => {
-      console.log(
-        'client connected',
-        socket.authorized ? 'authorized' : 'unauthorized',
-      );
-    });
+    const socket = connect(port, host, this.options);
     return socket;
   }
 }
