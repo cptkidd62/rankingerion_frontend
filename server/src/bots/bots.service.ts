@@ -317,6 +317,8 @@ export class BotsService {
         }
         continue;
       }
+      if (bot.status.type == 'deleted') continue;
+      if (this_bot.status.type == 'deleted') return;
       const scores = res.scores;
       const results =
         scores[0] > scores[1]

@@ -76,7 +76,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       const bakPath = filePath + '.bak';
 
       await fs.writeFile(tmpPath, json, 'utf-8');
-      await fs.rename(filePath, bakPath).catch(() => {});
+      await fs.rename(filePath, bakPath).catch(() => { });
       await fs.rename(tmpPath, filePath);
       console.log('Saved bot repo');
     }
@@ -110,7 +110,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
     if (idx >= 0 && this.bots[idx].status.type != 'deleted') {
-      this.bots[idx].status.type = 'deleted';
+      this.bots[idx].status = { type: 'deleted', progress: 'failed' };
       this.dirty = true;
     }
     this.mutex.release();

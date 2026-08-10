@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppConfig, PublicConfig } from './appconfig';
-import { NoBenchmarkerDevConfig } from './development';
+import { BenchmarkerDevConfig } from './development';
 // import { DataTestConfig } from './datatestconfig';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class AppConfigService {
   readonly config: AppConfig;
 
   constructor() {
-    this.config = NoBenchmarkerDevConfig;
+    this.config = BenchmarkerDevConfig;
   }
 
   getPublicConfig(): PublicConfig {
