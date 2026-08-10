@@ -59,12 +59,14 @@ export class ClientService {
     private readonly appConfig: AppConfigService,
     private readonly eventEmiter: EventEmitter2
   ) {
-    this.isConnected = false;
-    this.isReconnecting = false;
-    this.disconnectHandled = false;
-    this.outstream = new OutputStream();
-    this.instream = new InputStream();
-    this.reconnect();
+    if (appConfig.config.useBenchmarker) {
+      this.isConnected = false;
+      this.isReconnecting = false;
+      this.disconnectHandled = false;
+      this.outstream = new OutputStream();
+      this.instream = new InputStream();
+      this.reconnect();
+    }
   }
 
   private reconnect() {
