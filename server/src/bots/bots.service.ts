@@ -10,6 +10,7 @@ import { initialRating, RatingService } from 'src/data/rating.service';
 import { BotUploadException } from 'src/errors/BotUploadExceptions';
 import {
   CompilationError,
+  ConnectionError,
   PlayTaskError,
   PlaytimeError,
 } from 'src/errors/PlayErrors';
@@ -305,6 +306,10 @@ export class BotsService {
               return;
             }
           }
+        } else if (res instanceof ConnectionError) {
+          console.error('ConnectionError');
+          this.matchmakerService.removeFromCache(bot.id, id);
+          return;
         } else {
           console.error('PlayTaskError');
           this.matchmakerService.removeFromCache(bot.id, id);

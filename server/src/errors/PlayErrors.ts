@@ -19,3 +19,5 @@ export class PlaytimeError extends PlayTaskError {
     this.message = message;
   }
 }
+
+export class ConnectionError extends PlayTaskError {}
