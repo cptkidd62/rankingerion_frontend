@@ -27,7 +27,7 @@ const bot = computed(() => botsStore.bots.find((b) => b.id === Number(route.para
 const matches = computed(() => matchesStore.getSummaryForBot(Number(route.params.id)))
 
 function botOk(bot: Bot): boolean {
-    return bot.status.type == 'ok' || bot.status.type == 'created'
+    return bot.status.type == 'ok' || bot.status.type == 'created' || bot.status.type == 'deleted'
 }
 
 const scoreCountOverall = computed(() => {
