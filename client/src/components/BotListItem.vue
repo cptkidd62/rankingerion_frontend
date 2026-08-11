@@ -29,7 +29,7 @@ function handleDelete(id: number) {
       <h3 class="name">{{ bot.name }}{{ bot.status.progress == 'in_progress' ? ` (In progress: ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : ''}} {{ bot.status.type === 'deleted' ? '(deleted)' : '' }}</h3>
       <div v-if="bot.status.type === 'compilation_error'" class="error">Compilation error!</div>
       <div v-else-if="bot.status.type === 'playtime_error'" class="error">Playtime error!</div>
-      <div v-else>Rating: {{ bot.rating.value }}</div>
+      <div v-else>Rating: {{ Math.round(bot.rating.value * 100) / 100 }}</div>
     </RouterLink>
     <button v-if="bot.status.type !== 'deleted'" class="button" @click="handleDelete(bot.id)">delete</button>
   </div>
