@@ -38,7 +38,7 @@ onUnmounted(() => {
 <template>
   <div class="results">
     <h1>Ranking</h1>
-    <div v-if="botsStore.loading">Loading...</div>
+    <div v-if="!botsStore.initialized && botsStore.loading">Loading...</div>
     <div v-else>
       <span>
         <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
