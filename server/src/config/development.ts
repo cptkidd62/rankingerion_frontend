@@ -7,6 +7,7 @@ const DevConfig = {
   dataDir: './mock_data',
   botsDir: './mock_data/bots',
   autoSave: true,
+  gameName: 'TestGame',
   acceptedTextExtentions: ['.cpp'],
   acceptedBinExtentions: ['.exe'],
   matchesToPlay: 100,

@@ -9,6 +9,8 @@ export type AppConfig = {
 
   autoSave: boolean;
 
+  gameName: string;
+
   // matchmaking
   acceptedTextExtentions: string[];
   acceptedBinExtentions: string[];

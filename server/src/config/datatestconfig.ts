@@ -7,6 +7,7 @@ export const DataTestConfig: AppConfig = {
   dataDir: './mock_data',
   botsDir: './mock_data/tests/bots',
   autoSave: true,
+  gameName: 'TestGame',
   useBenchmarker: false,
   acceptedTextExtentions: ['.cpp'],
   acceptedBinExtentions: ['.exe'],
