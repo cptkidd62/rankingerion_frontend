@@ -142,7 +142,7 @@ document.addEventListener('drop', (e) => {
     </div>
 </template>
 
-<style>
+<style scoped>
 .new-bot-form {
     display: flex;
     flex-flow: column;

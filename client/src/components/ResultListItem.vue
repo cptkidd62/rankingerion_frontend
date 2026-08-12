@@ -35,7 +35,7 @@ const props = defineProps({
   </tr>
 </template>
 
-<style>
+<style scoped>
 .result-list-item a {
   display: flex;
   flex-flow: row;

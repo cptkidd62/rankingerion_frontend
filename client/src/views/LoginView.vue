@@ -32,13 +32,11 @@ const handleLogin = async (payload: { username: string; password: string }) => {
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .login {
-    min-height: 40vh;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-  }
+<style scoped>
+.login {
+  min-height: 40vh;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 }
 </style>

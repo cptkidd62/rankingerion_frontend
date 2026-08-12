@@ -88,16 +88,14 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .bots {
-    min-height: 40vh;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-  }
+<style scoped>
+.bots {
+  min-height: 40vh;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 #showDeleted {

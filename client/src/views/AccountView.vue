@@ -46,13 +46,11 @@ function toggleEditName() {
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .account {
-    min-height: 40vh;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-  }
+<style scoped>
+.account {
+  min-height: 40vh;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 }
 </style>

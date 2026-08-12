@@ -75,14 +75,12 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .results {
-    min-height: 40vh;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-  }
+<style scoped>
+.results {
+  min-height: 40vh;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 }
 
 .own {

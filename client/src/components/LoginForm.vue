@@ -56,7 +56,7 @@ const handleSubmit = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .login-form {
   display: flex;
   flex-flow: column;

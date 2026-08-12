@@ -35,7 +35,7 @@ function handleDelete(id: number) {
   </div>
 </template>
 
-<style>
+<style scoped>
 .bot-list-item {
   display: flex;
   flex-flow: row;
