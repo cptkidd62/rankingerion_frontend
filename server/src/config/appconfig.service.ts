@@ -14,6 +14,7 @@ export class AppConfigService {
   getPublicConfig(): PublicConfig {
     return {
       acceptedTextExtentions: this.config.acceptedTextExtentions,
+      gameName: this.config.gameName,
       matchesToPlay: this.config.matchesToPlay,
       maxBotsPerUser: this.config.maxBotsPerUser
     }

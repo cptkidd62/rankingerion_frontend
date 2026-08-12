@@ -21,12 +21,6 @@ a,
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-  }
-}
-
 .button {
   background-color: var(--color-text);
   border-radius: 0.6em;
