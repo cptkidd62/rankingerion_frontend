@@ -36,12 +36,14 @@ function toggleEditName() {
   <div class="account">
     <h1>My account</h1>
     <p>Username: {{ auth.user?.username }}</p>
-    <button class="button" @click="toggleEditName()">{{ editingPwd ? 'Cancel' : 'Change password' }}</button>
-    <span v-if="editingPwd">
-      <input class="text-input edit" type="password" name="editname" id="editname" placeholder="New password"
+    <span>
+      <button class="button" @click="toggleEditName()">{{ editingPwd ? 'Cancel' : 'Change password' }}</button>
+      <span v-if="editingPwd">
+        <input class="text-input edit" type="password" name="editname" id="editname" placeholder="New password"
         v-model="newPwd">
-      <button class="button" @click="updatePwd()">Submit</button>
-      <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
+        <button class="button" @click="updatePwd()">Submit</button>
+        <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
+      </span>
     </span>
   </div>
 </template>
@@ -52,5 +54,9 @@ function toggleEditName() {
   display: flex;
   flex-flow: column;
   align-items: center;
+}
+
+.button {
+  margin: 1em 0.5em;
 }
 </style>
