@@ -180,7 +180,6 @@ onUnmounted(() => {
 button {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    width: fit-content;
 }
 
 .text-input.edit {

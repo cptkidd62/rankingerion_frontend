@@ -27,7 +27,8 @@ a,
   border: none;
   color: var(--color-background);
   font-weight: bolder;
-  padding: 0.3em;
+  padding: 0.5em;
+  width: fit-content;
   font-size: 1em;
 }
 
@@ -58,22 +59,22 @@ a,
 /* tables */
 
 table {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 table,
 th,
 td {
-    border: 2px solid var(--color-border);
+  border: 2px solid var(--color-border);
 }
 
 th,
 td {
-    padding: 0.5em;
+  padding: 0.5em;
 }
 
 th {
-    background-color: var(--color-border);
-    color: var(--color-text);
-    font-weight: bold;
+  background-color: var(--color-border);
+  color: var(--color-text);
+  font-weight: bold;
 }
