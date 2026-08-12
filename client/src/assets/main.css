@@ -21,6 +21,17 @@ a,
   }
 }
 
+select {
+  background-color: var(--color-background);
+  border-radius: 0.6em;
+  border: solid var(--color-text) 0.15em;
+  color: var(--color-text);
+  font-weight: bolder;
+  padding: 0.5em;
+  width: fit-content;
+  font-size: 1em;
+}
+
 .button {
   background-color: var(--color-text);
   border-radius: 0.6em;
