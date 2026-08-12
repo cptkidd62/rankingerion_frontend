@@ -102,4 +102,10 @@ onUnmounted(() => {
   margin-right: 0.5em;
   margin-bottom: 2rem;
 }
+
+.div {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
 </style>

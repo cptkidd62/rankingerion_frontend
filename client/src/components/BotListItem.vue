@@ -39,6 +39,7 @@ function handleDelete(id: number) {
 .bot-list-item {
   display: flex;
   flex-flow: row;
+  justify-self: center;
   margin-bottom: 1rem;
 }
 

@@ -104,11 +104,13 @@ onUnmounted(() => {
 <template>
     <div v-if="bot" class="details">
         <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}{{ bot.status.progress == 'in_progress' ? ` (In progress: ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : ''}}</h1>
-        <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="toggleEditName()">{{ editingName ? 'Cancel' : 'Edit name'}}</button>
-        <span v-if="bot.user_id == useAuthStore().user?.id && editingName">
-            <input class="text-input edit" type="text" name="editname" id="editname" placeholder="New bot name" v-model="newName">
-            <button class="button" @click="updateName()">Submit</button>
-            <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
+        <span>
+            <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="toggleEditName()">{{ editingName ? 'Cancel' : 'Edit name'}}</button>
+            <span v-if="bot.user_id == useAuthStore().user?.id && editingName">
+                <input class="text-input edit" type="text" name="editname" id="editname" placeholder="New bot name" v-model="newName">
+                <button class="button" @click="updateName()">Submit</button>
+                <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
+            </span>
         </span>
         <p>Language: {{ bot.language }}</p>
         <div v-if="botOk(bot)">
@@ -166,7 +168,9 @@ onUnmounted(() => {
   min-height: 40vh;
   display: flex;
   flex-flow: column;
-  align-items: center;
+  align-items: left;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .error {
@@ -176,6 +180,7 @@ onUnmounted(() => {
 button {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+    width: fit-content;
 }
 
 .text-input.edit {
