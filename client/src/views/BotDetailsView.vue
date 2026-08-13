@@ -103,7 +103,7 @@ onUnmounted(() => {
 
 <template>
     <div v-if="bot" class="details">
-        <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}{{ bot.status.progress == 'in_progress' ? ` (In progress: ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : ''}}</h1>
+        <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
         <span>
             <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="toggleEditName()">{{ editingName ? 'Cancel' : 'Edit name'}}</button>
             <span v-if="bot.user_id == useAuthStore().user?.id && editingName">
@@ -114,6 +114,7 @@ onUnmounted(() => {
         </span>
         <p>Language: {{ bot.language }}</p>
         <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="openBotFile()">Show code</button>
+        <p class="progress">{{ bot.status.progress == 'in_progress' ? ` (In progress: ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : ''}}</p>
         <div v-if="botOk(bot)">
             <table>
                 <tbody>
@@ -185,5 +186,11 @@ button {
 .text-input.edit {
     margin-left: 1em;
     margin-right: 1em;
+}
+
+.progress {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 1.2em;
 }
 </style>
