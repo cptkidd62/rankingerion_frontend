@@ -1,6 +1,7 @@
 export type BotStatus = {
-  type: 'created' | 'compilation_error' | 'playtime_error' | 'ok' | 'deleted';
+  type: 'created' | 'compilation_error' | 'playtime_error' | 'ok';
   progress: 'in_progress' | 'saturated' | 'no_more_opponents' | 'failed';
+  isDeleted: boolean;
 };
 
 export type RatingData = {

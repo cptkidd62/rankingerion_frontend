@@ -59,7 +59,7 @@ export class BotsService {
     code: string,
     user_id: number,
   ): Promise<number> {
-    if ((await this.botRepo.filterByUserId(user_id)).filter((bot) => bot.status.type != 'deleted').length >= this.appConfig.config.maxBotsPerUser) {
+    if ((await this.botRepo.filterByUserId(user_id)).filter((bot) => !bot.status.isDeleted).length >= this.appConfig.config.maxBotsPerUser) {
       throw new BadRequestException('Reached max active bot number, delete any bot first');
     }
     if (file != undefined) {
@@ -89,7 +89,7 @@ export class BotsService {
         user_id: user_id,
         username: user.username,
         filename: uuid,
-        status: { type: 'created', progress: 'in_progress' },
+        status: { type: 'created', progress: 'in_progress', isDeleted: false },
         errorsCount: 0,
         lastErrorMsg: '',
         rating: initialRating,
@@ -126,7 +126,7 @@ export class BotsService {
         user_id: user_id,
         username: user.username,
         filename: uuid,
-        status: { type: 'created', progress: 'in_progress' },
+        status: { type: 'created', progress: 'in_progress', isDeleted: false },
         errorsCount: 0,
         lastErrorMsg: '',
         rating: initialRating,
@@ -219,7 +219,7 @@ export class BotsService {
       user_id: bots[id].user_id,
       username: bots[id].username,
       filename: bots[id].filename,
-      status: { type: 'ok', progress: 'no_more_opponents' },
+      status: { type: 'ok', progress: 'no_more_opponents', isDeleted: false },
       errorsCount: bots[id].errorsCount,
       lastErrorMsg: bots[id].lastErrorMsg,
       rating: bots[id].rating,
@@ -269,7 +269,7 @@ export class BotsService {
               user_id: player.user_id,
               username: player.username,
               filename: player.filename,
-              status: { type: 'compilation_error', progress: 'failed' },
+              status: { type: 'compilation_error', progress: 'failed', isDeleted: false },
               errorsCount: player.errorsCount,
               lastErrorMsg: player.lastErrorMsg,
               rating: player.rating,
@@ -296,7 +296,7 @@ export class BotsService {
               user_id: player.user_id,
               username: player.username,
               filename: player.filename,
-              status: { type: 'playtime_error', progress: 'failed' },
+              status: { type: 'playtime_error', progress: 'failed', isDeleted: false },
               errorsCount: player.errorsCount,
               lastErrorMsg: player.lastErrorMsg,
               rating: player.rating,
@@ -317,8 +317,8 @@ export class BotsService {
         }
         continue;
       }
-      if (bot.status.type == 'deleted') continue;
-      if (this_bot.status.type == 'deleted') return;
+      if (bot.status.isDeleted) continue;
+      if (this_bot.status.isDeleted) return;
       const scores = res.scores;
       const results =
         scores[0] > scores[1]
@@ -358,7 +358,7 @@ export class BotsService {
         user_id: bot.user_id,
         username: bot.username,
         filename: bot.filename,
-        status: { type: 'ok', progress: bot.status.progress },
+        status: { type: 'ok', progress: bot.status.progress, isDeleted: false },
         errorsCount: bot.errorsCount += (scores[0] == -1 ? 1 : 0),
         lastErrorMsg: scores[0] == -1 ? res.logs[0] : bot.lastErrorMsg,
         rating: bot.rating,
@@ -370,7 +370,7 @@ export class BotsService {
         user_id: this_bot.user_id,
         username: this_bot.username,
         filename: this_bot.filename,
-        status: { type: 'ok', progress: this_bot.status.progress },
+        status: { type: 'ok', progress: this_bot.status.progress, isDeleted: false },
         errorsCount: this_bot.errorsCount += (scores[1] == -1 ? 1 : 0),
         lastErrorMsg: scores[1] == -1 ? res.logs[1] : this_bot.lastErrorMsg,
         rating: this_bot.rating,
@@ -383,7 +383,7 @@ export class BotsService {
       user_id: this_bot.user_id,
       username: this_bot.username,
       filename: this_bot.filename,
-      status: { type: 'ok', progress: 'no_more_opponents' },
+      status: { type: 'ok', progress: 'no_more_opponents', isDeleted: false },
       errorsCount: this_bot.errorsCount,
       lastErrorMsg: this_bot.lastErrorMsg,
       rating: this_bot.rating,

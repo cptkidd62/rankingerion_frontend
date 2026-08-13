@@ -27,7 +27,7 @@ const bot = computed(() => botsStore.bots.find((b) => b.id === Number(route.para
 const matches = computed(() => matchesStore.getSummaryForBot(Number(route.params.id)))
 
 function botOk(bot: Bot): boolean {
-    return bot.status.type == 'ok' || bot.status.type == 'created' || bot.status.type == 'deleted'
+    return bot.status.type == 'ok' || bot.status.type == 'created'
 }
 
 const scoreCountOverall = computed(() => {
@@ -113,8 +113,8 @@ onUnmounted(() => {
             </span>
         </span>
         <p>Language: {{ bot.language }}</p>
+        <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="openBotFile()">Show code</button>
         <div v-if="botOk(bot)">
-            <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="openBotFile()">Show code</button>
             <table>
                 <tbody>
                     <tr>

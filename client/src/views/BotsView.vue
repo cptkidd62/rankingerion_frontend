@@ -16,7 +16,7 @@ const errorMsg = ref('')
 const showDeleted = ref(false)
 let intervalId: ReturnType<typeof setInterval>
 
-const botscount = computed(() => botsStore.myBots.filter((bot) => bot.status.type != 'deleted').length)
+const botscount = computed(() => botsStore.myBots.filter((bot) => !bot.status.isDeleted).length)
 
 const onCreateBot = async (payload: { name: string, file: any, language: string, code: string }) => {
   try {

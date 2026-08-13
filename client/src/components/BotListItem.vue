@@ -24,20 +24,20 @@ function handleDelete(id: number) {
 </script>
 
 <template>
-  <div v-if="showDeleted || bot.status.type !== 'deleted'" class="bot-list-item">
+  <div v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item">
     <RouterLink :to="`/bots/${bot.id}`">
       <h3 class="name">{{ bot.name }}</h3>
       <div class="info">
         {{ bot.status.progress == 'in_progress' ? `In progress:
         ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay}` : '' }}{{
-          bot.status.type === 'deleted'
+          bot.status.isDeleted
             ? '(deleted)' : '' }}
       </div>
       <div v-if="bot.status.type === 'compilation_error'" class="error rating">Compilation error!</div>
       <div v-else-if="bot.status.type === 'playtime_error'" class="error rating">Playtime error!</div>
       <div v-else class="rating">Rating: {{ Math.round(bot.rating.value * 100) / 100 }}</div>
     </RouterLink>
-    <button v-if="bot.status.type !== 'deleted'" class="button" @click="handleDelete(bot.id)">delete</button>
+    <button v-if="!bot.status.isDeleted" class="button" @click="handleDelete(bot.id)">delete</button>
   </div>
 </template>
 

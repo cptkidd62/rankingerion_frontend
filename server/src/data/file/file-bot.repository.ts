@@ -109,8 +109,8 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
   async deleteById(id: number): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0 && this.bots[idx].status.type != 'deleted') {
-      this.bots[idx].status = { type: 'deleted', progress: 'failed' };
+    if (idx >= 0 && !this.bots[idx].status.isDeleted) {
+      this.bots[idx].status = { type: this.bots[idx].status.type, progress: 'failed', isDeleted: true };
       this.dirty = true;
     }
     this.mutex.release();
@@ -119,7 +119,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
   async updateById(id: number, bot: Bot): Promise<void> {
     await this.mutex.acquire();
     const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0 && this.bots[idx].status.type != 'deleted') {
+    if (idx >= 0 && !this.bots[idx].status.isDeleted) {
       const rating = this.bots[idx].rating;
       this.bots[idx] = bot;
       this.bots[idx].rating = rating;

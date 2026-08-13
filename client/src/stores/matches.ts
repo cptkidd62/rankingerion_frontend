@@ -79,7 +79,7 @@ export const useMatchesStore = defineStore('matches', () => {
         const c = structuredClone(count);
         c.botname = bots.bots[ido].name;
         c.username = bots.bots[ido].username;
-        summary.set(ido, [c, bots.bots[ido].status.type === 'deleted']);
+        summary.set(ido, [c, bots.bots[ido].status.isDeleted]);
       }
       switch (match.score[idx]) {
         case 1:

@@ -11,8 +11,8 @@ export const useBotsStore = defineStore('bots', () => {
   const loading = ref(false)
   const initialized = ref(false)
 
-  const botsSorted = computed(() => [...bots.value].filter((bot) => bot.status.type != 'deleted').sort((a, b) => b.rating.value - a.rating.value))
-  const botsSortedAll = computed(() => [...bots.value].sort((a, b) => b.rating.value - a.rating.value))
+  const botsSorted = computed(() => [...bots.value].filter((bot) => botOk(bot) && !bot.status.isDeleted).sort((a, b) => b.rating.value - a.rating.value))
+  const botsSortedAll = computed(() => [...bots.value].filter((bot) => botOk(bot)).sort((a, b) => b.rating.value - a.rating.value))
   const myBots = computed(() => [...bots.value].filter((bot) => bot.user_id == auth.user?.id))
   const hasBotsInProgress = computed(() => [...bots.value].some((bot) => bot.user_id == auth.user?.id && bot.status.progress == 'in_progress'))
 
@@ -31,8 +31,8 @@ export const useBotsStore = defineStore('bots', () => {
 
   async function deleteBot(id: number) {
     const idx = bots.value.findIndex((bot) => bot.id == id);
-    if (idx >= 0 && bots.value[idx].status.type != 'deleted') {
-      bots.value[idx].status.type = 'deleted';
+    if (idx >= 0 && !bots.value[idx].status.isDeleted) {
+      bots.value[idx].status.isDeleted = true;
     }
   }
 
@@ -40,6 +40,10 @@ export const useBotsStore = defineStore('bots', () => {
     if (!initialized.value && !loading.value) {
       await fetchBots();
     }
+  }
+
+  function botOk(bot: Bot): boolean {
+    return bot.status.type == 'ok' || bot.status.type == 'created';
   }
 
   return {
