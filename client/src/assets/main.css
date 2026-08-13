@@ -63,7 +63,15 @@ select {
   color: var(--color-background);
 }
 
-.text-input.error {
+.file-input {
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border: solid var(--color-text) 0.15em;
+}
+
+.text-input.error,
+.file-input.error,
+select.error {
   border-color: red;
 }
 

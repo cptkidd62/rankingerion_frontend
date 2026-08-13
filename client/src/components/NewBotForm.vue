@@ -117,12 +117,12 @@ document.addEventListener('drop', (e) => {
                 <label for="code-text">Paste code as text</label>
             </div>
             <div v-if="codeInput == 'file'">
-                <input class="button file-input" type="file" name="file" id="file" ref="fileInput"
+                <input class="button file-input" :class="{ error: errors.file != '' }" type="file" name="file" id="file" ref="fileInput"
                     v-on:change="onFileChanged()" @blur="validateField('file')" placeholder="Paste code here">
                 <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
             </div>
             <div v-else class="textcode">
-                <select name="language" id="language" v-model="language" placeholder="Język"
+                <select :class="{ error: errors.language != '' }" name="language" id="language" v-model="language" placeholder="Język"
                     @blur="validateField('language')">
                     <option disabled value="">Select language</option>
                     <option v-for="language in useConfigStore().config!.acceptedTextExtentions" :value="language">{{
@@ -220,11 +220,5 @@ p {
 .textcode {
     display: flex;
     flex-flow: column;
-}
-
-.file-input {
-    color: var(--color-text);
-    background-color: var(--color-background);
-    border: solid var(--color-text) 0.15em;
 }
 </style>
