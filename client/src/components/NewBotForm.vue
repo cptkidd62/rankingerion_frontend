@@ -117,22 +117,23 @@ document.addEventListener('drop', (e) => {
                 <label for="code-text">Paste code as text</label>
             </div>
             <div v-if="codeInput == 'file'">
-                <input class="button" type="file" name="file" id="file" ref="fileInput" v-on:change="onFileChanged()"
-                    @blur="validateField('file')" placeholder="Paste code here">
+                <input class="button file-input" type="file" name="file" id="file" ref="fileInput"
+                    v-on:change="onFileChanged()" @blur="validateField('file')" placeholder="Paste code here">
                 <p v-if="errors.file" style="color:red;">{{ errors.file }}</p>
             </div>
             <div v-else class="textcode">
                 <select name="language" id="language" v-model="language" placeholder="Język"
                     @blur="validateField('language')">
                     <option disabled value="">Select language</option>
-                    <option v-for="language in useConfigStore().config!.acceptedTextExtentions" :value="language">{{ language }}</option>
+                    <option v-for="language in useConfigStore().config!.acceptedTextExtentions" :value="language">{{
+                        language }}</option>
                 </select>
                 <p v-if="errors.language" style="color:red;">{{ errors.language }}</p>
-                <textarea class="text-input" :class="{ error: errors.code != '' }" type="text" name="code" id="code" v-model="code" @blur="validateField('code')"
-                    placeholder="Paste code here"></textarea>
+                <textarea class="text-input" :class="{ error: errors.code != '' }" type="text" name="code" id="code"
+                    v-model="code" @blur="validateField('code')" placeholder="Paste code here"></textarea>
                 <p v-if="errors.code" style="color:red;">{{ errors.code }}</p>
             </div>
-            <input class="button" type="submit" value="Create">
+            <input class="button submit" type="submit" value="Create">
         </form>
     </div>
     <div v-if="codeInput == 'file' && isDragging" class="drop-overlay">
@@ -168,6 +169,10 @@ document.addEventListener('drop', (e) => {
     font-family: inherit;
     align-items: center;
     width: 20em;
+}
+
+.submit {
+    padding: 12px;
 }
 
 .new-bot-form div,
@@ -215,5 +220,11 @@ p {
 .textcode {
     display: flex;
     flex-flow: column;
+}
+
+.file-input {
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border: solid var(--color-text) 0.15em;
 }
 </style>
