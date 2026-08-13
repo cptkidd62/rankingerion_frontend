@@ -195,22 +195,22 @@ export class BotsService {
         score: results,
         sequence_number: -1,
       };
-      this.matchRepo.create(match).then(
-        (matchid) => {
-          match.id = matchid;
-          this.ratingService
-            .processMatch(match)
-            .then(() => this.matchmakerService.removeFromCache(bot.id, id))
-            .catch((err) => {
-              console.error(err);
-              this.matchmakerService.removeFromCache(bot.id, id);
-            });
-        },
-        (err) => {
+      try {
+        const matchid = await this.matchRepo.create(match);
+        match.id = matchid;
+        try {
+          this.ratingService.processMatch(match);
           this.matchmakerService.removeFromCache(bot.id, id);
-          console.error('Error during create match:', err);
-        },
-      );
+        }
+        catch (err) {
+          console.error(err);
+          this.matchmakerService.removeFromCache(bot.id, id);
+        }
+      }
+      catch (err) {
+        this.matchmakerService.removeFromCache(bot.id, id);
+        console.error('Error during create match:', err);
+      }
     }
     await this.botRepo.updateById(bots[id].id, {
       id: bots[id].id,
@@ -335,22 +335,22 @@ export class BotsService {
         score: results,
         sequence_number: -1,
       };
-      this.matchRepo.create(match).then(
-        (matchid) => {
-          match.id = matchid;
-          this.ratingService
-            .processMatch(match)
-            .then(() => this.matchmakerService.removeFromCache(bot.id, id))
-            .catch((err) => {
-              console.error(err);
-              this.matchmakerService.removeFromCache(bot.id, id);
-            });
-        },
-        (err) => {
+      try {
+        const matchid = await this.matchRepo.create(match);
+        match.id = matchid;
+        try {
+          this.ratingService.processMatch(match);
           this.matchmakerService.removeFromCache(bot.id, id);
-          console.error('Error during create match:', err);
-        },
-      );
+        }
+        catch (err) {
+          console.error(err);
+          this.matchmakerService.removeFromCache(bot.id, id);
+        }
+      }
+      catch (err) {
+        this.matchmakerService.removeFromCache(bot.id, id);
+        console.error('Error during create match:', err);
+      }
       await this.botRepo.updateById(bot.id, {
         id: bot.id,
         name: bot.name,
