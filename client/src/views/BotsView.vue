@@ -98,11 +98,6 @@ onUnmounted(() => {
   height: 100%;
 }
 
-#showDeleted {
-  margin-right: 0.5em;
-  margin-bottom: 2rem;
-}
-
 .div {
   display: flex;
   flex-flow: column;

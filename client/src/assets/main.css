@@ -21,6 +21,8 @@ a,
   }
 }
 
+/* forms */
+
 select {
   background-color: var(--color-background);
   border-radius: 0.6em;
@@ -96,4 +98,11 @@ th {
   background-color: var(--color-border);
   color: var(--color-text);
   font-weight: bold;
+}
+
+/* other */
+
+#showDeleted {
+  margin-right: 0.5em;
+  margin-bottom: 1rem;
 }

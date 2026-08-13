@@ -88,11 +88,6 @@ onUnmounted(() => {
   color: var(--color-background);
 }
 
-#showDeleted {
-  margin-right: 0.5em;
-  margin-bottom: 1rem;
-}
-
 a.table-link {
   color: inherit;
   background-color: inherit;
