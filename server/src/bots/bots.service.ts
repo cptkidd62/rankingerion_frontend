@@ -317,8 +317,14 @@ export class BotsService {
         }
         continue;
       }
-      if (bot.status.isDeleted) continue;
-      if (this_bot.status.isDeleted) return;
+      if (bot.status.isDeleted) {
+        this.matchmakerService.removeFromCache(bot.id, id);
+        continue;
+      }
+      if (this_bot.status.isDeleted) {
+        this.matchmakerService.removeFromCache(bot.id, id);
+        return;
+      }
       const scores = res.scores;
       const results =
         scores[0] > scores[1]

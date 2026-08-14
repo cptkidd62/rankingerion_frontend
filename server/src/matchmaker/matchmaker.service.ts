@@ -115,8 +115,8 @@ export class MatchmakerService implements OnModuleInit {
       (this.pendingCache.get(id1)!.opponentsCount.get(id2) ?? 0);
     return (
       bots[id1].user_id != bots[id2].user_id && //don't allow own bots
-      (bots[id1].status.type == 'created' || bots[id1].status.type == 'ok') &&
-      (bots[id2].status.type == 'created' || bots[id2].status.type == 'ok') &&
+      (bots[id1].status.type == 'created' || bots[id1].status.type == 'ok') && !bots[id1].status.isDeleted &&
+      (bots[id2].status.type == 'created' || bots[id2].status.type == 'ok') && !bots[id2].status.isDeleted &&
       played < this.appConfig.config.maxMatchesPerOpponent // check if not max with this opponent
     );
   }
