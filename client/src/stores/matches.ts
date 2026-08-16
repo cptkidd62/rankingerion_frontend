@@ -67,6 +67,7 @@ export const useMatchesStore = defineStore('matches', () => {
     const summary = new Map<number, [OpponentSummary, boolean]>();
     const count: OpponentSummary = {
       wins: 0, draws: 0, losses: 0,
+      winrate: 0,
       botname: "",
       username: ""
     };
@@ -96,7 +97,14 @@ export const useMatchesStore = defineStore('matches', () => {
           throw new Error('wrong score value ' + match.score[idx]);
       }
     }
+    for (var [_, [sum, _b]] of summary) {
+      sum.winrate = winRate(sum);
+    }
     return summary;
+  }
+
+  const winRate = (sum: OpponentSummary) => {
+    return sum.wins / (sum.wins + sum.draws + sum.losses)
   }
 
   async function ensureInitialized() {

@@ -28,8 +28,7 @@ const props = defineProps({
     </td>
     <td>
       <RouterLink class="table-link" :to="`/bots/${oppsummary[0]}`">
-        {{ Math.round(oppsummary[1][0].wins / (oppsummary[1][0].wins + oppsummary[1][0].draws + oppsummary[1][0].losses)
-          * 100) }}%
+        {{ Math.round(oppsummary[1][0].winrate * 100) }}%
       </RouterLink>
     </td>
   </tr>
