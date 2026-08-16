@@ -123,6 +123,10 @@ onUnmounted(() => {
                         <td>{{ bot.rating.value.toFixed(2) }}</td>
                     </tr>
                     <tr>
+                        <th>Matches</th>
+                        <td>{{ bot.rating.matchesPlayed }}</td>
+                    </tr>
+                    <tr>
                         <th>Winrate</th>
                         <td>{{ Math.round(winRateOverall * 100) }}%</td>
                     </tr>
