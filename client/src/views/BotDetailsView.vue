@@ -166,7 +166,7 @@ onUnmounted(() => {
                     <tr>
                         <th>W / D / L</th>
                         <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses
-                            }}</td>
+                        }}</td>
                     </tr>
                     <tr>
                         <th>Errors</th>
@@ -188,10 +188,13 @@ onUnmounted(() => {
                 <table>
                     <tbody>
                         <tr>
-                            <th class="sorting-header" @click="sortBy('botname')">Opponent</th>
-                            <th class="sorting-header" @click="sortBy('username')">User</th>
+                            <th class="sorting-header" @click="sortBy('botname')">Opponent <span
+                                    v-if="sortColumn == 'botname'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
+                            <th class="sorting-header" @click="sortBy('username')">User <span
+                                    v-if="sortColumn == 'username'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
                             <th>Wins / Draws / Losses</th>
-                            <th class="sorting-header" @click="sortBy('winrate')">Winrate</th>
+                            <th class="sorting-header" @click="sortBy('winrate')">Winrate <span
+                                    v-if="sortColumn == 'winrate'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
                         </tr>
                         <ResultListItem v-for="oppsummary in sortedSummary" :oppsummary="oppsummary"
                             :show-deleted="showDeleted" />
