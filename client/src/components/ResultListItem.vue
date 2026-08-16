@@ -18,7 +18,12 @@ const props = defineProps({
   <tr v-if="showDeleted || !oppsummary[1][1]" class="result-list-item">
     <td>
       <RouterLink class="table-link" :to="`/bots/${oppsummary[0]}`">
-        {{ oppsummary[1][0].botname }}@{{ oppsummary[1][0].username }}
+        {{ oppsummary[1][0].botname }}
+      </RouterLink>
+    </td>
+    <td>
+      <RouterLink class="table-link" :to="`/bots/${oppsummary[0]}`">
+        {{ oppsummary[1][0].username }}
       </RouterLink>
     </td>
     <td>

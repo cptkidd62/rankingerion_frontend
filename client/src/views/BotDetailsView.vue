@@ -156,6 +156,7 @@ onUnmounted(() => {
                     <tbody>
                         <tr>
                             <th>Opponent</th>
+                            <th>User</th>
                             <th>Wins / Draws / Losses</th>
                             <th>Winrate</th>
                         </tr>
