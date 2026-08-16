@@ -188,10 +188,10 @@ onUnmounted(() => {
                 <table>
                     <tbody>
                         <tr>
-                            <th @click="sortBy('botname')">Opponent</th>
-                            <th @click="sortBy('username')">User</th>
+                            <th class="sorting-header" @click="sortBy('botname')">Opponent</th>
+                            <th class="sorting-header" @click="sortBy('username')">User</th>
                             <th>Wins / Draws / Losses</th>
-                            <th @click="sortBy('winrate')">Winrate</th>
+                            <th class="sorting-header" @click="sortBy('winrate')">Winrate</th>
                         </tr>
                         <ResultListItem v-for="oppsummary in sortedSummary" :oppsummary="oppsummary"
                             :show-deleted="showDeleted" />

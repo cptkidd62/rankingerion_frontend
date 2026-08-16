@@ -100,6 +100,10 @@ th {
   font-weight: bold;
 }
 
+.sorting-header {
+  cursor: pointer;
+}
+
 /* other */
 
 #showDeleted {
