@@ -65,7 +65,7 @@ onUnmounted(() => {
             </td>
             <td>
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-                {{ Math.round(bot.rating.value * 100) / 100 }}
+                {{ bot.rating.value.toFixed(2) }}
               </RouterLink>
             </td>
           </tr>

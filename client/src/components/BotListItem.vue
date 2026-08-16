@@ -35,7 +35,7 @@ function handleDelete(id: number) {
       </div>
       <div v-if="bot.status.type === 'compilation_error'" class="error rating">Compilation error!</div>
       <div v-else-if="bot.status.type === 'playtime_error'" class="error rating">Playtime error!</div>
-      <div v-else class="rating">Rating: {{ Math.round(bot.rating.value * 100) / 100 }}</div>
+      <div v-else class="rating">Rating: {{ bot.rating.value.toFixed(2) }}</div>
     </RouterLink>
     <button v-if="!bot.status.isDeleted" class="button" @click="handleDelete(bot.id)">delete</button>
   </div>

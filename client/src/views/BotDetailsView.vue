@@ -120,7 +120,7 @@ onUnmounted(() => {
                 <tbody>
                     <tr>
                         <th>Rating</th>
-                        <td>{{ Math.round(bot.rating.value * 100) / 100 }}</td>
+                        <td>{{ bot.rating.value.toFixed(2) }}</td>
                     </tr>
                     <tr>
                         <th>Winrate</th>
