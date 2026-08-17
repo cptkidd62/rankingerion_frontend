@@ -76,6 +76,11 @@ function sortBy(column: keyof OpponentSummary) {
 };
 // =======================
 
+const formatter = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
+
 async function openBotFile() {
     const response = await api.bots.getFile(bot.value!.id);
     const url = URL.createObjectURL(response.data);
@@ -185,6 +190,10 @@ onUnmounted(() => {
                     <tr v-if="bot.lastErrorMsg != ''">
                         <th>Last log</th>
                         <td>{{ bot.lastErrorMsg }}</td>
+                    </tr>
+                    <tr>
+                        <th>Created</th>
+                        <td>{{ formatter.format(new Date(bot.dateCreated)) }}</td>
                     </tr>
                 </tbody>
             </table>

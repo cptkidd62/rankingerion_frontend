@@ -18,6 +18,7 @@ export interface Bot {
     language: string;
     user_id: number;
     username: string;
+    dateCreated: number;
     status: BotStatus;
     errorsCount: number;
     lastErrorMsg: string;
