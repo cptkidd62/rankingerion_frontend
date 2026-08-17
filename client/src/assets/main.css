@@ -66,9 +66,9 @@ select {
 }
 
 .file-input {
-    color: var(--color-text);
-    background-color: var(--color-background);
-    border: solid var(--color-text) 0.15em;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  border: solid var(--color-text) 0.15em;
 }
 
 .text-input.error,
@@ -109,4 +109,9 @@ th {
 #showDeleted {
   margin-right: 0.5em;
   margin-bottom: 1rem;
+}
+
+.monospace {
+  font-family: 'Iosevka', 'Fira Mono', 'Noto Mono', monospace;
+  text-align: right;
 }

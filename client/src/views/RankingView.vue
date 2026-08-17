@@ -55,7 +55,7 @@ onUnmounted(() => {
           </tr>
           <tr v-for="(bot, i) in (showDeleted ? botsStore.botsSortedAll : botsStore.botsSorted)"
             :class="{ own: bot.user_id == auth.user?.id }" class="ranking-row">
-            <td>
+            <td class="monospace">
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
                 {{ i + 1 }}
               </RouterLink>
@@ -70,12 +70,12 @@ onUnmounted(() => {
                 {{ bot.username }}
               </RouterLink>
             </td>
-            <td>
+            <td class="monospace">
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
                 {{ bot.rating.value.toFixed(2) }}
               </RouterLink>
             </td>
-            <td>
+            <td class="monospace">
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
                 {{ bot.rating.matchesPlayed }}
               </RouterLink>
