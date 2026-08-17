@@ -46,39 +46,39 @@ function displayStatus(bot: Bot): string {
 </script>
 
 <template>
-  <tr v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item">
+  <tr v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item ranking-row">
     <td>
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ bot.name }}
       </RouterLink>
     </td>
     <td>
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ displayStatus(bot) }}
       </RouterLink>
     </td>
     <td class="monospace">
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ useBotsStore().getRankingPosition(bot.id) > 0 ? useBotsStore().getRankingPosition(bot.id) : '---' }}
       </RouterLink>
     </td>
     <td class="monospace">
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ (bot.status.type != 'compilation_error' && bot.status.type != 'playtime_error') ? bot.rating.value.toFixed(2) : '---' }}
       </RouterLink>
     </td>
     <td>
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ formatter.format(new Date(bot.dateCreated)) }}
       </RouterLink>
     </td>
     <td class="monospace">
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ bot.rating.matchesPlayed }}
       </RouterLink>
     </td>
     <td class="monospace">
-      <RouterLink :to="`/bots/${bot.id}`">
+      <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ bot.errorsCount }}
       </RouterLink>
     </td>

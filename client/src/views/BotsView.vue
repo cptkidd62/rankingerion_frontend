@@ -133,12 +133,12 @@ onUnmounted(() => {
 <template>
   <div class="bots">
     <h1>My bots ({{ botscount }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
-    <span>
-      <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
-      <label for="showDeleted">Show deleted bots</label>
-    </span>
     <div v-if="botsStore.loading && !botsStore.initialized">Loading...</div>
     <div v-else>
+      <span>
+        <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
+        <label for="showDeleted">Show deleted bots</label>
+      </span>
       <table>
         <tbody>
           <tr>

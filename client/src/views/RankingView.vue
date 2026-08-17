@@ -99,30 +99,4 @@ onUnmounted(() => {
   background-color: var(--color-border);
   color: var(--color-text);
 }
-
-a.table-link {
-  color: inherit;
-  background-color: inherit;
-  text-decoration: none;
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-a.table-link:hover {
-  color: inherit;
-  background-color: inherit;
-  text-decoration: none;
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-tr.ranking-row:hover {
-  color: var(--color-header)
-}
 </style>
