@@ -96,8 +96,8 @@ onUnmounted(() => {
 }
 
 .own {
-  background-color: var(--color-text);
-  color: var(--color-background);
+  background-color: var(--color-border);
+  color: var(--color-text);
 }
 
 a.table-link {
