@@ -46,7 +46,7 @@ function displayStatus(bot: Bot): string {
 </script>
 
 <template>
-  <tr v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item ranking-row" :class="{ error: bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error' }">
+  <tr v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item ranking-row" :class="{ error: bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error', deleted: bot.status.isDeleted }">
     <td>
       <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ bot.name }}

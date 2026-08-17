@@ -141,3 +141,7 @@ tr.ranking-row:hover {
   font-family: 'Iosevka', 'Fira Mono', 'Noto Mono', monospace;
   text-align: right;
 }
+
+.deleted {
+    opacity: 0.6;
+}

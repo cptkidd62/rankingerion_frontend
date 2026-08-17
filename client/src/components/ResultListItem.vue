@@ -15,10 +15,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <tr v-if="showDeleted || !oppsummary[1][1]" class="result-list-item">
+  <tr v-if="showDeleted || !oppsummary[1][1]" class="result-list-item" :class="{ deleted: oppsummary[1][1] }">
     <td>
       <RouterLink class="table-link" :to="`/bots/${oppsummary[0]}`">
-        {{ oppsummary[1][0].botname }}
+        {{ oppsummary[1][0].botname }}{{ oppsummary[1][1] ? ' (deleted)' : '' }}
       </RouterLink>
     </td>
     <td>

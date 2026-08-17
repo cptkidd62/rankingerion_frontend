@@ -54,7 +54,7 @@ onUnmounted(() => {
             <th>Matches</th>
           </tr>
           <tr v-for="(bot, i) in (showDeleted ? botsStore.botsSortedAll : botsStore.botsSorted)"
-            :class="{ own: bot.user_id == auth.user?.id }" class="ranking-row">
+            :class="{ own: bot.user_id == auth.user?.id, deleted: bot.status.isDeleted }" class="ranking-row">
             <td class="monospace">
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
                 {{ i + 1 }}
@@ -62,7 +62,7 @@ onUnmounted(() => {
             </td>
             <td>
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-                {{ bot.name }}
+                {{ bot.name }}{{ bot.status.isDeleted ? ' (deleted)' : '' }}
               </RouterLink>
             </td>
             <td>
