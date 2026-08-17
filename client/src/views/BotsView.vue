@@ -135,6 +135,11 @@ onUnmounted(() => {
     <h1>My bots ({{ botscount }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
     <div v-if="botsStore.loading && !botsStore.initialized">Loading...</div>
     <div v-else>
+      <details v-if="botscount < configStore.config!.maxBotsPerUser" :open="isOpen" class="add-bot">
+        <summary @click.prevent="isOpen = !isOpen">Add bot</summary>
+        <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />
+        <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
+      </details>
       <span>
         <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
         <label for="showDeleted">Show deleted bots</label>
@@ -166,11 +171,6 @@ onUnmounted(() => {
             @delete="onDeleteBot" />
         </tbody>
       </table>
-      <details v-if="botscount < configStore.config!.maxBotsPerUser" :open="isOpen">
-        <summary @click.prevent="isOpen = !isOpen">Add bot</summary>
-        <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />
-        <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
-      </details>
     </div>
   </div>
 </template>
@@ -189,5 +189,9 @@ onUnmounted(() => {
   display: flex;
   flex-flow: column;
   align-items: center;
+}
+
+.add-bot {
+  margin-bottom: 1.5em;
 }
 </style>
