@@ -57,6 +57,8 @@ const sortedSummary = computed(() => {
         const valueA = a[1][0][sortColumn.value!];
         const valueB = b[1][0][sortColumn.value!];
 
+        if (valueA == null) return sortDirection.value === 'asc' ? -1 : 1;
+        if (valueB == null) return sortDirection.value === 'asc' ? 1 : -1;
         if (valueA < valueB) return sortDirection.value === 'asc' ? -1 : 1;
         if (valueA > valueB) return sortDirection.value === 'asc' ? 1 : -1;
         return 0;
@@ -203,6 +205,8 @@ onUnmounted(() => {
                             <th>Wins / Draws / Losses</th>
                             <th class="sorting-header" @click="sortBy('winrate')">Winrate <span
                                     v-if="sortColumn == 'winrate'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
+                            <th class="sorting-header" @click="sortBy('rankDelta')">Rank Δ <span
+                                    v-if="sortColumn == 'rankDelta'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
                         </tr>
                         <ResultListItem v-for="oppsummary in sortedSummary" :oppsummary="oppsummary"
                             :show-deleted="showDeleted" />

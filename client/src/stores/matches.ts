@@ -68,6 +68,7 @@ export const useMatchesStore = defineStore('matches', () => {
     const count: OpponentSummary = {
       wins: 0, draws: 0, losses: 0,
       winrate: 0,
+      rankDelta: null,
       botname: "",
       username: ""
     };
@@ -97,8 +98,13 @@ export const useMatchesStore = defineStore('matches', () => {
           throw new Error('wrong score value ' + match.score[idx]);
       }
     }
-    for (var [_, [sum, _b]] of summary) {
+    for (var [i, [sum, _]] of summary) {
       sum.winrate = winRate(sum);
+      const rOwn = bots.getRankingPosition(botId);
+      const rOpp = bots.getRankingPosition(i);
+      if (rOwn > 0 && rOpp > 0) {
+        sum.rankDelta = rOpp - rOwn;
+      }
     }
     return summary;
   }

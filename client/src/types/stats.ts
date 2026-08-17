@@ -5,6 +5,7 @@ export type OpponentSummary = {
   losses: number;
   draws: number;
   winrate: number;
+  rankDelta: number | null;
 }
 
 export type Summary = Map<number, [OpponentSummary, boolean]>

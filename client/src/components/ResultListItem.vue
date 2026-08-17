@@ -36,6 +36,11 @@ const props = defineProps({
         {{ Math.round(oppsummary[1][0].winrate * 100) }}%
       </RouterLink>
     </td>
+    <td>
+      <RouterLink class="table-link" :to="`/bots/${oppsummary[0]}`">
+        {{ oppsummary[1][0].rankDelta ?? '---' }}
+      </RouterLink>
+    </td>
   </tr>
 </template>
 
