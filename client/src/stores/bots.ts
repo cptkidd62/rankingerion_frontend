@@ -42,6 +42,14 @@ export const useBotsStore = defineStore('bots', () => {
     }
   }
 
+  function getRankingPosition(id: number): number {
+    return botsSorted.value.findIndex((bot) => bot.id == id) + 1;
+  }
+
+  function getRatingOfLeader(): number {
+    return botsSorted.value[0].rating.value;
+  }
+
   function botOk(bot: Bot): boolean {
     return bot.status.type == 'ok' || bot.status.type == 'created';
   }
@@ -56,6 +64,8 @@ export const useBotsStore = defineStore('bots', () => {
     loading,
     initialized,
     deleteBot,
+    getRankingPosition,
+    getRatingOfLeader,
     ensureInitialized
   }
 }

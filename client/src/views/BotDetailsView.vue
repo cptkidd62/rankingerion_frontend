@@ -156,6 +156,14 @@ onUnmounted(() => {
                         <td>{{ bot.rating.value.toFixed(2) }}</td>
                     </tr>
                     <tr>
+                        <th>Ranking</th>
+                        <td>{{ botsStore.getRankingPosition(bot.id) > 0 ? '#' + botsStore.getRankingPosition(bot.id) : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>To #1</th>
+                        <td>{{ botsStore.getRankingPosition(bot.id) != 1 ? (botsStore.getRatingOfLeader() - bot.rating.value).toFixed(2) : '-' }}</td>
+                    </tr>
+                    <tr>
                         <th>Matches</th>
                         <td>{{ bot.rating.matchesPlayed }}</td>
                     </tr>
