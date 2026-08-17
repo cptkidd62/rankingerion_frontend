@@ -71,6 +71,9 @@ export class RatingService implements OnModuleInit {
       for (const id of ids) {
         if (!this.ratings.has(id)) {
           this.ratings.set(id, structuredClone(this.newRating));
+          if (bots[id].status.type == 'compilation_error' || bots[id].status.type == 'playtime_error') {
+            this.ratings.get(id)!.value = 0;
+          }
         }
       }
       for (const [id, rating] of this.ratings) {

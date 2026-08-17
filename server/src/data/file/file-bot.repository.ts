@@ -39,6 +39,9 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       this.bots = data.bots;
       for (const bot of this.bots) {
         bot.rating = initialRating;
+        if (bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error') {
+          bot.rating.value = 0;
+        }
       }
       this.nextId = data.next_id;
     } catch (err) {

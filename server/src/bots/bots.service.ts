@@ -278,6 +278,13 @@ export class BotsService {
               lastErrorMsg: player.lastErrorMsg,
               rating: player.rating,
             });
+            await this.botRepo.updateRatingById(player.id, {
+              value: 0,
+              RD: player.rating.RD,
+              lastMatchId: player.rating.lastMatchId,
+              matchesPlayed: player.rating.matchesPlayed,
+              opponentsPlayed: player.rating.opponentsPlayed
+            });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
               this.matchmakerService.removeFromCache(bot.id, id);
@@ -305,6 +312,13 @@ export class BotsService {
               errorsCount: player.errorsCount,
               lastErrorMsg: player.lastErrorMsg,
               rating: player.rating,
+            });
+            await this.botRepo.updateRatingById(player.id, {
+              value: 0,
+              RD: player.rating.RD,
+              lastMatchId: player.rating.lastMatchId,
+              matchesPlayed: player.rating.matchesPlayed,
+              opponentsPlayed: player.rating.opponentsPlayed
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
