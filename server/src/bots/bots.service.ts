@@ -283,7 +283,9 @@ export class BotsService {
               RD: player.rating.RD,
               lastMatchId: player.rating.lastMatchId,
               matchesPlayed: player.rating.matchesPlayed,
-              opponentsPlayed: player.rating.opponentsPlayed
+              opponentsPlayed: player.rating.opponentsPlayed,
+              trueSkillMu: player.rating.trueSkillMu,
+              trueSkillSigma: player.rating.trueSkillSigma,
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
@@ -318,7 +320,9 @@ export class BotsService {
               RD: player.rating.RD,
               lastMatchId: player.rating.lastMatchId,
               matchesPlayed: player.rating.matchesPlayed,
-              opponentsPlayed: player.rating.opponentsPlayed
+              opponentsPlayed: player.rating.opponentsPlayed,
+              trueSkillMu: player.rating.trueSkillMu,
+              trueSkillSigma: player.rating.trueSkillSigma,
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error

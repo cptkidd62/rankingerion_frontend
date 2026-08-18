@@ -2,8 +2,10 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { BotRepository, RatingData } from './bot.repository';
 import { Match, MatchRepository } from './match.repository';
 import { glicko } from './glicko';
+import { Rating, TrueSkill } from 'ts-trueskill';
 
 export const glickoData = { initialRating: 1500, RD: 350 } as const;
+const tsEnv = new TrueSkill(undefined, undefined, undefined, 0.002, 0.0001);
 
 export const initialRating = {
   value: glickoData.initialRating,
@@ -11,6 +13,8 @@ export const initialRating = {
   lastMatchId: -1,
   matchesPlayed: 0,
   opponentsPlayed: new Map<number, number>(),
+  trueSkillMu: tsEnv.createRating().mu,
+  trueSkillSigma: tsEnv.createRating().sigma
 } as RatingData;
 
 // rating service jest jedyną klasą, która modyfikuje pole rating w bocie oraz sequence_number w match
@@ -120,8 +124,8 @@ export class RatingService implements OnModuleInit {
   private serialize<T>(fn: () => Promise<T>): Promise<T> {
     const res = this.queue.then(fn, fn);
     this.queue = res.then(
-      () => {},
-      () => {},
+      () => { },
+      () => { },
     );
     return res;
   }
@@ -134,6 +138,11 @@ export class RatingService implements OnModuleInit {
     const rating2 = this.ratings.get(id2) ?? structuredClone(this.newRating);
 
     const [r1, r2] = glicko(match.score, rating1, rating2);
+    const [[ts1], [ts2]]: Rating[][] = tsEnv.rate([[new Rating(r1.trueSkillMu, r1.trueSkillSigma)], [new Rating(r2.trueSkillMu, r2.trueSkillSigma)]], match.score.map((r) => -r));
+    r1.trueSkillMu = ts1.mu;
+    r1.trueSkillSigma = ts1.sigma;
+    r2.trueSkillMu = ts2.mu;
+    r2.trueSkillSigma = ts2.sigma;
 
     this.ratings.set(id1, r1);
     this.ratings.set(id2, r2);

@@ -10,6 +10,10 @@ export type RatingData = {
   lastMatchId: number,
   matchesPlayed: number,
   opponentsPlayed: Map<number, number>,
+
+  // trueskill
+  trueSkillMu: number;
+  trueSkillSigma: number;
 };
 
 export interface Bot {
