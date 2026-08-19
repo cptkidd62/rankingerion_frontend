@@ -38,7 +38,7 @@ function displayStatus(bot: Bot): string {
   } else if (bot.status.progress != 'in_progress') {
     return 'ok';
   } else if (bot.status.progress == 'in_progress') {
-    return `in progress (${bot.rating.matchesPlayed} / ${useConfigStore().config!.matchesToPlay})`;
+    return `in progress`;
   } else {
     return '---';
   }
@@ -46,7 +46,8 @@ function displayStatus(bot: Bot): string {
 </script>
 
 <template>
-  <tr v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item ranking-row" :class="{ error: bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error', deleted: bot.status.isDeleted }">
+  <tr v-if="showDeleted || !bot.status.isDeleted" class="bot-list-item ranking-row"
+    :class="{ error: bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error', deleted: bot.status.isDeleted }">
     <td>
       <RouterLink class="table-link" :to="`/bots/${bot.id}`">
         {{ bot.name }}
@@ -64,7 +65,8 @@ function displayStatus(bot: Bot): string {
     </td>
     <td class="monospace">
       <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-        {{ (bot.status.type != 'compilation_error' && bot.status.type != 'playtime_error') ? bot.rating.value.toFixed(2) : '---' }}
+        {{ (bot.status.type != 'compilation_error' && bot.status.type != 'playtime_error') ? bot.rating.value.toFixed(2)
+          : '---' }}
       </RouterLink>
     </td>
     <td>
@@ -74,7 +76,8 @@ function displayStatus(bot: Bot): string {
     </td>
     <td class="monospace">
       <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-        {{ bot.rating.matchesPlayed }}
+        {{ bot.rating.matchesPlayed }}{{ bot.status.progress == 'in_progress' ? ` (${Math.round(bot.rating.matchesPlayed
+          / useConfigStore().config!.matchesToPlay * 100)}%)` : '' }}
       </RouterLink>
     </td>
     <td class="monospace">

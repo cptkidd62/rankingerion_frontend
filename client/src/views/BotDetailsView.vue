@@ -77,8 +77,8 @@ function sortBy(column: keyof OpponentSummary) {
 // =======================
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
+    dateStyle: 'medium',
+    timeStyle: 'short',
 });
 
 async function openBotFile() {
@@ -153,8 +153,6 @@ onUnmounted(() => {
         </span>
         <p>Language: {{ bot.language }}</p>
         <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="openBotFile()">Show code</button>
-        <p class="progress">{{ bot.status.progress == 'in_progress' ? ` (In progress:
-            ${bot.rating.matchesPlayed}/${useConfigStore().config?.matchesToPlay})` : '' }}</p>
         <div v-if="botOk(bot)">
             <table>
                 <tbody>
@@ -164,11 +162,13 @@ onUnmounted(() => {
                     </tr>
                     <tr>
                         <th>Ranking</th>
-                        <td>{{ botsStore.getRankingPosition(bot.id) > 0 ? '#' + botsStore.getRankingPosition(bot.id) : '-' }}</td>
+                        <td>{{ botsStore.getRankingPosition(bot.id) > 0 ? '#' + botsStore.getRankingPosition(bot.id) :
+                            '-' }}</td>
                     </tr>
                     <tr>
                         <th>To #1</th>
-                        <td>{{ botsStore.getRankingPosition(bot.id) != 1 ? (botsStore.getRatingOfLeader() - bot.rating.value).toFixed(2) : '-' }}</td>
+                        <td>{{ botsStore.getRankingPosition(bot.id) != 1 ? (botsStore.getRatingOfLeader() -
+                            bot.rating.value).toFixed(2) : '-' }}</td>
                     </tr>
                     <tr>
                         <th>Trueskill</th>
@@ -176,7 +176,9 @@ onUnmounted(() => {
                     </tr>
                     <tr>
                         <th>Matches</th>
-                        <td>{{ bot.rating.matchesPlayed }}</td>
+                        <td>{{ bot.rating.matchesPlayed }}{{ bot.status.progress == 'in_progress' ? `
+                            (${Math.round(bot.rating.matchesPlayed / useConfigStore().config!.matchesToPlay * 100)}%)` :
+                            '' }}</td>
                     </tr>
                     <tr>
                         <th>Winrate</th>
@@ -219,7 +221,8 @@ onUnmounted(() => {
                             <th class="sorting-header" @click="sortBy('winrate')">Winrate <span
                                     v-if="sortColumn == 'winrate'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
                             <th class="sorting-header" @click="sortBy('rankDelta')">Rank Δ <span
-                                    v-if="sortColumn == 'rankDelta'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span></th>
+                                    v-if="sortColumn == 'rankDelta'">{{ sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                            </th>
                         </tr>
                         <ResultListItem v-for="oppsummary in sortedSummary" :oppsummary="oppsummary"
                             :show-deleted="showDeleted" />
@@ -253,11 +256,5 @@ button {
 .text-input.edit {
     margin-left: 1em;
     margin-right: 1em;
-}
-
-.progress {
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 1.2em;
 }
 </style>

@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
+import { useConfigStore } from '@/stores/config';
 
 const auth = useAuthStore()
 const botsStore = useBotsStore()
@@ -77,7 +78,8 @@ onUnmounted(() => {
             </td>
             <td class="monospace">
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-                {{ bot.rating.matchesPlayed }}
+                {{ bot.rating.matchesPlayed }}{{ bot.status.progress == 'in_progress' ? `
+                (${Math.round(bot.rating.matchesPlayed / useConfigStore().config!.matchesToPlay * 100)}%)` : '' }}
               </RouterLink>
             </td>
           </tr>
