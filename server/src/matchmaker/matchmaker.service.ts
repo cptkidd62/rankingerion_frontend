@@ -73,15 +73,13 @@ export class MatchmakerService implements OnModuleInit {
       (rating_opp: RatingData, _rating_own: RatingData): number;
       (rating_opp: RatingData, rating_own: RatingData): number;
     };
+    // draw scoring heuristic in 10:3:2 ratio
     const r = Math.random();
     if (r < 0.66) {
-      // console.log(r, 1);
       score = this.scoreOpponent1;
     } else if (r < 0.86) {
-      // console.log(r, 2);
       score = this.scoreOpponent2;
     } else {
-      // console.log(r, 3);
       score = this.scoreOpponent3;
     }
     const queue = this.generateQueue(this.bots, id, score);

@@ -17,7 +17,8 @@ export const initialRating = {
   trueSkillSigma: tsEnv.createRating().sigma
 } as RatingData;
 
-// rating service jest jedyną klasą, która modyfikuje pole rating w bocie oraz sequence_number w match
+// rating service is the only class to modify rating field in bot and sequence_number in match
+// technically bot service also does it but only for error bots so their ratings don't matter anyway
 @Injectable()
 export class RatingService implements OnModuleInit {
   private nextSequenceNumber: number;

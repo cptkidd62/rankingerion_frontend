@@ -37,7 +37,7 @@ export class DataSaverService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     clearInterval(this.intervalId);
-    // Ostatnia próba zapisu przy wyłączaniu
+    // last save attempt on shutdown
     await this.botRepo.saveData();
     await this.matchRepo.saveData();
     await this.userRepo.saveData();

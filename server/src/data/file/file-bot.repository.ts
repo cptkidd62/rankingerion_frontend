@@ -46,7 +46,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       this.nextId = data.next_id;
     } catch (err) {
       console.error('Error reading bots.json:', err);
-      // jeśli plik nie istnieje — inicjuj puste dane
+      // initialize empty data if file does not exist
       this.bots = [];
       this.nextId = 0;
     }

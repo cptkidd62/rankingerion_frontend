@@ -18,7 +18,6 @@ import { ok } from 'assert';
 import { Agent } from '../models/agent';
 import { AppConfigService } from 'src/config/appconfig.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-// import { CompileResult } from '../tasks/compileresult';
 
 @Injectable()
 export class ClientService {
@@ -191,9 +190,6 @@ export class ClientService {
       debugLog(3, this.acceptedPlayTasks.get(id));
       debugLog(3, this.acceptedPlayTasks);
     }
-    // else if (task instanceof CompileContainer) {
-    //   task.complete();
-    // }
   }
 
   enqueueBatch(batch: PlayTask[]): Promise<PlayResult[]> {
@@ -244,11 +240,6 @@ export class ClientService {
     this.sendPlayTask(playTask);
   }
 
-  // enqueueCompile(compileTask: CompileContainer): Promise<CompileResult> {
-  //   this.sendCompileTask(compileTask);
-  //   return compileTask.promise;
-  // }
-
   private reportBatchResults(bc: BatchContainer) {
     ok(bc.playCount != 0);
     if (bc.playCount > 0) {
@@ -278,10 +269,6 @@ export class ClientService {
       ' with msg: ' +
       errorMsg,
     );
-    // const task = this.sentTasks.shift();
-    // if (task instanceof CompileContainer) {
-    //   task.fail(errorMsg);
-    // }
   }
 
   private taskPlayed(playTask: PlayTaskContainer, playResults: PlayResult) {
@@ -315,12 +302,6 @@ export class ClientService {
     debugLog(3, 'ans code:', ans);
     switch (ans) {
       case ClientService.ANS_COMPILED: {
-        // const id = this.instream.peekInt();
-        // if (id == null) {
-        //   this.instream.resetCursor();
-        //   return false;
-        // }
-        // console.log('id: ' + id);
         debugLog(2, 'compiled');
         this.acceptPlayTask(-1);
         break;

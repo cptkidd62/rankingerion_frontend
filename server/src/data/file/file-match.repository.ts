@@ -41,7 +41,7 @@ export class FileMatchRepository
       this.nextId = data.next_id;
     } catch (err) {
       console.error('Error reading matches.json:', err);
-      // jeśli plik nie istnieje — inicjuj puste dane
+      // initialize empty data if file does not exist
       this.matches = [];
     }
   }

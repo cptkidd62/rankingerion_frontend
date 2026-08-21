@@ -1,7 +1,5 @@
 import { RatingData } from './bot.repository';
 
-// ========= GLICKO =============
-
 export function glicko(
   matchScore: number[],
   rating1: RatingData,
@@ -13,28 +11,28 @@ export function glicko(
   r1.value =
     rating1.value +
     (q * g(rating2.RD) * (s - exp(rating1.value, rating2.value, rating2.RD))) /
-      (1 / (rating1.RD * rating1.RD) +
-        1 / d2(rating1.value, rating2.value, rating2.RD));
+    (1 / (rating1.RD * rating1.RD) +
+      1 / d2(rating1.value, rating2.value, rating2.RD));
   r2.value =
     rating2.value +
     (q *
       g(rating1.RD) *
       (1 - s - exp(rating2.value, rating1.value, rating1.RD))) /
-      (1 / (rating2.RD * rating2.RD) +
-        1 / d2(rating2.value, rating1.value, rating1.RD));
+    (1 / (rating2.RD * rating2.RD) +
+      1 / d2(rating2.value, rating1.value, rating1.RD));
   r1.RD = Math.max(
     Math.sqrt(
       1 /
-        (1 / (rating1.RD * rating1.RD) +
-          1 / d2(rating1.value, rating2.value, rating2.RD)),
+      (1 / (rating1.RD * rating1.RD) +
+        1 / d2(rating1.value, rating2.value, rating2.RD)),
     ),
     30,
   );
   r2.RD = Math.max(
     Math.sqrt(
       1 /
-        (1 / (rating2.RD * rating2.RD) +
-          1 / d2(rating2.value, rating1.value, rating1.RD)),
+      (1 / (rating2.RD * rating2.RD) +
+        1 / d2(rating2.value, rating1.value, rating1.RD)),
     ),
     30,
   );
@@ -56,5 +54,3 @@ function d2(r: number, rj: number, rdj: number): number {
   const ej = exp(r, rj, rdj);
   return 1 / (q * q * gj * gj * ej * (1 - ej));
 }
-
-// ===============================
