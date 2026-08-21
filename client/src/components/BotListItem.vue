@@ -100,30 +100,8 @@ function displayStatus(bot: Bot): string {
   margin: 0;
 }
 
-.bot-list-item>button {
-  position: absolute;
-  bottom: 7px;
-  right: 7px;
-}
-
-.info {
-  margin: 0px 10px;
-}
-
-.name {
-  margin: 2px 7px;
-  margin-bottom: 0px;
-  font-weight: bolder;
-}
-
 .error {
   color: red;
   font-weight: bold;
-}
-
-.rating {
-  position: absolute;
-  bottom: 2px;
-  left: 10px;
 }
 </style>

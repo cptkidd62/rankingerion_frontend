@@ -47,9 +47,11 @@ const handleSubmit = () => {
 <template>
   <div class="login-form">
     <form @submit.prevent="handleSubmit">
-      <input class="text-input" style="margin-top: 0;" type="text" name="username" id="username" v-model="username" placeholder="Username" @blur="validateField('username')">
+      <input class="text-input" style="margin-top: 0;" type="text" name="username" id="username" v-model="username"
+        placeholder="Username" @blur="validateField('username')">
       <p v-if="errors.username" style="color:red;">{{ errors.username }}</p>
-      <input class="text-input" type="password" name="password" id="password" v-model="password" placeholder="Password" @blur="validateField('password')">
+      <input class="text-input" type="password" name="password" id="password" v-model="password" placeholder="Password"
+        @blur="validateField('password')">
       <p v-if="errors.password" style="color:red;">{{ errors.password }}</p>
       <input class="button" type="submit" value="Sign in">
     </form>

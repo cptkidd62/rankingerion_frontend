@@ -187,7 +187,7 @@ onUnmounted(() => {
                     <tr>
                         <th>W / D / L</th>
                         <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses
-                        }}</td>
+                            }}</td>
                     </tr>
                     <tr>
                         <th>Errors</th>

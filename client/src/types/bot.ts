@@ -17,14 +17,14 @@ export type RatingData = {
 };
 
 export interface Bot {
-    id: number;
-    name: string;
-    language: string;
-    user_id: number;
-    username: string;
-    dateCreated: number;
-    status: BotStatus;
-    errorsCount: number;
-    lastErrorMsg: string;
-    rating: RatingData;
+  id: number;
+  name: string;
+  language: string;
+  user_id: number;
+  username: string;
+  dateCreated: number;
+  status: BotStatus;
+  errorsCount: number;
+  lastErrorMsg: string;
+  rating: RatingData;
 }

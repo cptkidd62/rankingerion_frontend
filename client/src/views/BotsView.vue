@@ -185,12 +185,6 @@ onUnmounted(() => {
   height: 100%;
 }
 
-.div {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-}
-
 .add-bot {
   margin-bottom: 1.5em;
 }

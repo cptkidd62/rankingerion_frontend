@@ -40,7 +40,7 @@ function toggleEditName() {
       <button class="button" @click="toggleEditName()">{{ editingPwd ? 'Cancel' : 'Change password' }}</button>
       <span v-if="editingPwd">
         <input class="text-input edit" type="password" name="editname" id="editname" placeholder="New password"
-        v-model="newPwd">
+          v-model="newPwd">
         <button class="button" @click="updatePwd()">Submit</button>
         <p v-if="errorMsg" style="color:red;">{{ errorMsg }}</p>
       </span>

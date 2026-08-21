@@ -18,7 +18,7 @@ onMounted(() => {
 <template>
   <header>
     <div class="gameName">{{ configStore.config?.gameName }}</div>
-    <div class="wrapper">
+    <div>
       <nav>
         <RouterLink v-if="auth.token" to="/ranking">Ranking</RouterLink>
         <RouterLink v-if="auth.token" to="/bots">My bots</RouterLink>
