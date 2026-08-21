@@ -1,5 +1,7 @@
 import { RatingData } from './bot.repository';
 
+// https://www.glicko.net/glicko/glicko.pdf
+
 export function glicko(
   matchScore: number[],
   rating1: RatingData,

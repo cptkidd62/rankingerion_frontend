@@ -37,6 +37,7 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
       const raw = await fs.readFile(filePath, 'utf-8');
       const data: BotFileData = JSON.parse(raw) as BotFileData;
       this.bots = data.bots;
+      // set ratings to initial values for purpose of recaltulating rating on server restart
       for (const bot of this.bots) {
         bot.rating = initialRating;
         if (bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error') {
