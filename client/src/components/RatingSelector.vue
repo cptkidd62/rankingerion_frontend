@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const active = ref<'glicko' | 'trueskill'>('glicko');
+const active = ref<'glicko' | 'trueskill'>(localStorage.getItem('rating') as ('glicko' | 'trueskill') ?? 'glicko');
+
+function setRating(rating: 'glicko' | 'trueskill') {
+    active.value = rating;
+    localStorage.setItem('rating', rating);
+}
 </script>
 
 <template>
     <div class="rating-selector">
-        <div class="rating-option" :class="{ selected: active == 'glicko' }" @click="active = 'glicko'">Glicko</div>
-        <div class="rating-option" :class="{ selected: active == 'trueskill' }" @click="active = 'trueskill'">TrueSkill</div>
+        <div class="rating-option" :class="{ selected: active == 'glicko' }" @click="setRating('glicko')">Glicko</div>
+        <div class="rating-option" :class="{ selected: active == 'trueskill' }" @click="setRating('trueskill')">
+            TrueSkill
+        </div>
     </div>
 </template>
 
