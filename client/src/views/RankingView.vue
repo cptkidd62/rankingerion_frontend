@@ -77,7 +77,7 @@ onUnmounted(() => {
             </td>
             <td class="monospace">
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-                {{ bot.rating.value.toFixed(2) }}
+                {{ botsStore.getRating(bot).toFixed(2) }}
               </RouterLink>
             </td>
             <td class="monospace">

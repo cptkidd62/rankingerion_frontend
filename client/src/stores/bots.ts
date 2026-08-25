@@ -3,16 +3,18 @@ import { defineStore } from "pinia";
 import { useAuthStore } from "./auth";
 import { computed, ref } from "vue";
 import { api } from "@/api";
+import { useConfigStore } from "./config";
 
 const auth = useAuthStore();
+const config = useConfigStore();
 
 export const useBotsStore = defineStore('bots', () => {
   const bots = ref<Bot[]>([])
   const loading = ref(false)
   const initialized = ref(false)
 
-  const botsSorted = computed(() => [...bots.value].filter((bot) => botOk(bot) && !bot.status.isDeleted).sort((a, b) => b.rating.value - a.rating.value))
-  const botsSortedAll = computed(() => [...bots.value].filter((bot) => botOk(bot)).sort((a, b) => b.rating.value - a.rating.value))
+  const botsSorted = computed(() => [...bots.value].filter((bot) => botOk(bot) && !bot.status.isDeleted).sort((a, b) => getRating(b) - getRating(a)))
+  const botsSortedAll = computed(() => [...bots.value].filter((bot) => botOk(bot)).sort((a, b) => getRating(b) - getRating(a)))
   const myBots = computed(() => [...bots.value].filter((bot) => bot.user_id == auth.user?.id))
   const hasBotsInProgress = computed(() => [...bots.value].some((bot) => bot.user_id == auth.user?.id && bot.status.progress == 'in_progress'))
 
@@ -47,11 +49,19 @@ export const useBotsStore = defineStore('bots', () => {
   }
 
   function getRatingOfLeader(): number {
-    return botsSorted.value[0].rating.value;
+    return getRating(botsSorted.value[0]);
   }
 
   function botOk(bot: Bot): boolean {
     return bot.status.type == 'ok' || bot.status.type == 'created';
+  }
+
+  function getRating(bot: Bot): number {
+    if (config.rating == 'glicko') {
+      return bot.rating.value;
+    } else {
+      return bot.rating.trueSkillMu - 3 * bot.rating.trueSkillSigma;
+    }
   }
 
   return {
@@ -66,6 +76,7 @@ export const useBotsStore = defineStore('bots', () => {
     deleteBot,
     getRankingPosition,
     getRatingOfLeader,
+    getRating,
     ensureInitialized
   }
 }

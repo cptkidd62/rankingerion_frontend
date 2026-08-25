@@ -65,7 +65,7 @@ function displayStatus(bot: Bot): string {
     </td>
     <td class="monospace">
       <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-        {{ (bot.status.type != 'compilation_error' && bot.status.type != 'playtime_error') ? bot.rating.value.toFixed(2)
+        {{ (bot.status.type != 'compilation_error' && bot.status.type != 'playtime_error') ? useBotsStore().getRating(bot).toFixed(2)
           : '---' }}
       </RouterLink>
     </td>

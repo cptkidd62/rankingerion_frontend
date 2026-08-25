@@ -61,8 +61,10 @@ const sortedBots = computed(() => {
   }
 
   return [...botsStore.myBots].sort((a, b) => {
-    const valueA = sortColumn.value == 'status' ? scoreStatus(a) : getNestedValue(a, sortColumn.value!);
-    const valueB = sortColumn.value == 'status' ? scoreStatus(b) : getNestedValue(b, sortColumn.value!);
+    const valueA = sortColumn.value == 'status' ? scoreStatus(a) :
+      (sortColumn.value == 'rating.value' ? botsStore.getRating(a) : getNestedValue(a, sortColumn.value!));
+    const valueB = sortColumn.value == 'status' ? scoreStatus(b) :
+      (sortColumn.value == 'rating.value' ? botsStore.getRating(b) : getNestedValue(b, sortColumn.value!));
 
     if (valueA == null) return sortDirection.value === 'asc' ? -1 : 1;
     if (valueB == null) return sortDirection.value === 'asc' ? 1 : -1;
