@@ -8,6 +8,7 @@ import { useBotsStore } from '@/stores/bots';
 import { api } from '@/api/index.ts';
 import { useConfigStore } from '@/stores/config.ts';
 import type { Bot } from '@/types/bot.ts';
+import RatingSelector from '@/components/RatingSelector.vue';
 
 const auth = useAuthStore()
 const botsStore = useBotsStore()
@@ -132,9 +133,12 @@ onUnmounted(() => {
 
 <template>
   <div class="bots">
-    <h1>My bots ({{ botscount }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
     <div v-if="botsStore.loading && !botsStore.initialized">Loading...</div>
     <div v-else>
+      <div class="page-header">
+        <h1>My bots ({{ botscount }}/{{ configStore.config?.maxBotsPerUser ?? '?' }})</h1>
+        <RatingSelector />
+      </div>
       <details v-if="botscount < configStore.config!.maxBotsPerUser" :open="isOpen" class="add-bot">
         <summary @click.prevent="isOpen = !isOpen">Add bot</summary>
         <NewBotForm @submit="onCreateBot" @input-change="errorMsg = ''" />

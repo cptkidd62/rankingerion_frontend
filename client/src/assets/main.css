@@ -143,5 +143,12 @@ tr.ranking-row:hover {
 }
 
 .deleted {
-    opacity: 0.6;
+  opacity: 0.6;
+}
+
+.page-header {
+  width: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

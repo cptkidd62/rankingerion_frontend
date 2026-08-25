@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
 import { useConfigStore } from '@/stores/config';
+import RatingSelector from '@/components/RatingSelector.vue';
 
 const auth = useAuthStore()
 const botsStore = useBotsStore()
@@ -38,9 +39,12 @@ onUnmounted(() => {
 
 <template>
   <div class="results">
-    <h1>Ranking</h1>
     <div v-if="!botsStore.initialized && botsStore.loading">Loading...</div>
     <div v-else>
+      <div class="page-header">
+        <h1>Ranking</h1>
+        <RatingSelector />
+      </div>
       <span>
         <input type="checkbox" name="showDeleted" id="showDeleted" v-model="showDeleted">
         <label for="showDeleted">Show deleted bots</label>

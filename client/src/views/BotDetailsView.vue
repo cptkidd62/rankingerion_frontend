@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { api } from '@/api';
+import RatingSelector from '@/components/RatingSelector.vue';
 import ResultListItem from '@/components/ResultListItem.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
@@ -140,7 +141,10 @@ onUnmounted(() => {
 
 <template>
     <div v-if="bot" class="details">
-        <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
+        <div class="page-header">
+            <h1>{{ bot.name }}{{ bot.user_id == useAuthStore().user?.id ? '' : `@${bot.username}` }}</h1>
+            <RatingSelector />
+        </div>
         <span>
             <button v-if="bot.user_id == useAuthStore().user?.id" class="button" @click="toggleEditName()">{{
                 editingName ? 'Cancel' : 'Edit name' }}</button>
