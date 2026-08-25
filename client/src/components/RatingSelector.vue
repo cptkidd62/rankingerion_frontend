@@ -9,15 +9,25 @@ function setRating(rating: 'glicko' | 'trueskill') {
 
 <template>
     <div class="rating-selector">
-        <div class="rating-option" :class="{ selected: useConfigStore().rating == 'glicko' }" @click="setRating('glicko')">Glicko</div>
-        <div class="rating-option" :class="{ selected: useConfigStore().rating == 'trueskill' }" @click="setRating('trueskill')">
-            TrueSkill
+        <div class="selector-row">
+            <div class="rating-option" :class="{ selected: useConfigStore().rating == 'glicko' }"
+                @click="setRating('glicko')">Glicko</div>
+            <div class="rating-option" :class="{ selected: useConfigStore().rating == 'trueskill' }"
+                @click="setRating('trueskill')">
+                TrueSkill
+            </div>
         </div>
+        <p>Matchmaking uses Glicko</p>
     </div>
 </template>
 
 <style scoped>
-.rating-selector {
+.rating-selector>p {
+    font-size: 0.75em;
+    justify-self: end;
+}
+
+.selector-row {
     display: flex;
     flex-flow: row;
     font-size: 1em;
