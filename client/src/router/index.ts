@@ -57,6 +57,10 @@ const router = createRouter({
         title: 'Sign in - Rankingerion'
       }
     },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/bots',
+    },
   ],
 })
 
