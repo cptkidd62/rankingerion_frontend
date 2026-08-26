@@ -187,7 +187,7 @@ onUnmounted(() => {
                     <tr>
                         <th>W / D / L</th>
                         <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses
-                            }}</td>
+                        }}</td>
                     </tr>
                     <tr>
                         <th>Errors</th>
@@ -230,7 +230,19 @@ onUnmounted(() => {
                 </table>
             </div>
         </div>
-        <div v-else-if="bot.status.type == 'compilation_error'" class="error">Compilation error!</div>
+        <div v-else-if="bot.status.type == 'compilation_error'">
+            <div class="error">
+                Compilation error!
+            </div>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Created</th>
+                        <td>{{ formatter.format(new Date(bot.dateCreated)) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
