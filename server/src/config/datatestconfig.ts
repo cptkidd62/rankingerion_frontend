@@ -8,6 +8,8 @@ export const DataTestConfig: AppConfig = {
   botsDir: './mock_data/tests/bots',
   autoSave: true,
   gameName: 'TestGame',
+  referee: 'Sandbox',
+  maxSeed: 100000,
   useBenchmarker: false,
   acceptedTextExtentions: ['.cpp'],
   acceptedBinExtentions: ['.exe'],

@@ -10,6 +10,8 @@ export type AppConfig = {
   autoSave: boolean;
 
   gameName: string;
+  referee: string;
+  maxSeed: number;
 
   // matchmaking
   acceptedTextExtentions: string[];

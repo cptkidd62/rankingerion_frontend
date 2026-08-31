@@ -11,10 +11,11 @@ import {
   PlaytimeError,
 } from 'src/errors/PlayErrors';
 import * as path from 'path';
+import { AppConfigService } from 'src/config/appconfig.service';
 
 @Injectable()
 export class BenchmarkerService {
-  constructor(private clientService: ClientService) {}
+  constructor(private readonly clientService: ClientService, private readonly appConfigService: AppConfigService) { }
 
   async playSingle(bots: string[]): Promise<PlayResult | PlayTaskError> {
     if (!this.clientService.isConnected) return new ConnectionError();
@@ -22,7 +23,7 @@ export class BenchmarkerService {
     bots.forEach((bot) => agents.push(new Agent(bot)));
     try {
       const results = await this.clientService.enqueueBatch([
-        new PlayTask(agents, BigInt(randomInt(1000)), 'Sandbox'),
+        new PlayTask(agents, BigInt(randomInt(this.appConfigService.config.maxSeed)), this.appConfigService.config.referee),
       ]);
       console.log('**** OUT Batch results:');
       for (let i = 0; i < results.length; i++) {

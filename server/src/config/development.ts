@@ -8,6 +8,8 @@ const DevConfig = {
   botsDir: './mock_data/bots',
   autoSave: true,
   gameName: 'TestGame',
+  referee: 'Sandbox',
+  maxSeed: 100000,
   acceptedTextExtentions: ['.cpp'],
   acceptedBinExtentions: ['.exe'],
   matchesToPlay: 100,
