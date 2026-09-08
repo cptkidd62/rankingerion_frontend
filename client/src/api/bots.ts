@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL } from "./url";
 
-const API_URL = 'http://localhost:3000/bots'
+const API_URL = API_BASE_URL + '/bots'
 
 export const botsApi = {
   async create(payload: { name: string, file: any, language: string, code: string }, userId: number) {

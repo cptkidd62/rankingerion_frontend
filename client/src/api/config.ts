@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL } from "./url";
 
-const API_URL = 'http://localhost:3000/config'
+const API_URL = API_BASE_URL + '/config'
 
 export const configApi = {
   async getConfig() {
