@@ -23,7 +23,7 @@ export class BenchmarkerService {
     bots.forEach((bot) => agents.push(new Agent(bot)));
     try {
       const results = await this.clientService.enqueueBatch([
-        new PlayTask(agents, BigInt(randomInt(this.appConfigService.config.maxSeed)), this.appConfigService.config.referee),
+        new PlayTask(agents, this.randomLong(), this.appConfigService.config.referee),
       ]);
       console.log('**** OUT Batch results:');
       for (let i = 0; i < results.length; i++) {
@@ -48,5 +48,22 @@ export class BenchmarkerService {
       }
       throw Error('unknown error type ' + error);
     }
+  }
+
+  private randomLong(): bigint {
+    const bytes = new Uint8Array(8);
+    crypto.getRandomValues(bytes);
+
+    let value = 0n;
+
+    for (const byte of bytes) {
+      value = (value << 8n) | BigInt(byte);
+    }
+
+    if (value >= 2n ** 63n) {
+      value -= 2n ** 64n;
+    }
+
+    return value;
   }
 }
