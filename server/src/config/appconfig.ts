@@ -11,9 +11,10 @@ export type AppConfig = {
 
   gameName: string;
   referee: string;
-  maxSeed: number;
+  playersCount: number;
 
   // matchmaking
+  ratingForMatchmaking: 'glicko' | 'trueskill';
   acceptedTextExtentions: string[];
   acceptedBinExtentions: string[];
   matchesToPlay: number;

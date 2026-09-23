@@ -9,14 +9,15 @@ const DevConfig = {
   autoSave: true,
   gameName: 'TestGame',
   referee: 'Sandbox',
-  maxSeed: 100000,
+  playersCount: 2,
+  ratingForMatchmaking: 'glicko',
   acceptedTextExtentions: ['.cpp'],
   acceptedBinExtentions: ['.exe'],
   matchesToPlay: 100,
   maxMatchesPerOpponent: 10,
   maxBotsPerUser: 10,
   noise: 25
-};
+} as AppConfig;
 
 export const BenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
