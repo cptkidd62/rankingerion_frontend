@@ -9,6 +9,9 @@ export class AppConfigService {
 
   constructor() {
     this.config = ProdConfig;
+    if (this.config.playersCount > 2 && this.config.ratingForMatchmaking == 'glicko') {
+      throw new Error("Cannot run server with 'playersCount > 2' and 'ratingForMatchmaking == 'glicko''. Please change one of these values.");
+    }
   }
 
   getPublicConfig(): PublicConfig {
