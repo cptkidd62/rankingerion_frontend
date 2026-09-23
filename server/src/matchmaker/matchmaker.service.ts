@@ -35,12 +35,9 @@ export class MatchmakerService implements OnModuleInit {
   }
 
   private scoreOpponent1 = (rating_opp: RatingData, rating_own: RatingData) => {
-    return (
-      rating_opp.value -
-      Math.abs(rating_opp.value - rating_own.value) -
-      rating_opp.lastMatchId +
-      this.randomNoise()
-    );
+    const r_opp = (this.appConfig.config.ratingForMatchmaking == 'glicko' ? rating_opp.value : rating_opp.trueSkillMu - 3 * rating_opp.trueSkillSigma);
+    const r_own = (this.appConfig.config.ratingForMatchmaking == 'glicko' ? rating_own.value : rating_own.trueSkillMu - 3 * rating_own.trueSkillSigma);
+    return (r_opp - Math.abs(r_opp - r_own) - rating_opp.lastMatchId + this.randomNoise());
   };
   private scoreOpponent2 = (
     _rating_opp: RatingData,
@@ -52,7 +49,8 @@ export class MatchmakerService implements OnModuleInit {
     rating_opp: RatingData,
     _rating_own: RatingData,
   ) => {
-    return -rating_opp.value - rating_opp.lastMatchId + this.randomNoise();
+    const r_opp = (this.appConfig.config.ratingForMatchmaking == 'glicko' ? rating_opp.value : rating_opp.trueSkillMu - 3 * rating_opp.trueSkillSigma);
+    return -r_opp - rating_opp.lastMatchId + this.randomNoise();
   };
 
   async getNextOpponent(id: number): Promise<number | null> {
