@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Bot, BotRepository, RatingData } from '../bot.repository';
 import { Mutex } from 'async-mutex';
 import { initialRating } from '../rating.service';
-import { AppConfigService } from 'src/config/appconfig.service';
+import { AppConfigService } from '@/config/appconfig.service';
 
 interface BotFileData {
   next_id: number;

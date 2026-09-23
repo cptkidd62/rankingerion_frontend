@@ -4,13 +4,13 @@ import {
   OnModuleDestroy,
   Inject,
 } from '@nestjs/common';
-import { BotRepository } from 'src/data/bot.repository';
-import { MatchRepository } from 'src/data/match.repository';
-import { UserRepository } from 'src/data/user.repository';
+import { BotRepository } from '@/data/bot.repository';
+import { MatchRepository } from '@/data/match.repository';
+import { UserRepository } from '@/data/user.repository';
 
 @Injectable()
 export class DataSaverService implements OnModuleInit, OnModuleDestroy {
-  private intervalId: NodeJS.Timeout;
+  private intervalId: NodeJS.Timeout | undefined;
 
   constructor(
     @Inject(BotRepository)

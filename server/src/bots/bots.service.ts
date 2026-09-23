@@ -1,21 +1,21 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
-import { BotRepository, Bot, BotDTO, BotFileData } from 'src/data/bot.repository';
-import { MatchRepository } from 'src/data/match.repository';
-import { UserRepository } from 'src/data/user.repository';
+import { BotRepository, Bot, BotDTO, BotFileData } from '@/data/bot.repository';
+import { MatchRepository } from '@/data/match.repository';
+import { UserRepository } from '@/data/user.repository';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { BenchmarkerService } from 'src/benchmarker/benchmarker.service';
-import { initialRating, RatingService } from 'src/data/rating.service';
-import { BotUploadException } from 'src/errors/BotUploadExceptions';
+import { BenchmarkerService } from '@/benchmarker/benchmarker.service';
+import { initialRating, RatingService } from '@/data/rating.service';
+import { BotUploadException } from '@/errors/BotUploadExceptions';
 import {
   CompilationError,
   ConnectionError,
   PlayTaskError,
   PlaytimeError,
-} from 'src/errors/PlayErrors';
-import { AppConfigService } from 'src/config/appconfig.service';
-import { MatchmakerService } from 'src/matchmaker/matchmaker.service';
+} from '@/errors/PlayErrors';
+import { AppConfigService } from '@/config/appconfig.service';
+import { MatchmakerService } from '@/matchmaker/matchmaker.service';
 import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()

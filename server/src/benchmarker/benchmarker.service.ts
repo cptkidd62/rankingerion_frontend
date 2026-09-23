@@ -3,15 +3,14 @@ import { ClientService } from './client/client.service';
 import { PlayTask } from './tasks/playtask';
 import { Agent } from './models/agent';
 import { PlayResult } from './tasks/playresult';
-import { randomInt } from 'crypto';
 import {
   CompilationError,
   ConnectionError,
   PlayTaskError,
   PlaytimeError,
-} from 'src/errors/PlayErrors';
+} from '@/errors/PlayErrors';
 import * as path from 'path';
-import { AppConfigService } from 'src/config/appconfig.service';
+import { AppConfigService } from '@/config/appconfig.service';
 
 @Injectable()
 export class BenchmarkerService {

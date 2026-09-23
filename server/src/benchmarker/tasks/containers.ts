@@ -7,8 +7,8 @@ export class BatchContainer {
   public results: PlayResult[];
   public playCount: number = 0;
   public promise: Promise<PlayResult[]>;
-  private resolve: (value: PlayResult[]) => void;
-  private reject: (reason?: any) => void;
+  private resolve: ((value: PlayResult[]) => void) | undefined;
+  private reject: ((reason?: any) => void) | undefined;
 
   constructor(public batch: PlayTask[]) {
     this.results = new Array<PlayResult>(batch.length);
@@ -19,11 +19,11 @@ export class BatchContainer {
   }
 
   complete() {
-    this.resolve(this.results);
+    this.resolve!(this.results);
   }
 
   fail(error: any) {
-    this.reject(error);
+    this.reject!(error);
   }
 }
 
@@ -58,8 +58,8 @@ export class PlayTaskContainer extends TaskContainer {
 
 export class CompileContainer extends TaskContainer {
   public promise: Promise<CompileResult>;
-  private resolve: (value: CompileResult) => void;
-  private reject: (value: CompileResult) => void;
+  private resolve: ((value: CompileResult) => void) | undefined;
+  private reject: ((value: CompileResult) => void) | undefined;
 
   constructor(
     public agent: Agent,
@@ -82,10 +82,10 @@ export class CompileContainer extends TaskContainer {
   }
 
   complete() {
-    this.resolve(new CompileResult(this.agent.toString(), ''));
+    this.resolve!(new CompileResult(this.agent.toString(), ''));
   }
 
   fail(error: string) {
-    this.reject(new CompileResult(this.agent.toString(), error));
+    this.reject!(new CompileResult(this.agent.toString(), error));
   }
 }

@@ -2,8 +2,8 @@ export class Agent {
   baseName: string;
   version: string | null;
   lang: string;
-  paramNames: string[];
-  values: number[];
+  paramNames: string[] = [];
+  values: number[] = [];
 
   constructor(def: string) {
     if (def.startsWith('$')) {

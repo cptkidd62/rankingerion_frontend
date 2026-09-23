@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BotRepository } from 'src/data/bot.repository';
-import { MatchRepository, Match } from 'src/data/match.repository';
+import { BotRepository } from '@/data/bot.repository';
+import { MatchRepository, Match } from '@/data/match.repository';
 
 @Injectable()
 export class MatchesService {

@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Get, Patch, Post, Req, UseGuards
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { AuthenticatedRequest } from './types';
-import { UserRepository } from 'src/data/user.repository';
+import { UserRepository } from '@/data/user.repository';
 import * as bcrypt from 'bcrypt';
 
 @Controller('auth')

@@ -6,7 +6,7 @@ import { FileUserRepository } from './file-user.repository';
 import { FileBotRepository } from './file-bot.repository';
 import { FileMatchRepository } from './file-match.repository';
 import { DataSaverService } from './data-saver/data-saver.service';
-import { AppConfigService } from 'src/config/appconfig.service';
+import { AppConfigService } from '@/config/appconfig.service';
 
 @Module({
   providers: [

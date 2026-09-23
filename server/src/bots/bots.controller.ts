@@ -16,12 +16,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { BotsService } from './bots.service';
-import { BotDTO } from 'src/data/bot.repository';
-import { MatchesService } from 'src/matches/matches.service';
-import { Match } from 'src/data/match.repository';
+import { BotDTO } from '@/data/bot.repository';
+import { MatchesService } from '@/matches/matches.service';
+import { Match } from '@/data/match.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { AuthenticatedRequest } from 'src/auth/types';
+import { AuthGuard } from '@/auth/auth.guard';
+import { AuthenticatedRequest } from '@/auth/types';
 import { Response } from 'express';
 
 @Controller('bots')

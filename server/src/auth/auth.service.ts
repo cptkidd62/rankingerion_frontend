@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserRepository } from 'src/data/user.repository';
+import { UserRepository } from '@/data/user.repository';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 

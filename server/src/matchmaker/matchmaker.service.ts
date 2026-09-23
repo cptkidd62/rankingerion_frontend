@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { AppConfigService } from 'src/config/appconfig.service';
-import { Bot, BotRepository, RatingData } from 'src/data/bot.repository';
+import { AppConfigService } from '@/config/appconfig.service';
+import { Bot, BotRepository, RatingData } from '@/data/bot.repository';
 
 interface PendingData {
   matches: number;
@@ -16,7 +16,7 @@ const createTempData: () => PendingData = () => {
 
 @Injectable()
 export class MatchmakerService implements OnModuleInit {
-  bots: Bot[];
+  bots: Bot[] = [];
   pendingCache: Map<number, PendingData>;
 
   constructor(private readonly botRepository: BotRepository, private readonly appConfig: AppConfigService) {

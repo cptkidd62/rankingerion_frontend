@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from 'src/data/user.repository';
-import { Match } from 'src/data/match.repository';
-import { MatchesService } from 'src/matches/matches.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from '@/data/user.repository';
+import { Match } from '@/data/match.repository';
+import { MatchesService } from '@/matches/matches.service';
+import { AuthGuard } from '@/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {

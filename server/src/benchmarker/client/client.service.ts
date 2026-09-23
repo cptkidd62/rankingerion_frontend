@@ -16,7 +16,7 @@ import { PlayTask } from '../tasks/playtask';
 import { PlayResult } from '../tasks/playresult';
 import { ok } from 'assert';
 import { Agent } from '../models/agent';
-import { AppConfigService } from 'src/config/appconfig.service';
+import { AppConfigService } from '@/config/appconfig.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -39,19 +39,19 @@ export class ClientService {
   static ANS_GENERAL_ERROR = 18;
   static ANS_PONG = 19;
 
-  private socket: TLSSocket;
-  private outstream: OutputStream;
-  private instream: InputStream;
+  private socket: TLSSocket | undefined;
+  private outstream: OutputStream = new OutputStream();
+  private instream: InputStream = new InputStream();
 
   private sendingQueue: Array<Buffer> = [];
   private batches: Array<BatchContainer> = [];
   private sentTasks: Array<TaskContainer> = [];
   private acceptedPlayTasks: Map<number, PlayTaskContainer> = new Map();
 
-  isConnected: boolean;
-  isReconnecting: boolean;
-  disconnectHandled: boolean;
-  private intervalID: NodeJS.Timeout;
+  isConnected: boolean = false;
+  isReconnecting: boolean = false;
+  disconnectHandled: boolean = false;
+  private intervalID: NodeJS.Timeout | undefined;
 
   constructor(
     private connectorService: ConnectorService,
@@ -88,7 +88,7 @@ export class ClientService {
       while (this.parseBuffer());
     });
     this.socket.on('connect', () => {
-      debugLog(1, 'client connected', this.socket.authorized ? 'authorized' : 'unauthorized');
+      debugLog(1, 'client connected', this.socket!.authorized ? 'authorized' : 'unauthorized');
       this.isConnected = true;
       this.isReconnecting = false;
       this.disconnectHandled = false;
@@ -106,7 +106,7 @@ export class ClientService {
     });
     this.socket.on('timeout', () => {
       debugLog(1, 'socket timeout');
-      this.socket.destroy();
+      this.socket!.destroy();
       this.handleDisconnecting();
     });
   }
@@ -433,11 +433,11 @@ export class ClientService {
   private trySend() {
     while (this.sendingQueue.length > 0) {
       const buf = this.sendingQueue[0];
-      const ok = this.socket.write(buf);
+      const ok = this.socket!.write(buf);
       this.sendingQueue.shift();
 
       if (!ok) {
-        this.socket.once('drain', () => this.trySend());
+        this.socket!.once('drain', () => this.trySend());
         return;
       }
     }

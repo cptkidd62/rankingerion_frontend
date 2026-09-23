@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Match, MatchRepository } from '../match.repository';
 import { Mutex } from 'async-mutex';
-import { AppConfigService } from 'src/config/appconfig.service';
+import { AppConfigService } from '@/config/appconfig.service';
 
 interface MatchesFileData {
   next_id: number;
