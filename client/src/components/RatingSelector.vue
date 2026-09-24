@@ -8,7 +8,7 @@ function setRating(rating: 'glicko' | 'trueskill') {
 </script>
 
 <template>
-    <div class="rating-selector">
+    <div v-if="useConfigStore().config!.playersCount == 2" class="rating-selector">
         <div class="selector-row">
             <div class="rating-option" :class="{ selected: useConfigStore().rating == 'glicko' }"
                 @click="setRating('glicko')">Glicko</div>
@@ -17,7 +17,7 @@ function setRating(rating: 'glicko' | 'trueskill') {
                 TrueSkill
             </div>
         </div>
-        <p>Matchmaking uses Glicko</p>
+        <p>Matchmaking uses {{ useConfigStore().config?.ratingForMatchmaking == 'glicko' ? 'Glicko' : 'TrueSkill' }}</p>
     </div>
 </template>
 

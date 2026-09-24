@@ -12,6 +12,9 @@ export const useConfigStore = defineStore('config', {
             try {
                 const response = await api.config.getConfig();
                 this.config = response.data;
+                if (this.config!.playersCount > 2 && this.config?.ratingForMatchmaking == 'trueskill') {
+                    localStorage.setItem('rating', 'trueskill');
+                }
             } catch (error) {
                 console.error('Failed fetching config', error);
             }
