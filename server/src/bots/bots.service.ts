@@ -150,17 +150,16 @@ export class BotsService {
       return id;
     }
     if (this.appConfig.config.useBenchmarker) {
-      this.generateBenchmarkerMatches(name, id, user_id).catch((error) => {
+      this.generateBenchmarkerMatches(id, user_id).catch((error) => {
         console.error(error);
       });
     } else {
-      await this.generateMockMatches(name, id, user_id);
+      await this.generateMockMatches(id, user_id);
     }
     return id;
   }
 
   private async generateMockMatches(
-    name: string,
     id: number,
     user_id: number,
   ): Promise<void> {
@@ -226,7 +225,6 @@ export class BotsService {
   }
 
   private async generateBenchmarkerMatches(
-    name: string,
     id: number,
     user_id: number,
   ): Promise<void> {
@@ -234,11 +232,6 @@ export class BotsService {
 
     const bots = await this.botRepo.findAll();
     const users = await this.userRepo.findAll();
-    const this_user = users.find((u) => u.id == user_id) ?? {
-      id: -1,
-      username: 'undefined',
-      password: '',
-    };
     const this_bot = bots.find((b) => b.id == id)!;
     let ids: number[] | null;
     while ((ids = await this.matchmakerService.getNextOpponent(id)) != null) {
