@@ -3,6 +3,7 @@ import { BotRepository, RatingData } from './bot.repository';
 import { Match, MatchRepository } from './match.repository';
 import { glicko } from './glicko';
 import { Rating, TrueSkill } from 'ts-trueskill';
+import { AppConfigService } from '@/config/appconfig.service';
 
 export const glickoData = { initialRating: 1500, RD: 350 } as const;
 const tsEnv = new TrueSkill(undefined, undefined, undefined, 0.002, 0.0001);
@@ -29,6 +30,7 @@ export class RatingService implements OnModuleInit {
   constructor(
     private readonly botRepo: BotRepository,
     private readonly matchRepo: MatchRepository,
+    private readonly configService: AppConfigService,
   ) {
     this.nextSequenceNumber = 0;
     this.ratings = new Map<number, RatingData>();
@@ -132,20 +134,18 @@ export class RatingService implements OnModuleInit {
   }
 
   private doMatch(match: Match) {
-    const id1 = match.bot_ids[0];
-    const id2 = match.bot_ids[1];
-
-    const rating1 = this.ratings.get(id1) ?? structuredClone(this.newRating);
-    const rating2 = this.ratings.get(id2) ?? structuredClone(this.newRating);
-
-    const [r1, r2] = glicko(match.score, rating1, rating2);
-    const [[ts1], [ts2]]: Rating[][] = tsEnv.rate([[new Rating(r1.trueSkillMu, r1.trueSkillSigma)], [new Rating(r2.trueSkillMu, r2.trueSkillSigma)]], match.score.map((r) => -r));
-    r1.trueSkillMu = ts1.mu;
-    r1.trueSkillSigma = ts1.sigma;
-    r2.trueSkillMu = ts2.mu;
-    r2.trueSkillSigma = ts2.sigma;
-
-    this.ratings.set(id1, r1);
-    this.ratings.set(id2, r2);
+    const ids = match.bot_ids;
+    const ratings = ids.map((id) => this.ratings.get(id) ?? structuredClone(this.newRating));
+    if (this.configService.config.playersCount == 2) {
+      const [r1, r2] = glicko(match.score, ratings[0], ratings[1]);
+      ratings[0] = r1;
+      ratings[1] = r2;
+    }
+    const ts: Rating[][] = tsEnv.rate(ratings.map((r) => [new Rating(r.trueSkillMu, r.trueSkillSigma)]), match.score.map((r) => -r));
+    for (let i = 0; i < ts.length; i++) {
+      ratings[i].trueSkillMu = ts[i][0].mu;
+      ratings[i].trueSkillSigma = ts[i][0].sigma;
+      this.ratings.set(ids[i], ratings[i]);
+    }
   }
 }
