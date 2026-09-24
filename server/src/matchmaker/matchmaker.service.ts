@@ -53,7 +53,8 @@ export class MatchmakerService implements OnModuleInit {
     return -r_opp - rating_opp.lastMatchId + this.randomNoise();
   };
 
-  async getNextOpponent(id: number): Promise<number | null> {
+  async getNextOpponent(id: number): Promise<number[] | null> {
+    const opponents: number[] = [];
     this.bots = await this.botRepository.findAll();
     if (!this.pendingCache.has(id)) {
       this.pendingCache.set(id, createTempData());
@@ -84,8 +85,13 @@ export class MatchmakerService implements OnModuleInit {
     for (const id2 of queue) {
       // check if match can happan
       if (this.isMatchOK(this.bots, id, id2)) {
-        this.addToCache(id, id2);
-        return id2;
+        opponents.push(id2);
+        if (opponents.length == this.appConfig.config.playersCount - 1) {
+          const all = structuredClone(opponents);
+          all.push(id);
+          this.addToCache(all);
+          return opponents;
+        }
       }
     }
     console.log('no remaining');
@@ -117,31 +123,32 @@ export class MatchmakerService implements OnModuleInit {
     );
   }
 
-  private addToCache(id1: number, id2: number) {
-    const c1 = this.pendingCache.get(id1);
-    c1!.matches++;
-    c1!.opponentsCount.set(id2, (c1!.opponentsCount.get(id2) ?? 0) + 1);
-    const c2 = this.pendingCache.get(id2);
-    c2!.matches++;
-    c2!.opponentsCount.set(id1, (c2!.opponentsCount.get(id1) ?? 0) + 1);
+  private addToCache(ids: number[]) {
+    for (let i = 0; i < ids.length; i++) {
+      const c1 = this.pendingCache.get(ids[i]);
+      c1!.matches++;
+      for (let j = 0; j < ids.length; j++) {
+        if (j != i) {
+          c1!.opponentsCount.set(ids[j], (c1!.opponentsCount.get(ids[j]) ?? 0) + 1);
+        }
+      }
+    }
   }
 
-  removeFromCache(id1: number, id2: number) {
-    const c1 = this.pendingCache.get(id1);
-    c1!.matches--;
-    if (c1!.matches < 0) {
-      c1!.matches = 0;
-      console.error('cache matches < 0 for id: ' + id1);
+  removeFromCache(ids: number[]) {
+    for (let i = 0; i < ids.length; i++) {
+      const c1 = this.pendingCache.get(ids[i]);
+      c1!.matches--;
+      if (c1!.matches < 0) {
+        c1!.matches = 0;
+        console.error('cache matches < 0 for id: ' + ids[i]);
+      }
+      for (let j = 0; j < ids.length; j++) {
+        if (j != i) {
+          c1!.opponentsCount.set(ids[j], c1!.opponentsCount.get(ids[j])! - 1);
+          if (c1!.opponentsCount.get(ids[j]) == 0) c1!.opponentsCount.delete(ids[j]);
+        }
+      }
     }
-    c1!.opponentsCount.set(id2, c1!.opponentsCount.get(id2)! - 1);
-    if (c1!.opponentsCount.get(id2) == 0) c1!.opponentsCount.delete(id2);
-    const c2 = this.pendingCache.get(id2);
-    c2!.matches--;
-    if (c2!.matches < 0) {
-      c2!.matches = 0;
-      console.error('cache matches < 0 for id: ' + id2);
-    }
-    c2!.opponentsCount.set(id1, c2!.opponentsCount.get(id1)! - 1);
-    if (c2!.opponentsCount.get(id1) == 0) c2!.opponentsCount.delete(id1);
   }
 }

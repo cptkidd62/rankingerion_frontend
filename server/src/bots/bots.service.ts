@@ -167,34 +167,30 @@ export class BotsService {
     console.log('create with mock');
 
     const bots = await this.botRepo.findAll();
-    const users = await this.userRepo.findAll();
-    const this_user = users.find((u) => u.id == user_id) ?? {
-      id: -1,
-      username: 'undefined',
-      password: '',
-    };
-    let i: number | null;
-    while ((i = await this.matchmakerService.getNextOpponent(id)) != null) {
-      const bot = bots[i];
-      const user = users.find((u) => u.id == bot.user_id) ?? {
-        id: -1,
-        username: 'undefined',
-        password: '',
-      };
-      const scores = [randomInt(0, 1000), randomInt(0, 1000)];
-      const results =
-        scores[0] > scores[1]
-          ? [1, -1]
-          : scores[0] < scores[1]
-            ? [-1, 1]
-            : [0, 0];
+    let ids: number[] | null;
+    while ((ids = await this.matchmakerService.getNextOpponent(id)) != null) {
+      const players = [bots[id]];
+      const scores: number[] = [randomInt(0, 1000)];
+      const botIds = [id];
+      const botNames = [bots[id].name];
+      const userIds = [user_id];
+      const userNames = [bots[id].username];
+      for (let i = 0; i < ids.length; i++) {
+        players.push(bots[ids[i]]);
+        scores.push(randomInt(0, 1000));
+        const opp = bots[ids[i]];
+        botIds.push(opp.id);
+        botNames.push(opp.name);
+        userIds.push(opp.user_id);
+        userNames.push(opp.username);
+      }
       const match = {
         id: -1,
-        bot_ids: [bot.id, id],
-        botnames: [bot.name, name],
-        user_ids: [user.id, user_id],
-        usernames: [user.username, this_user.username],
-        score: results,
+        bot_ids: botIds,
+        botnames: botNames,
+        user_ids: userIds,
+        usernames: userNames,
+        score: scores,
         sequence_number: -1,
       };
       try {
@@ -202,15 +198,15 @@ export class BotsService {
         match.id = matchid;
         try {
           this.ratingService.processMatch(match);
-          this.matchmakerService.removeFromCache(bot.id, id);
+          this.matchmakerService.removeFromCache(ids);
         }
         catch (err) {
           console.error(err);
-          this.matchmakerService.removeFromCache(bot.id, id);
+          this.matchmakerService.removeFromCache(ids);
         }
       }
       catch (err) {
-        this.matchmakerService.removeFromCache(bot.id, id);
+        this.matchmakerService.removeFromCache(ids);
         console.error('Error during create match:', err);
       }
     }
@@ -244,15 +240,13 @@ export class BotsService {
       password: '',
     };
     const this_bot = bots.find((b) => b.id == id)!;
-    let i: number | null;
-    while ((i = await this.matchmakerService.getNextOpponent(id)) != null) {
-      const bot = bots[i];
-      const user = users.find((u) => u.id == bot.user_id) ?? {
-        id: -1,
-        username: 'undefined',
-        password: '',
-      };
-      const players = [bot, this_bot];
+    let ids: number[] | null;
+    while ((ids = await this.matchmakerService.getNextOpponent(id)) != null) {
+      const players = [bots[id]];
+      const botIds = [id];
+      const botNames = [bots[id].name];
+      const userIds = [user_id];
+      const userNames = [bots[id].username];
       const res = await this.benchmarkerService.playSingle(
         players.map((player) => this.botFile(player)),
       );
@@ -289,7 +283,7 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
-              this.matchmakerService.removeFromCache(bot.id, id);
+              this.matchmakerService.removeFromCache(ids);
               return;
             }
           }
@@ -326,42 +320,36 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
-              this.matchmakerService.removeFromCache(bot.id, id);
+              this.matchmakerService.removeFromCache(ids);
               return;
             }
           }
         } else if (res instanceof ConnectionError) {
           console.error('ConnectionError');
-          this.matchmakerService.removeFromCache(bot.id, id);
+          this.matchmakerService.removeFromCache(ids);
           return;
         } else {
           console.error('PlayTaskError');
-          this.matchmakerService.removeFromCache(bot.id, id);
+          this.matchmakerService.removeFromCache(ids);
         }
         continue;
       }
-      if (bot.status.isDeleted) {
-        this.matchmakerService.removeFromCache(bot.id, id);
-        continue;
-      }
       if (this_bot.status.isDeleted) {
-        this.matchmakerService.removeFromCache(bot.id, id);
+        this.matchmakerService.removeFromCache(ids);
         return;
       }
+      if (players.some((bot) => bot.status.isDeleted)) {
+        this.matchmakerService.removeFromCache(ids);
+        continue;
+      }
       const scores = res.scores;
-      const results =
-        scores[0] > scores[1]
-          ? [1, -1]
-          : scores[0] < scores[1]
-            ? [-1, 1]
-            : [0, 0];
       const match = {
         id: -1,
-        bot_ids: [bot.id, id],
-        botnames: [bot.name, name],
-        user_ids: [user.id, user_id],
-        usernames: [user.username, this_user.username],
-        score: results,
+        bot_ids: botIds,
+        botnames: botNames,
+        user_ids: userIds,
+        usernames: userNames,
+        score: scores,
         sequence_number: -1,
       };
       try {
@@ -369,43 +357,32 @@ export class BotsService {
         match.id = matchid;
         try {
           this.ratingService.processMatch(match);
-          this.matchmakerService.removeFromCache(bot.id, id);
+          this.matchmakerService.removeFromCache(ids);
         }
         catch (err) {
           console.error(err);
-          this.matchmakerService.removeFromCache(bot.id, id);
+          this.matchmakerService.removeFromCache(ids);
         }
       }
       catch (err) {
-        this.matchmakerService.removeFromCache(bot.id, id);
+        this.matchmakerService.removeFromCache(ids);
         console.error('Error during create match:', err);
       }
-      await this.botRepo.updateById(bot.id, {
-        id: bot.id,
-        name: bot.name,
-        language: bot.language,
-        user_id: bot.user_id,
-        username: bot.username,
-        dateCreated: bot.dateCreated,
-        filename: bot.filename,
-        status: { type: 'ok', progress: bot.status.progress, isDeleted: false },
-        errorsCount: bot.errorsCount += (scores[0] == -1 ? 1 : 0),
-        lastErrorMsg: scores[0] == -1 ? res.logs[0] : bot.lastErrorMsg,
-        rating: bot.rating,
-      });
-      await this.botRepo.updateById(this_bot.id, {
-        id: this_bot.id,
-        name: this_bot.name,
-        language: this_bot.language,
-        user_id: this_bot.user_id,
-        username: this_bot.username,
-        dateCreated: this_bot.dateCreated,
-        filename: this_bot.filename,
-        status: { type: 'ok', progress: this_bot.status.progress, isDeleted: false },
-        errorsCount: this_bot.errorsCount += (scores[1] == -1 ? 1 : 0),
-        lastErrorMsg: scores[1] == -1 ? res.logs[1] : this_bot.lastErrorMsg,
-        rating: this_bot.rating,
-      });
+      players.forEach(async (bot) => {
+        await this.botRepo.updateById(bot.id, {
+          id: bot.id,
+          name: bot.name,
+          language: bot.language,
+          user_id: bot.user_id,
+          username: bot.username,
+          dateCreated: bot.dateCreated,
+          filename: bot.filename,
+          status: { type: 'ok', progress: bot.status.progress, isDeleted: false },
+          errorsCount: bot.errorsCount += (scores[0] == -1 ? 1 : 0),
+          lastErrorMsg: scores[0] == -1 ? res.logs[0] : bot.lastErrorMsg,
+          rating: bot.rating,
+        });
+      })
     }
     await this.botRepo.updateById(this_bot.id, {
       id: this_bot.id,
