@@ -447,7 +447,7 @@ export class BotsService {
     const bots = await this.botRepo.findAll();
     for (const bot of bots) {
       if (bot.status.progress == 'in_progress') {
-        this.generateBenchmarkerMatches(bot.name, bot.id, bot.user_id);
+        this.generateBenchmarkerMatches(bot.id, bot.user_id);
       }
     }
   }
