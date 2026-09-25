@@ -197,15 +197,15 @@ export class BotsService {
         match.id = matchid;
         try {
           this.ratingService.processMatch(match);
-          this.matchmakerService.removeFromCache(ids);
+          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
         catch (err) {
           console.error(err);
-          this.matchmakerService.removeFromCache(ids);
+          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
       }
       catch (err) {
-        this.matchmakerService.removeFromCache(ids);
+        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         console.error('Error during create match:', err);
       }
     }
@@ -276,7 +276,7 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
-              this.matchmakerService.removeFromCache(ids);
+              this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
               return;
             }
           }
@@ -313,26 +313,26 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
-              this.matchmakerService.removeFromCache(ids);
+              this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
               return;
             }
           }
         } else if (res instanceof ConnectionError) {
           console.error('ConnectionError');
-          this.matchmakerService.removeFromCache(ids);
+          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
           return;
         } else {
           console.error('PlayTaskError');
-          this.matchmakerService.removeFromCache(ids);
+          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
         continue;
       }
       if (this_bot.status.isDeleted) {
-        this.matchmakerService.removeFromCache(ids);
+        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         return;
       }
       if (players.some((bot) => bot.status.isDeleted)) {
-        this.matchmakerService.removeFromCache(ids);
+        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         continue;
       }
       const scores = res.scores;
@@ -350,15 +350,15 @@ export class BotsService {
         match.id = matchid;
         try {
           this.ratingService.processMatch(match);
-          this.matchmakerService.removeFromCache(ids);
+          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
         catch (err) {
           console.error(err);
-          this.matchmakerService.removeFromCache(ids);
+          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
       }
       catch (err) {
-        this.matchmakerService.removeFromCache(ids);
+        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         console.error('Error during create match:', err);
       }
       players.forEach(async (bot) => {
