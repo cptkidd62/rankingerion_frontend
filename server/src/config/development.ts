@@ -28,3 +28,12 @@ export const NoBenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
   useBenchmarker: false,
 };
+
+export const NoBenchmarker3PlayerDevConfig: AppConfig = {
+  ...DevConfig,
+  useBenchmarker: false,
+  botsFile: 'bots3.json',
+  matchesFile: 'matches3.json',
+  playersCount: 3,
+  ratingForMatchmaking: 'trueskill'
+};
