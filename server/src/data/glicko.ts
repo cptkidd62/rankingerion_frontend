@@ -9,7 +9,7 @@ export function glicko(
 ): [RatingData, RatingData] {
   const r1 = structuredClone(rating1);
   const r2 = structuredClone(rating2);
-  const s = (matchScore[0] + 1) / 2;
+  const s = matchScore[0] > matchScore[1] ? 1 : (matchScore[0] == matchScore[1] ? 0.5 : 0);
   r1.value =
     rating1.value +
     (q * g(rating2.RD) * (s - exp(rating1.value, rating2.value, rating2.RD))) /
