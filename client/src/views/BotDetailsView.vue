@@ -15,6 +15,7 @@ import { useRoute } from 'vue-router';
 const route = useRoute()
 const botsStore = useBotsStore()
 const matchesStore = useMatchesStore()
+const configStore = useConfigStore()
 
 const props = defineProps({
     botId: Number
@@ -35,9 +36,9 @@ function botOk(bot: Bot): boolean {
 const scoreCountOverall = computed(() => {
     let count = { wins: 0, draws: 0, losses: 0 }
     for (var [_, summary] of mySummary.value) {
-        count.wins += summary[0].wins;
-        count.losses += summary[0].losses;
-        count.draws += summary[0].draws;
+        count.wins += configStore.config!.playersCount > 2 ? summary[0].wins / (configStore.config!.playersCount - 1.) : summary[0].wins;
+        count.losses += configStore.config!.playersCount > 2 ? summary[0].losses / (configStore.config!.playersCount - 1.) : summary[0].losses;
+        count.draws += configStore.config!.playersCount > 2 ? summary[0].draws / (configStore.config!.playersCount - 1.) : summary[0].draws;
     }
     return count
 })
@@ -177,7 +178,7 @@ onUnmounted(() => {
                     <tr>
                         <th>Matches</th>
                         <td>{{ bot.rating.matchesPlayed }}{{ bot.status.progress == 'in_progress' ? `
-                            (${Math.round(bot.rating.matchesPlayed / useConfigStore().config!.matchesToPlay * 100)}%)` :
+                            (${Math.round(bot.rating.matchesPlayed / configStore.config!.matchesToPlay * 100)}%)` :
                             '' }}</td>
                     </tr>
                     <tr>

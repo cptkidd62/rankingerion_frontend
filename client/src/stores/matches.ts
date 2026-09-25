@@ -75,27 +75,25 @@ export const useMatchesStore = defineStore('matches', () => {
     for (var match of matches.value) {
       const idx = match.bot_ids.indexOf(botId);
       if (idx < 0) continue;
-      const opp = 1 - idx;
-      const ido = match.bot_ids[opp];
-      if (!summary.has(ido)) {
-        const c = structuredClone(count);
-        c.botname = bots.bots[ido].name;
-        c.username = bots.bots[ido].username;
-        summary.set(ido, [c, bots.bots[ido].status.isDeleted]);
-      }
-      switch (match.score[idx]) {
-        case 1:
-          summary.get(ido)![0].wins++;
-          break;
-        case 0:
-          summary.get(ido)![0].draws++;
-          break;
-        case -1:
-          summary.get(ido)![0].losses++;
-          break;
-
-        default:
-          throw new Error('wrong score value ' + match.score[idx]);
+      for (let i = 0; i < match.bot_ids.length; i++) {
+        if (i != idx) {
+          const ido = match.bot_ids[i];
+          if (!summary.has(ido)) {
+            const c = structuredClone(count);
+            c.botname = bots.bots[ido].name;
+            c.username = bots.bots[ido].username;
+            summary.set(ido, [c, bots.bots[ido].status.isDeleted]);
+          }
+          if (match.score[idx] > match.score[i]) {
+            summary.get(ido)![0].wins++;
+          }
+          else if (match.score[idx] == match.score[i]) {
+            summary.get(ido)![0].draws++;
+          }
+          else {
+            summary.get(ido)![0].losses++;
+          }
+        }
       }
     }
     for (var [i, [sum, _]] of summary) {
