@@ -163,7 +163,6 @@ export class BotsService {
     id: number,
     user_id: number,
   ): Promise<void> {
-    console.log('create with mock');
 
     const bots = await this.botRepo.findAll();
     let ids: number[] | null;
@@ -196,7 +195,7 @@ export class BotsService {
         const matchid = await this.matchRepo.create(match);
         match.id = matchid;
         try {
-          this.ratingService.processMatch(match);
+          await this.ratingService.processMatch(match);
           this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
         catch (err) {
@@ -349,7 +348,7 @@ export class BotsService {
         const matchid = await this.matchRepo.create(match);
         match.id = matchid;
         try {
-          this.ratingService.processMatch(match);
+          await this.ratingService.processMatch(match);
           this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
         catch (err) {
