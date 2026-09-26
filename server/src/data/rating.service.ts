@@ -52,26 +52,31 @@ export class RatingService implements OnModuleInit {
       for (const match of matches) {
         this.doMatch(match);
 
-        const id1 = match.bot_ids[0];
-        const id2 = match.bot_ids[1];
+        for (let i = 0; i < match.bot_ids.length - 1; i++) {
+          const id1 = match.bot_ids[i];
+          const rating1 = this.ratings.get(id1)!;
+          for (let j = i + 1; j < match.bot_ids.length; j++) {
+            const id2 = match.bot_ids[j];
+            const rating2 = this.ratings.get(id2)!;
+            rating1.opponentsPlayed.set(
+              id2,
+              (rating1.opponentsPlayed.get(id2) ?? 0) + 1,
+            );
 
-        const rating1 = this.ratings.get(id1)!;
-        const rating2 = this.ratings.get(id2)!;
+            rating2.opponentsPlayed.set(
+              id1,
+              (rating2.opponentsPlayed.get(id1) ?? 0) + 1,
+            );
 
-        rating1.opponentsPlayed.set(
-          id2,
-          (rating1.opponentsPlayed.get(id2) ?? 0) + 1,
-        );
+          }
+        }
 
-        rating2.opponentsPlayed.set(
-          id1,
-          (rating2.opponentsPlayed.get(id1) ?? 0) + 1,
-        );
-
-        rating1.lastMatchId = this.nextSequenceNumber;
-        rating2.lastMatchId = this.nextSequenceNumber;
-        rating1.matchesPlayed++;
-        rating2.matchesPlayed++;
+        for (let i = 0; i < match.bot_ids.length; i++) {
+          const id1 = match.bot_ids[i];
+          const rating1 = this.ratings.get(id1)!;
+          rating1.lastMatchId = this.nextSequenceNumber;
+          rating1.matchesPlayed++;
+        }
       }
       const bots = await this.botRepo.findAll();
       const ids = bots.map((bot) => bot.id);
@@ -93,34 +98,37 @@ export class RatingService implements OnModuleInit {
     return this.serialize(async () => {
       this.doMatch(match);
 
-      const id1 = match.bot_ids[0];
-      const id2 = match.bot_ids[1];
+      for (let i = 0; i < match.bot_ids.length - 1; i++) {
+        const id1 = match.bot_ids[i];
+        const rating1 = this.ratings.get(id1)!;
+        for (let j = i + 1; j < match.bot_ids.length; j++) {
+          const id2 = match.bot_ids[j];
+          const rating2 = this.ratings.get(id2)!;
+          rating1.opponentsPlayed.set(
+            id2,
+            (rating1.opponentsPlayed.get(id2) ?? 0) + 1,
+          );
 
-      const rating1 = this.ratings.get(id1)!;
-      const rating2 = this.ratings.get(id2)!;
+          rating2.opponentsPlayed.set(
+            id1,
+            (rating2.opponentsPlayed.get(id1) ?? 0) + 1,
+          );
 
-      rating1.opponentsPlayed.set(
-        id2,
-        (rating1.opponentsPlayed.get(id2) ?? 0) + 1,
-      );
+        }
+      }
 
-      rating2.opponentsPlayed.set(
-        id1,
-        (rating2.opponentsPlayed.get(id1) ?? 0) + 1,
-      );
-
-      rating1.lastMatchId = this.nextSequenceNumber;
-      rating2.lastMatchId = this.nextSequenceNumber;
-      rating1.matchesPlayed++;
-      rating2.matchesPlayed++;
+      for (let i = 0; i < match.bot_ids.length; i++) {
+        const id1 = match.bot_ids[i];
+        const rating1 = this.ratings.get(id1)!;
+        rating1.lastMatchId = this.nextSequenceNumber;
+        rating1.matchesPlayed++;
+        await this.botRepo.updateRatingById(id1, rating1);
+      }
 
       await this.matchRepo.updateSequenceNumber(
         match.id,
         this.nextSequenceNumber++,
       );
-
-      await this.botRepo.updateRatingById(id1, rating1);
-      await this.botRepo.updateRatingById(id2, rating2);
     });
   }
 

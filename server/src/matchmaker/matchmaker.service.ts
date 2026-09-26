@@ -59,6 +59,8 @@ export class MatchmakerService implements OnModuleInit {
     if (!this.pendingCache.has(id)) {
       this.pendingCache.set(id, createTempData());
     }
+    console.log('played ', this.bots[id].rating.matchesPlayed)
+    console.log('planned ', this.pendingCache.get(id)!.matches)
     const matches =
       this.pendingCache.get(id)!.matches + this.bots[id].rating.matchesPlayed;
     if (matches >= this.appConfig.config.matchesToPlay) {
