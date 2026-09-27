@@ -7,8 +7,6 @@ export type AppConfig = {
 
   useBenchmarker: boolean;
 
-  autoSave: boolean;
-
   gameName: string;
   referee: string;
   playersCount: number;
