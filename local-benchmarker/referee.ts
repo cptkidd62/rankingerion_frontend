@@ -1,5 +1,12 @@
 import { ChildProcess, spawn } from "node:child_process"
 
+export type MatchResult = {
+  time: number;
+  scores: number[];
+  agentsLogs: string[];
+  refereeLog: string;
+}
+
 export class Referee {
   private process: ChildProcess | undefined
   run() {
@@ -12,6 +19,8 @@ export class Referee {
 
     this.process.stdout?.on("data", (data) => {
       console.log("JAVA STDOUT:", JSON.stringify(data.toString()));
+      const result = this.parseResult(data.toString());
+      console.log(result);
     });
 
     this.process.stderr?.on("data", (data) => {
@@ -41,5 +50,20 @@ export class Referee {
         console.error("JAVA STDIN WRITE ERROR:", error);
       }
     });
+  }
+
+  parseResult(data: string): MatchResult | undefined {
+    const tokens = data.trimEnd().split('\u001e');
+    if ((tokens.length - 2) % 2 != 0) {
+      return undefined;
+    }
+    else {
+      return {
+        time: Number(tokens[0]),
+        scores: tokens.slice(1, tokens.length / 2).map(score => Number(score)),
+        agentsLogs: tokens.slice(tokens.length / 2, -1),
+        refereeLog: tokens[tokens.length - 1]
+      }
+    }
   }
 }
