@@ -27,9 +27,14 @@ export class Referee {
     });
   }
 
-  doMatch() {
-    const message =
-      "2|321|./referee-test/test|1|./referee-test/test|1|1|\n";
+  doMatch(playersCount: number, seed: number, agents: string[], agentsOpts: number[], logOpts: number) {
+    let message = "";
+    message += playersCount + "|";
+    message += seed + "|";
+    for (let i = 0; i < playersCount; i++) {
+      message += agents[i] + "|" + agentsOpts[i] + "|";
+    }
+    message += logOpts + "|\n";
 
     this.process?.stdin?.write(message, (error) => {
       if (error) {
