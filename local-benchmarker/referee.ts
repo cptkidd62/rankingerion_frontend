@@ -9,6 +9,7 @@ export type MatchResult = {
 
 export class Referee {
   private process: ChildProcess | undefined
+  private buffer = ""
   run() {
     this.process = spawn("java", [
       "-cp",
@@ -19,8 +20,13 @@ export class Referee {
 
     this.process.stdout?.on("data", (data) => {
       console.log("JAVA STDOUT:", JSON.stringify(data.toString()));
-      const result = this.parseResult(data.toString());
-      console.log(result);
+      this.buffer += data.toString();
+      let newlineIndex;
+      while ((newlineIndex = this.buffer.indexOf("\n")) !== -1) {
+        const line = this.buffer.slice(0, newlineIndex);
+        this.buffer = this.buffer.slice(newlineIndex + 1);
+        this.handleResponse(line);
+      }
     });
 
     this.process.stderr?.on("data", (data) => {
@@ -52,7 +58,20 @@ export class Referee {
     });
   }
 
-  parseResult(data: string): MatchResult | undefined {
+  private handleResponse(line: string) {
+    if (line.startsWith("runOnePlay exception for:")) {
+      // play exception
+      return;
+    }
+    if (line.startsWith("WorkerProcess exception:")) {
+      // worker exception
+      return;
+    }
+    const result = this.parseResult(line);
+    console.log(result);
+  }
+
+  private parseResult(data: string): MatchResult | undefined {
     const tokens = data.trimEnd().split('\u001e');
     if ((tokens.length - 2) % 2 != 0) {
       return undefined;
