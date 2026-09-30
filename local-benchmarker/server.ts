@@ -12,6 +12,11 @@ export class Server {
   };
 
   start() {
+    try {
+      fs.readdirSync('bots');
+    } catch {
+      fs.mkdirSync('bots');
+    }
     this.server = tls.createServer(this.options, connection => {
       const socket = new Socket(connection);
     });

@@ -1,4 +1,5 @@
 import { TLSSocket } from "node:tls";
+import { promises as fs } from 'fs';
 import { InputStream } from "./datastream/InputStream";
 import { OutputStream } from "./datastream/OutputStream";
 import { TaskManager } from "./task-manager";
@@ -32,7 +33,8 @@ export class Socket {
   private intervalId: NodeJS.Timeout | undefined;
 
   // tasks
-  private taskManager = new TaskManager();
+  private taskManager = new TaskManager(this);
+  private sourceRequests = new Map<string, () => void>();
 
   constructor(private readonly socket: TLSSocket) {
     socket.on('data', (chunk: Buffer) => {
@@ -68,7 +70,6 @@ export class Socket {
           this.sendPing();
         }
       }, 30_000);
-      return true;
     }
     const cmd = this.instream.peekInt();
     if (cmd == null) {
@@ -108,6 +109,26 @@ export class Socket {
           return false;
         }
         this.taskManager.addTask(n, agents, seed, referee);
+        break;
+      }
+      case Socket.CMD_SOURCE: {
+        const sourceName = this.instream.peekUTF();
+        if (sourceName == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        const n = this.instream.peekInt();
+        if (n == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        const code = this.instream.peekNBytesString(n);
+        if (code == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        this.processCode(sourceName, code);
+        break;
       }
     }
     this.instream.clearCursor();
@@ -134,7 +155,37 @@ export class Socket {
     this.trySend();
   }
 
+  private requestSource(sourceName: string) {
+    this.outstream.writeInt(Socket.ANS_REQUEST_SOURCE);
+    this.outstream.writeUTF(sourceName);
+    const buf = this.outstream.getBuffer();
+    this.sendingQueue.push(buf);
+    this.trySend();
+  }
+
   private setContact() {
     this.lastContactTime = Date.now();
+  }
+
+  getCode(sourceName: string): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.sourceRequests.set(sourceName, resolve);
+      this.requestSource(sourceName);
+    });
+  }
+
+  private async processCode(sourceName: string, code: string) {
+    await this.saveCodeToFile(sourceName, code);
+
+    const resolve = this.sourceRequests.get(sourceName);
+
+    if (resolve) {
+      resolve();
+      this.sourceRequests.delete(sourceName);
+    }
+  }
+
+  private async saveCodeToFile(sourceName: string, code: string) {
+    await fs.writeFile('bots/' + sourceName, code, 'utf-8');
   }
 }
