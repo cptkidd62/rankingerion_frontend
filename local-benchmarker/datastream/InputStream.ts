@@ -7,7 +7,7 @@ export class InputStream {
 
   addToBuffer(chunk: Buffer) {
     this.buffer = Buffer.concat([this.buffer, chunk]);
-    if (process.env.DEBUG_BUFFER == 'true') {
+    if (true) {
       console.log('&&& buffer after receiving:');
       console.log(this.buffer);
     }
@@ -19,7 +19,7 @@ export class InputStream {
 
   clearCursor() {
     this.buffer = this.buffer.subarray(this.cursor);
-    if (process.env.DEBUG_BUFFER == 'true') {
+    if (true) {
       console.log('&&& buffer after parsing:');
       console.log(this.buffer);
     }
