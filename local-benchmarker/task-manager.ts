@@ -43,6 +43,8 @@ export class TaskManager {
         this.processedTask.seed, this.processedTask.agents.map((agent) => './bots/' + agent),
         Array(this.processedTask.players).fill(1), 1);
       console.log('result', result);
+      this.socket.sendMatchResult(result, this.taskId++);
     }
+    this.processedTask = null;
   }
 }

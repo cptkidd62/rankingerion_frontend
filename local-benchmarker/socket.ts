@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import { InputStream } from "./datastream/InputStream";
 import { OutputStream } from "./datastream/OutputStream";
 import { TaskManager } from "./task-manager";
+import { MatchResult } from "./referee";
 
 export class Socket {
   static CMD_PLAY = 1;
@@ -194,6 +195,24 @@ export class Socket {
     console.log('accept');
     this.outstream.writeInt(Socket.ANS_ACCEPTED);
     this.outstream.writeInt(id);
+    const buf = this.outstream.getBuffer();
+    this.sendingQueue.push(buf);
+    this.trySend();
+  }
+
+  sendMatchResult(result: MatchResult, id: number) {
+    this.outstream.writeInt(Socket.ANS_PLAY_RESULT);
+    this.outstream.writeInt(id);
+    this.outstream.writeLong(result.time);
+    result.scores.forEach((score) => {
+      this.outstream.writeInt(score);
+    })
+    result.agentsLogs.forEach((log) => {
+      this.outstream.writeInt(log.length);
+      this.outstream.write(Buffer.from(log));
+    })
+    this.outstream.writeInt(result.refereeLog.length);
+    this.outstream.write(Buffer.from(result.refereeLog));
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.trySend();

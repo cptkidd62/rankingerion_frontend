@@ -1,7 +1,7 @@
 import { ChildProcess, spawn } from "node:child_process"
 
 export type MatchResult = {
-  time: number;
+  time: bigint;
   scores: number[];
   agentsLogs: string[];
   refereeLog: string;
@@ -91,7 +91,7 @@ export class Referee {
     }
     else {
       return {
-        time: Number(tokens[0]),
+        time: BigInt(tokens[0]),
         scores: tokens.slice(1, tokens.length / 2).map(score => Number(score)),
         agentsLogs: tokens.slice(tokens.length / 2, -1),
         refereeLog: tokens[tokens.length - 1]
