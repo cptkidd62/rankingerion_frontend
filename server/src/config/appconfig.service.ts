@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppConfig, PublicConfig } from './appconfig';
-import { NoBenchmarker3PlayerDevConfig, NoBenchmarkerDevConfig } from './development';
+import { BenchmarkerDevConfig, NoBenchmarker3PlayerDevConfig, NoBenchmarkerDevConfig } from './development';
 import { ProdConfig } from './production';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class AppConfigService {
   readonly config: AppConfig;
 
   constructor() {
-    this.config = NoBenchmarkerDevConfig;
+    this.config = BenchmarkerDevConfig;
     if (this.config.playersCount > 2 && this.config.ratingForMatchmaking == 'glicko') {
       throw new Error("Cannot run server with 'playersCount > 2' and 'ratingForMatchmaking == 'glicko''. Please change one of these values.");
     }
