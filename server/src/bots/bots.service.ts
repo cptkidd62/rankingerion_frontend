@@ -239,6 +239,14 @@ export class BotsService {
       const botNames = [bots[id].name];
       const userIds = [user_id];
       const userNames = [bots[id].username];
+      for (let i = 0; i < ids.length; i++) {
+        players.push(bots[ids[i]]);
+        const opp = bots[ids[i]];
+        botIds.push(opp.id);
+        botNames.push(opp.name);
+        userIds.push(opp.user_id);
+        userNames.push(opp.username);
+      }
       const res = await this.benchmarkerService.playSingle(
         players.map((player) => this.botFile(player)),
       );

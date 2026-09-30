@@ -10,6 +10,8 @@ export type MatchResult = {
 export class Referee {
   private process: ChildProcess | undefined
   private buffer = ""
+  private matchesRequests = new Array<(matchResult: MatchResult) => void>();
+
   run() {
     this.process = spawn("java", [
       "-cp",
@@ -42,7 +44,7 @@ export class Referee {
     });
   }
 
-  doMatch(playersCount: number, seed: number, agents: string[], agentsOpts: number[], logOpts: number) {
+  doMatch(playersCount: number, seed: bigint, agents: string[], agentsOpts: number[], logOpts: number): Promise<MatchResult> {
     let message = "";
     message += playersCount + "|";
     message += seed + "|";
@@ -51,10 +53,17 @@ export class Referee {
     }
     message += logOpts + "|\n";
 
+    console.log('message', message);
     this.process?.stdin?.write(message, (error) => {
       if (error) {
         console.error("JAVA STDIN WRITE ERROR:", error);
       }
+    });
+
+    console.log('do match');
+
+    return new Promise((resolve) => {
+      this.matchesRequests.push(resolve);
     });
   }
 
@@ -68,7 +77,11 @@ export class Referee {
       return;
     }
     const result = this.parseResult(line);
-    console.log(result);
+    console.log('response', line);
+    const resolve = this.matchesRequests.pop();
+    if (resolve && result) {
+      resolve(result);
+    }
   }
 
   private parseResult(data: string): MatchResult | undefined {

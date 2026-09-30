@@ -21,6 +21,7 @@ export class TaskManager {
 
   addTask(players: number, agents: string[], seed: bigint, referee: string) {
     this.tasks.push({ players, agents, seed, referee });
+    console.log({ players, agents, seed, referee });
     console.log('tasks in queue:', this.tasks.length);
     this.processTask();
   }
@@ -38,6 +39,10 @@ export class TaskManager {
         }
       })
       this.socket.sendTaskAccepted(this.taskId);
+      const result = await this.referee.doMatch(this.processedTask.players,
+        this.processedTask.seed, this.processedTask.agents.map((agent) => './bots/' + agent),
+        Array(this.processedTask.players).fill(1), 1);
+      console.log('result', result);
     }
   }
 }

@@ -40,10 +40,10 @@ export class InputStream {
     return n;
   }
 
-  peekNBytesString(bytes: number): string | null {
-    if (bytes == 0) return '';
+  peekNBytes(bytes: number): Buffer<ArrayBufferLike> | null {
+    if (bytes == 0) return Buffer.from('');
     if (this.buffer.length - this.cursor < bytes) return null;
-    const s = String(this.buffer.subarray(this.cursor, this.cursor + bytes));
+    const s = (this.buffer.subarray(this.cursor, this.cursor + bytes));
     this.cursor += bytes;
     return s;
   }

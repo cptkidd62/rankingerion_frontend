@@ -122,7 +122,7 @@ export class Socket {
           this.instream.resetCursor();
           return false;
         }
-        const code = this.instream.peekNBytesString(n);
+        const code = this.instream.peekNBytes(n);
         if (code == null) {
           this.instream.resetCursor();
           return false;
@@ -174,7 +174,7 @@ export class Socket {
     });
   }
 
-  private async processCode(sourceName: string, code: string) {
+  private async processCode(sourceName: string, code: Buffer<ArrayBufferLike>) {
     await this.saveCodeToFile(sourceName, code);
 
     const resolve = this.sourceRequests.get(sourceName);
@@ -185,8 +185,9 @@ export class Socket {
     }
   }
 
-  private async saveCodeToFile(sourceName: string, code: string) {
+  private async saveCodeToFile(sourceName: string, code: Buffer<ArrayBufferLike>) {
     await fs.writeFile('bots/' + sourceName, code, 'utf-8');
+    await fs.chmod('bots/' + sourceName, 0o755);
   }
 
   sendTaskAccepted(id: number) {
