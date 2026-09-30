@@ -1,6 +1,7 @@
 import { TLSSocket } from "node:tls";
 import { InputStream } from "./datastream/InputStream";
 import { OutputStream } from "./datastream/OutputStream";
+import { TaskManager } from "./task-manager";
 
 export class Socket {
   static CMD_PLAY = 1;
@@ -29,6 +30,9 @@ export class Socket {
   // ping
   private lastContactTime: number = 0;
   private intervalId: NodeJS.Timeout | undefined;
+
+  // tasks
+  private taskManager = new TaskManager();
 
   constructor(private readonly socket: TLSSocket) {
     socket.on('data', (chunk: Buffer) => {
@@ -77,6 +81,33 @@ export class Socket {
         console.log("pong");
         this.setContact();
         break;
+      }
+      case Socket.CMD_PLAY: {
+        const n = this.instream.peekInt();
+        if (n == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        const agents: string[] = [];
+        for (let i = 0; i < n; i++) {
+          const agent = this.instream.peekUTF();
+          if (agent == null) {
+            this.instream.resetCursor();
+            return false;
+          }
+          agents.push(agent);
+        }
+        const seed = this.instream.peekLong();
+        if (seed == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        const referee = this.instream.peekUTF();
+        if (referee == null) {
+          this.instream.resetCursor();
+          return false;
+        }
+        this.taskManager.addTask(n, agents, seed, referee);
       }
     }
     this.instream.clearCursor();

@@ -23,6 +23,14 @@ export const BenchmarkerDevConfig: AppConfig = {
   useBenchmarker: true,
 };
 
+export const LocalBenchmarkerDevConfig: AppConfig = {
+  ...DevConfig,
+  useBenchmarker: true,
+  acceptedTextExtentions: [],
+  botsFile: 'bots-l.json',
+  matchesFile: 'matches-l.json',
+};
+
 export const NoBenchmarkerDevConfig: AppConfig = {
   ...DevConfig,
   useBenchmarker: false,
