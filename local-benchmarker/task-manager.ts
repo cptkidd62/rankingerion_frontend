@@ -13,6 +13,7 @@ export class TaskManager {
   private referee = new Referee();
   private tasks: Array<Task> = [];
   private processedTask: Task | null = null;
+  private taskId = 0;
 
   constructor(private readonly socket: Socket) {
     this.referee.run();
@@ -36,6 +37,7 @@ export class TaskManager {
           await this.socket.getCode(agent);
         }
       })
+      this.socket.sendTaskAccepted(this.taskId);
     }
   }
 }

@@ -188,4 +188,13 @@ export class Socket {
   private async saveCodeToFile(sourceName: string, code: string) {
     await fs.writeFile('bots/' + sourceName, code, 'utf-8');
   }
+
+  sendTaskAccepted(id: number) {
+    console.log('accept');
+    this.outstream.writeInt(Socket.ANS_ACCEPTED);
+    this.outstream.writeInt(id);
+    const buf = this.outstream.getBuffer();
+    this.sendingQueue.push(buf);
+    this.trySend();
+  }
 }
