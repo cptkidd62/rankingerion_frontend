@@ -34,10 +34,11 @@ export class Socket {
   private intervalId: NodeJS.Timeout | undefined;
 
   // tasks
-  private taskManager = new TaskManager(this);
+  private taskManager = new TaskManager(0,this);
   private sourceRequests = new Map<string, () => void>();
 
-  constructor(private readonly socket: TLSSocket) {
+  constructor(count: number, private readonly socket: TLSSocket) {
+    this.taskManager = new TaskManager(count,this);
     socket.on('data', (chunk: Buffer) => {
       this.instream.addToBuffer(chunk);
       while (this.parseBuffer());

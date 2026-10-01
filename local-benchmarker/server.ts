@@ -11,6 +11,8 @@ export class Server {
     rejectUnauthorized: true,
   };
 
+  constructor(private count: number) { }
+
   start() {
     try {
       fs.readdirSync('bots');
@@ -18,7 +20,7 @@ export class Server {
       fs.mkdirSync('bots');
     }
     this.server = tls.createServer(this.options, connection => {
-      const socket = new Socket(connection);
+      const socket = new Socket(this.count, connection);
     });
     this.server.listen(5555, () => console.log('opened TCP server on', this.server!.address()));
   }
