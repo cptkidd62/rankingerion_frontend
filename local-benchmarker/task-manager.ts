@@ -45,20 +45,24 @@ export class TaskManager {
 
         this.socket.sendTaskAccepted(this.taskId);
 
-        const result = await this.referee.doMatch(
-          this.processedTask.players,
-          this.processedTask.seed,
-          this.processedTask.agents.map(
-            agent => './bots/' + agent
-          ),
-          Array(this.processedTask.players).fill(1),
-          1
-        );
+        try {
+          const result = await this.referee.doMatch(
+            this.processedTask.players,
+            this.processedTask.seed,
+            this.processedTask.agents.map(
+              agent => './bots/' + agent
+            ),
+            Array(this.processedTask.players).fill(1),
+            1
+          );
 
-        console.log('result', result);
+          console.log('result', result);
 
-        this.socket.sendMatchResult(result, this.taskId++);
-        this.processedTask = null;
+          this.socket.sendMatchResult(result, this.taskId++);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          this.socket.sendPlayError(this.taskId++, message);
+        }
       }
     } finally {
       this.processedTask = null;

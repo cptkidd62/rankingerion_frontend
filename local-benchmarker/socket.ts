@@ -217,4 +217,21 @@ export class Socket {
     this.sendingQueue.push(buf);
     this.trySend();
   }
+
+  sendCompilationError(agent: string) {
+    this.outstream.writeInt(Socket.ANS_COMPILATION_ERROR);
+    this.outstream.writeUTF(agent);
+    const buf = this.outstream.getBuffer();
+    this.sendingQueue.push(buf);
+    this.trySend();
+  }
+
+  sendPlayError(id: number, msg: string) {
+    this.outstream.writeInt(Socket.ANS_PLAY_ERROR);
+    this.outstream.writeInt(id);
+    this.outstream.writeUTF(msg);
+    const buf = this.outstream.getBuffer();
+    this.sendingQueue.push(buf);
+    this.trySend();
+  }
 }

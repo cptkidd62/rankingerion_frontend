@@ -10,7 +10,7 @@ export type MatchResult = {
 export class Referee {
   private process: ChildProcess | undefined
   private buffer = ""
-  private matchesRequests = new Array<(matchResult: MatchResult) => void>();
+  private matchesRequests = new Array<{ resolve: (matchResult: MatchResult) => void, reject: (err: Error) => void }>();
 
   run() {
     this.process = spawn("java", [
@@ -62,25 +62,25 @@ export class Referee {
 
     console.log('do match');
 
-    return new Promise((resolve) => {
-      this.matchesRequests.push(resolve);
+    return new Promise((resolve, reject) => {
+      this.matchesRequests.push({ resolve, reject });
     });
   }
 
   private handleResponse(line: string) {
+    const promise = this.matchesRequests.shift();
     if (line.startsWith("runOnePlay exception for:")) {
-      // play exception
+      promise?.reject(new Error(line));
       return;
     }
     if (line.startsWith("WorkerProcess exception:")) {
-      // worker exception
+      promise?.reject(new Error(line));
       return;
     }
     const result = this.parseResult(line);
     console.log('response', line);
-    const resolve = this.matchesRequests.shift();
-    if (resolve && result) {
-      resolve(result);
+    if (promise && result) {
+      promise.resolve(result);
     }
   }
 
