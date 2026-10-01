@@ -6,9 +6,10 @@ The goal of this system is to allow competitive tests of bots for bot contests l
 ## Architecture
 - Frontend: Vue
 - Backend: Nest.js
+- Local Benchmarker: NodeJS (TypeScript) and Java
 
 ## Installation and usage
-Project requires Node and npm to run locally. Details can be found in respective READMEs of `server` and `client`.
+Project requires Node and npm to run locally. Details can be found in respective READMEs of `server`, `client` and `local-benchmarker`.
 
 ## Author
 Project originally created as a part of masters thesis of Zuzanna Kania at University of Wrocław.
