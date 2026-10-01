@@ -30,21 +30,38 @@ export class TaskManager {
     if (this.processedTask != null) {
       return;
     }
-    while (this.tasks.length > 0) {
-      this.processedTask = this.tasks.shift()!;
-      const files = await fs.readdir("bots/");
-      for (const agent of this.processedTask.agents) {
-        if (!files.includes(agent)) {
-          await this.socket.getCode(agent);
+
+    try {
+      while (this.tasks.length > 0) {
+        this.processedTask = this.tasks.pop()!;
+
+        const files = await fs.readdir("bots/");
+
+        for (const agent of this.processedTask.agents) {
+          if (!files.includes(agent)) {
+            await this.socket.getCode(agent);
+          }
         }
+
+        this.socket.sendTaskAccepted(this.taskId);
+
+        const result = await this.referee.doMatch(
+          this.processedTask.players,
+          this.processedTask.seed,
+          this.processedTask.agents.map(
+            agent => './bots/' + agent
+          ),
+          Array(this.processedTask.players).fill(1),
+          1
+        );
+
+        console.log('result', result);
+
+        this.socket.sendMatchResult(result, this.taskId++);
+        this.processedTask = null;
       }
-      this.socket.sendTaskAccepted(this.taskId);
-      const result = await this.referee.doMatch(this.processedTask.players,
-        this.processedTask.seed, this.processedTask.agents.map((agent) => './bots/' + agent),
-        Array(this.processedTask.players).fill(1), 1);
-      console.log('result', result);
-      this.socket.sendMatchResult(result, this.taskId++);
+    } finally {
+      this.processedTask = null;
     }
-    this.processedTask = null;
   }
 }
