@@ -187,7 +187,7 @@ export class Socket {
   }
 
   private async saveCodeToFile(sourceName: string, code: Buffer<ArrayBufferLike>) {
-    await fs.writeFile('bots/' + sourceName, code, 'utf-8');
+    await fs.writeFile('bots/' + sourceName, code);
     await fs.chmod('bots/' + sourceName, 0o755);
   }
 

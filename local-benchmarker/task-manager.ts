@@ -33,11 +33,11 @@ export class TaskManager {
     while (this.tasks.length > 0) {
       this.processedTask = this.tasks.pop()!;
       const files = await fs.readdir("bots/");
-      this.processedTask.agents.forEach(async (agent) => {
+      for (const agent of this.processedTask.agents) {
         if (!files.includes(agent)) {
           await this.socket.getCode(agent);
         }
-      })
+      }
       this.socket.sendTaskAccepted(this.taskId);
       const result = await this.referee.doMatch(this.processedTask.players,
         this.processedTask.seed, this.processedTask.agents.map((agent) => './bots/' + agent),
