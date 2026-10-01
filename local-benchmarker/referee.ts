@@ -78,7 +78,7 @@ export class Referee {
     }
     const result = this.parseResult(line);
     console.log('response', line);
-    const resolve = this.matchesRequests.pop();
+    const resolve = this.matchesRequests.shift();
     if (resolve && result) {
       resolve(result);
     }

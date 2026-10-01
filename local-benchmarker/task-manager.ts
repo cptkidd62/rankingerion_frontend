@@ -31,7 +31,7 @@ export class TaskManager {
       return;
     }
     while (this.tasks.length > 0) {
-      this.processedTask = this.tasks.pop()!;
+      this.processedTask = this.tasks.shift()!;
       const files = await fs.readdir("bots/");
       for (const agent of this.processedTask.agents) {
         if (!files.includes(agent)) {
