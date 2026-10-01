@@ -1,4 +1,4 @@
 #!/bin/bash
 
 npm install
-npx tsx main.ts
+npx tsx main.ts "$1"
