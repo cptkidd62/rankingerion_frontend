@@ -1,0 +1,35 @@
+{
+  "next_id": 6,
+  "users": [
+    {
+      "id": 0,
+      "username": "user1",
+      "password": "$2a$12$M9mkU8xiLc6/kl/AokuKd.i542464HDLMHezEoTU2wdfzscvsM762"
+    },
+    {
+      "id": 1,
+      "username": "user2",
+      "password": "$2a$12$M9mkU8xiLc6/kl/AokuKd.i542464HDLMHezEoTU2wdfzscvsM762"
+    },
+    {
+      "id": 2,
+      "username": "user3",
+      "password": "$2a$12$M9mkU8xiLc6/kl/AokuKd.i542464HDLMHezEoTU2wdfzscvsM762"
+    },
+    {
+      "id": 3,
+      "username": "user4",
+      "password": "$2a$12$M9mkU8xiLc6/kl/AokuKd.i542464HDLMHezEoTU2wdfzscvsM762"
+    },
+    {
+      "id": 4,
+      "username": "user5",
+      "password": "$2a$12$M9mkU8xiLc6/kl/AokuKd.i542464HDLMHezEoTU2wdfzscvsM762"
+    },
+    {
+      "id": 5,
+      "username": "user6",
+      "password": "$2a$12$M9mkU8xiLc6/kl/AokuKd.i542464HDLMHezEoTU2wdfzscvsM762"
+    }
+  ]
+}
