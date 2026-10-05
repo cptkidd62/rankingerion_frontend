@@ -13,7 +13,7 @@ Project requires Node and npm to run locally. Details can be found in respective
 
 Project can be also run through `./run.sh`:
 - `./run.sh setup` - does all the installation and configuration, has to be done at least once
-- `./run.sh start <referee-count>` - starts all the components (benchmarker with a given number of concurrent referees), requires everything done in setup stage + **requires `.env` file in `server` folder (can be copied from .env.example), users file located at a path specified in `server/src/config/` and all the directories from that config already existing**
+- `./run.sh start <referee-count>` - starts all the components (benchmarker with a given number of concurrent referees), requires everything done in setup stage
 - `./run.sh stop` - stops all the components
 
 ## Author
