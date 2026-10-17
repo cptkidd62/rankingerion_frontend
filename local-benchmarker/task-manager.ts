@@ -1,3 +1,4 @@
+import { CGRefereePool } from "./cg-referee-pool";
 import { RefereePool } from "./referee-pool";
 import { Socket } from "./socket";
 import { promises as fs } from "node:fs";
