@@ -60,18 +60,23 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     };
     if (this.dirty) {
       await this.mutex.acquire();
-      const json = JSON.stringify(
-        data,
-        (_, value: unknown) => {
-          if (value instanceof Map) {
-            return [...value];
-          }
-          return value;
-        },
-        2,
-      );
-      this.dirty = false;
-      this.mutex.release();
+      let json = '';
+      try {
+        json = JSON.stringify(
+          data,
+          (_, value: unknown) => {
+            if (value instanceof Map) {
+              return [...value];
+            }
+            return value;
+          },
+          2,
+        );
+        this.dirty = false;
+      }
+      finally {
+        this.mutex.release();
+      }
 
       const dataDir = this.appConfig.config.dataDir;
       const fileName = this.appConfig.config.botsFile;
@@ -103,95 +108,131 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
 
   async create(bot: Bot): Promise<number> {
     await this.mutex.acquire();
-    bot.id = this.nextId++;
-    this.bots.push(bot);
-    this.dirty = true;
-    this.mutex.release();
-    return bot.id;
+    try {
+      bot.id = this.nextId++;
+      this.bots.push(bot);
+      this.dirty = true;
+    }
+    finally {
+      this.mutex.release();
+      return bot.id;
+    }
   }
 
   async deleteById(id: number): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0 && !this.bots[idx].status.isDeleted) {
-      this.bots[idx].status = { type: this.bots[idx].status.type, progress: 'failed', isDeleted: true };
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0 && !this.bots[idx].status.isDeleted) {
+        this.bots[idx].status = { type: this.bots[idx].status.type, progress: 'failed', isDeleted: true };
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateById(id: number, bot: Bot): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0 && !this.bots[idx].status.isDeleted) {
-      const rating = this.bots[idx].rating;
-      this.bots[idx] = bot;
-      this.bots[idx].rating = rating;
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0 && !this.bots[idx].status.isDeleted) {
+        const rating = this.bots[idx].rating;
+        this.bots[idx] = bot;
+        this.bots[idx].rating = rating;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateNameById(id: number, name: string): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0) {
-      this.bots[idx].name = name;
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0) {
+        this.bots[idx].name = name;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateRatingById(id: number, rating: RatingData): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0) {
-      this.bots[idx].rating = rating;
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0) {
+        this.bots[idx].rating = rating;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateErrorLogById(id: number, msg: string): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0) {
-      this.bots[idx].errorsCount++;
-      this.bots[idx].lastErrorMsg = msg;
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0) {
+        this.bots[idx].errorsCount++;
+        this.bots[idx].lastErrorMsg = msg;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateStatusTypeById(id: number, statusType: StatusType): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0 && (this.bots[idx].status.type == 'created' || statusType != 'ok')) {
-      this.bots[idx].status.type = statusType;
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0 && (this.bots[idx].status.type == 'created' || statusType != 'ok')) {
+        this.bots[idx].status.type = statusType;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateStatusProgressById(id: number, statusProgress: StatusProgress): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0) {
-      this.bots[idx].status.progress = statusProgress;
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0) {
+        this.bots[idx].status.progress = statusProgress;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 
   async updateStatusById(id: number, statusType: StatusType, statusProgress: StatusProgress): Promise<void> {
     await this.mutex.acquire();
-    const idx = this.bots.findIndex((bot) => bot.id == id);
-    if (idx >= 0) {
-      if (this.bots[idx].status.type == 'created' || statusType != 'ok')
-        this.bots[idx].status.type = statusType;
-      this.bots[idx].status.progress = statusProgress
-      this.dirty = true;
+    try {
+      const idx = this.bots.findIndex((bot) => bot.id == id);
+      if (idx >= 0) {
+        if (this.bots[idx].status.type == 'created' || statusType != 'ok')
+          this.bots[idx].status.type = statusType;
+        this.bots[idx].status.progress = statusProgress
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 }

@@ -13,8 +13,7 @@ interface MatchesFileData {
 @Injectable()
 export class FileMatchRepository
   extends MatchRepository
-  implements OnModuleInit
-{
+  implements OnModuleInit {
   private matches: Match[] = [];
   private nextId = 0;
   private mutex: Mutex = new Mutex();
@@ -53,9 +52,14 @@ export class FileMatchRepository
     };
     if (this.dirty) {
       await this.mutex.acquire();
-      const json = JSON.stringify(data, null, 2);
-      this.dirty = false;
-      this.mutex.release();
+      let json = '';
+      try {
+        json = JSON.stringify(data, null, 2);
+        this.dirty = false;
+      }
+      finally {
+        this.mutex.release();
+      }
 
       const dataDir = this.appConfig.config.dataDir;
       const fileName = this.appConfig.config.matchesFile;
@@ -64,7 +68,7 @@ export class FileMatchRepository
       const bakPath = filePath + '.bak';
 
       await fs.writeFile(tmpPath, json, 'utf-8');
-      await fs.rename(filePath, bakPath).catch(() => {});
+      await fs.rename(filePath, bakPath).catch(() => { });
       await fs.rename(tmpPath, filePath);
       console.log('Saved match repo');
     }
@@ -97,20 +101,28 @@ export class FileMatchRepository
 
   async create(match: Match): Promise<number> {
     await this.mutex.acquire();
-    match.id = this.nextId++;
-    this.matches.push(match);
-    this.dirty = true;
-    this.mutex.release();
+    try {
+      match.id = this.nextId++;
+      this.matches.push(match);
+      this.dirty = true;
+    }
+    finally {
+      this.mutex.release();
+    }
     return match.id;
   }
 
   async updateSequenceNumber(id: number, seq: number) {
     await this.mutex.acquire();
-    const idx = this.matches.findIndex((match) => match.id == id);
-    if (idx >= 0) {
-      this.matches[idx].sequence_number = seq;
-      this.dirty = true;
+    try {
+      const idx = this.matches.findIndex((match) => match.id == id);
+      if (idx >= 0) {
+        this.matches[idx].sequence_number = seq;
+        this.dirty = true;
+      }
     }
-    this.mutex.release();
+    finally {
+      this.mutex.release();
+    }
   }
 }
