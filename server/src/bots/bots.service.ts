@@ -216,19 +216,7 @@ export class BotsService {
         console.error('Error during create match:', err);
       }
     }
-    await this.botRepo.updateById(bots[id].id, {
-      id: bots[id].id,
-      name: bots[id].name,
-      language: bots[id].language,
-      user_id: bots[id].user_id,
-      username: bots[id].username,
-      dateCreated: bots[id].dateCreated,
-      filename: bots[id].filename,
-      status: { type: 'ok', progress: 'no_more_opponents', isDeleted: false },
-      errorsCount: bots[id].errorsCount,
-      lastErrorMsg: bots[id].lastErrorMsg,
-      rating: bots[id].rating,
-    });
+    await this.botRepo.updateStatusById(id, 'ok', 'no_more_opponents');
   }
 
   private async generateBenchmarkerMatches(
@@ -288,19 +276,7 @@ export class BotsService {
         const this_bot = bots.find((b) => b.id == id)!;
         console.log('XXXXXX', this_bot.rating.matchesPlayed)
         if (result.type == 'no-more-opponents' || this_bot.rating.matchesPlayed >= this.appConfig.config.matchesToPlay) {
-          await this.botRepo.updateById(this_bot.id, {
-            id: this_bot.id,
-            name: this_bot.name,
-            language: this_bot.language,
-            user_id: this_bot.user_id,
-            username: this_bot.username,
-            dateCreated: this_bot.dateCreated,
-            filename: this_bot.filename,
-            status: { type: 'ok', progress: 'no_more_opponents', isDeleted: false },
-            errorsCount: this_bot.errorsCount,
-            lastErrorMsg: this_bot.lastErrorMsg,
-            rating: this_bot.rating,
-          });
+          await this.botRepo.updateStatusById(this_bot.id, 'ok', 'no_more_opponents');
           break;
         }
         checkFinish = false;
@@ -340,19 +316,7 @@ export class BotsService {
           );
           const player = players.at(res.agentIndex!);
           if (player) {
-            await this.botRepo.updateById(player.id, {
-              id: player.id,
-              name: player.name,
-              language: player.language,
-              user_id: player.user_id,
-              username: player.username,
-              dateCreated: player.dateCreated,
-              filename: player.filename,
-              status: { type: 'compilation_error', progress: 'failed', isDeleted: false },
-              errorsCount: player.errorsCount,
-              lastErrorMsg: player.lastErrorMsg,
-              rating: player.rating,
-            });
+            await this.botRepo.updateStatusById(player.id, 'compilation_error', 'failed');
             await this.botRepo.updateRatingById(player.id, {
               value: 0,
               RD: player.rating.RD,
@@ -376,19 +340,7 @@ export class BotsService {
           );
           const player = players.at(res.agentIndex!);
           if (player) {
-            await this.botRepo.updateById(player.id, {
-              id: player.id,
-              name: player.name,
-              language: player.language,
-              user_id: player.user_id,
-              username: player.username,
-              dateCreated: player.dateCreated,
-              filename: player.filename,
-              status: { type: 'playtime_error', progress: 'failed', isDeleted: false },
-              errorsCount: player.errorsCount,
-              lastErrorMsg: player.lastErrorMsg,
-              rating: player.rating,
-            });
+            await this.botRepo.updateStatusById(player.id, 'playtime_error', 'failed');
             await this.botRepo.updateRatingById(player.id, {
               value: 0,
               RD: player.rating.RD,
@@ -440,25 +392,14 @@ export class BotsService {
       catch (err) {
         console.error('Error during create match:', err);
       }
-      await Promise.all(players.map(async (bot) => {
-        await this.botRepo.updateById(bot.id, {
-          id: bot.id,
-          name: bot.name,
-          language: bot.language,
-          user_id: bot.user_id,
-          username: bot.username,
-          dateCreated: bot.dateCreated,
-          filename: bot.filename,
-          status: { type: 'ok', progress: bot.status.progress, isDeleted: false },
-          errorsCount: bot.errorsCount += (scores[0] == -1 ? 1 : 0),
-          lastErrorMsg: scores[0] == -1 ? res.logs[0] : bot.lastErrorMsg,
-          rating: bot.rating,
-        });
+      await Promise.all(players.map(async (bot, i) => {
+        if (scores[i] == -1)
+          await this.botRepo.updateErrorLogById(bot.id, res.logs[i]);
+        await this.botRepo.updateStatusTypeById(bot.id, 'ok');
       }));
     }
-    finally {
-      return true;
-    }
+    finally { }
+    return true;
   }
 
   async getFile(botId: number): Promise<BotFileData> {

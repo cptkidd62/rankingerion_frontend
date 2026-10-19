@@ -1,8 +1,11 @@
 export type BotStatus = {
-  type: 'created' | 'compilation_error' | 'playtime_error' | 'ok';
-  progress: 'in_progress' | 'saturated' | 'no_more_opponents' | 'failed';
+  type: StatusType;
+  progress: StatusProgress;
   isDeleted: boolean;
 };
+
+export type StatusType = 'created' | 'compilation_error' | 'playtime_error' | 'ok';
+export type StatusProgress = 'in_progress' | 'saturated' | 'no_more_opponents' | 'failed';
 
 export type RatingData = {
   value: number;
@@ -58,4 +61,8 @@ export abstract class BotRepository {
   abstract updateById(id: number, bot: Bot): Promise<void>;
   abstract updateNameById(id: number, name: string): Promise<void>;
   abstract updateRatingById(id: number, rating: RatingData): Promise<void>;
+  abstract updateErrorLogById(id: number, msg: string): Promise<void>;
+  abstract updateStatusTypeById(id: number, statusType: StatusType): Promise<void>;
+  abstract updateStatusProgressById(id: number, statusProgress: StatusProgress): Promise<void>;
+  abstract updateStatusById(id: number, statusType: StatusType, statusProgress: StatusProgress): Promise<void>;
 }

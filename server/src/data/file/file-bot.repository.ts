@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { Bot, BotRepository, RatingData } from '../bot.repository';
+import { Bot, BotRepository, RatingData, StatusProgress, StatusType } from '../bot.repository';
 import { Mutex } from 'async-mutex';
 import { initialRating } from '../rating.service';
 import { AppConfigService } from '@/config/appconfig.service';
@@ -147,6 +147,49 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     const idx = this.bots.findIndex((bot) => bot.id == id);
     if (idx >= 0) {
       this.bots[idx].rating = rating;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
+
+  async updateErrorLogById(id: number, msg: string): Promise<void> {
+    await this.mutex.acquire();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0) {
+      this.bots[idx].errorsCount++;
+      this.bots[idx].lastErrorMsg = msg;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
+
+  async updateStatusTypeById(id: number, statusType: StatusType): Promise<void> {
+    await this.mutex.acquire();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0 && (this.bots[idx].status.type == 'created' || statusType != 'ok')) {
+      this.bots[idx].status.type = statusType;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
+
+  async updateStatusProgressById(id: number, statusProgress: StatusProgress): Promise<void> {
+    await this.mutex.acquire();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0) {
+      this.bots[idx].status.progress = statusProgress;
+      this.dirty = true;
+    }
+    this.mutex.release();
+  }
+
+  async updateStatusById(id: number, statusType: StatusType, statusProgress: StatusProgress): Promise<void> {
+    await this.mutex.acquire();
+    const idx = this.bots.findIndex((bot) => bot.id == id);
+    if (idx >= 0) {
+      if (this.bots[idx].status.type == 'created' || statusType != 'ok')
+        this.bots[idx].status.type = statusType;
+      this.bots[idx].status.progress = statusProgress
       this.dirty = true;
     }
     this.mutex.release();
