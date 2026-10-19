@@ -17,5 +17,6 @@ export const ProdConfig: AppConfig = {
   maxMatchesPerOpponent: 10, // max number of matches between two bots in initial matchmaking
   maxBotsPerUser: 10, // max number of active bots per user
   noise: 25, // random noise for matchmaking functions - do not modify
-  maxPlannedMatchesPerBot: 1, // max concurrent planned matches per bot
+  maxPlannedMatches: 4, // max concurrent planned matches
+  maxPlannedMatchesPerBot: 4, // max concurrent planned matches per bot
 };

@@ -325,7 +325,6 @@ export class ClientService {
         const playTask = this.acceptedPlayTasks.get(id);
         debugLog(3, 'Playtask with id: ', id, playTask);
         if (!playTask) throw Error('No playtask found with id ' + id);
-        this.acceptedPlayTasks.delete(id);
         const time = this.instream.peekLong();
         if (time == null) {
           this.instream.resetCursor();
@@ -361,6 +360,7 @@ export class ClientService {
           return false;
         }
         debugLog(3, 'summaries:', summaries);
+        this.acceptedPlayTasks.delete(id);
         const result = new PlayResult(time, scores, logs, summaries);
         this.taskPlayed(playTask, result);
         break;

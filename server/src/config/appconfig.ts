@@ -18,6 +18,7 @@ export type AppConfig = {
   matchesToPlay: number;
   maxMatchesPerOpponent: number;
   noise: number;
+  maxPlannedMatches: number;
   maxPlannedMatchesPerBot: number;
 
   // bots

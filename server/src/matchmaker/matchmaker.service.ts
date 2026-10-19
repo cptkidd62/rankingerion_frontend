@@ -21,14 +21,18 @@ export type NextMatchResult =
   | { type: 'no-more-opponents' }
   | { type: 'done' }
 
+type MatchStatus = 'ok' | 'wait' | 'not-ok'
+
 @Injectable()
 export class MatchmakerService implements OnModuleInit {
   private readonly matchChanged = new EventEmitter();
   bots: Bot[] = [];
   pendingCache: Map<number, PendingData>;
+  plannedMatches: number;
 
   constructor(private readonly botRepository: BotRepository, private readonly appConfig: AppConfigService) {
     this.pendingCache = new Map();
+    this.plannedMatches = 0;
   }
 
   async onModuleInit() {
@@ -63,11 +67,13 @@ export class MatchmakerService implements OnModuleInit {
 
   async getNextOpponent(id: number): Promise<NextMatchResult> {
     const opponents: number[] = [];
+    let wait = false;
     this.bots = await this.botRepository.findAll();
     if (!this.pendingCache.has(id)) {
       this.pendingCache.set(id, createTempData());
     }
-    if (this.pendingCache.get(id)!.matches >= this.appConfig.config.maxPlannedMatchesPerBot) {
+    if (this.pendingCache.get(id)!.matches >= this.appConfig.config.maxPlannedMatchesPerBot
+      || this.plannedMatches >= this.appConfig.config.maxPlannedMatches) {
       const changed = once(this.matchChanged, 'changed');
 
       return {
@@ -102,7 +108,8 @@ export class MatchmakerService implements OnModuleInit {
     const queue = this.generateQueue(this.bots, id, score);
     for (const id2 of queue) {
       // check if match can happan
-      if (this.isMatchOK(this.bots, id, id2)) {
+      const matchOK = this.isMatchOK(this.bots, id, id2);
+      if (matchOK == 'ok') {
         opponents.push(id2);
         if (opponents.length == this.appConfig.config.playersCount - 1) {
           const all = structuredClone(opponents);
@@ -110,7 +117,17 @@ export class MatchmakerService implements OnModuleInit {
           this.addToCache(all);
           return { type: 'match', opponentIds: opponents };
         }
+      } else if (matchOK == 'wait') {
+        wait = true;
       }
+    }
+    if (wait) {
+      const changed = once(this.matchChanged, 'changed');
+
+      return {
+        type: 'wait',
+        changed: changed.then(() => undefined),
+      };
     }
     console.log('no remaining');
     return { type: 'no-more-opponents' };
@@ -129,16 +146,24 @@ export class MatchmakerService implements OnModuleInit {
     return evs.map((a) => a[0]);
   }
 
-  private isMatchOK(bots: Bot[], id1: number, id2: number) {
+  private isMatchOK(bots: Bot[], id1: number, id2: number): MatchStatus {
     const played =
       (bots[id1].rating.opponentsPlayed.get(id2) ?? 0) +
       (this.pendingCache.get(id1)!.opponentsCount.get(id2) ?? 0);
-    return (
+    const opp_planned = this.pendingCache.get(id2)!.matches;
+    if (
       bots[id1].user_id != bots[id2].user_id && //don't allow own bots
       (bots[id1].status.type == 'created' || bots[id1].status.type == 'ok') && !bots[id1].status.isDeleted &&
       (bots[id2].status.type == 'created' || bots[id2].status.type == 'ok') && !bots[id2].status.isDeleted &&
       played < this.appConfig.config.maxMatchesPerOpponent // check if not max with this opponent
-    );
+    ) {
+      if (opp_planned < this.appConfig.config.maxPlannedMatchesPerBot)
+        return 'ok'
+      else
+        return 'wait'
+    }
+    else
+      return 'not-ok'
   }
 
   private addToCache(ids: number[]) {
@@ -151,6 +176,7 @@ export class MatchmakerService implements OnModuleInit {
         }
       }
     }
+    this.plannedMatches++;
   }
 
   removeFromCache(ids: number[]) {
@@ -168,6 +194,8 @@ export class MatchmakerService implements OnModuleInit {
         }
       }
     }
+    this.plannedMatches--;
+    console.log('RELEASE', ids, this.plannedMatches);
     this.matchChanged.emit('changed');
   }
 }

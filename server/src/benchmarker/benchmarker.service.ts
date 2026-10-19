@@ -14,17 +14,20 @@ import { AppConfigService } from '@/config/appconfig.service';
 
 @Injectable()
 export class BenchmarkerService {
+  private count = 0;
   constructor(private readonly clientService: ClientService, private readonly appConfigService: AppConfigService) { }
 
   async playSingle(bots: string[]): Promise<PlayResult | PlayTaskError> {
     if (!this.clientService.isConnected) return new ConnectionError();
     const agents: Agent[] = [];
     bots.forEach((bot) => agents.push(new Agent(bot)));
+    const c = this.count++;
     try {
+      console.log('SEND', c);
       const results = await this.clientService.enqueueBatch([
         new PlayTask(agents, this.randomLong(), this.appConfigService.config.referee),
       ]);
-      console.log('**** OUT Batch results:');
+      console.log('**** OUT Batch results no %d:', c);
       for (let i = 0; i < results.length; i++) {
         console.log('id: ', i, ', scores: ', results[i].scores);
       }

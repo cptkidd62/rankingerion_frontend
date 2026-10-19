@@ -16,7 +16,8 @@ const DevConfig = {
   maxMatchesPerOpponent: 10,
   maxBotsPerUser: 10,
   noise: 25,
-  maxPlannedMatchesPerBot: 1,
+  maxPlannedMatches: 4,
+  maxPlannedMatchesPerBot: 4,
 } as AppConfig;
 
 export const BenchmarkerDevConfig: AppConfig = {

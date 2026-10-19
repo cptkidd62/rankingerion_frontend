@@ -34,11 +34,14 @@ export class Socket {
   private intervalId: NodeJS.Timeout | undefined;
 
   // tasks
-  private taskManager = new TaskManager(0,this);
-  private sourceRequests = new Map<string, () => void>();
+  private taskManager = new TaskManager(0, this);
+  private sourceRequests = new Map<
+    string,
+    { promise: Promise<void>; resolve: () => void }
+  >();
 
   constructor(count: number, private readonly socket: TLSSocket) {
-    this.taskManager = new TaskManager(count,this);
+    this.taskManager = new TaskManager(count, this);
     socket.on('data', (chunk: Buffer) => {
       this.instream.addToBuffer(chunk);
       while (this.parseBuffer());
@@ -170,20 +173,29 @@ export class Socket {
   }
 
   getCode(sourceName: string): Promise<void> {
-    return new Promise<void>((resolve) => {
-      this.sourceRequests.set(sourceName, resolve);
-      this.requestSource(sourceName);
+    const existingRequest = this.sourceRequests.get(sourceName);
+    if (existingRequest) {
+      return existingRequest.promise;
+    }
+
+    let resolve!: () => void;
+    const promise = new Promise<void>((res) => {
+      resolve = res;
     });
+
+    this.sourceRequests.set(sourceName, { promise, resolve });
+    this.requestSource(sourceName);
+
+    return promise;
   }
 
-  private async processCode(sourceName: string, code: Buffer<ArrayBufferLike>) {
+  private async processCode(sourceName: string, code: Buffer<ArrayBufferLike>): Promise<void> {
     await this.saveCodeToFile(sourceName, code);
 
-    const resolve = this.sourceRequests.get(sourceName);
-
-    if (resolve) {
-      resolve();
+    const request = this.sourceRequests.get(sourceName);
+    if (request) {
       this.sourceRequests.delete(sourceName);
+      request.resolve();
     }
   }
 
