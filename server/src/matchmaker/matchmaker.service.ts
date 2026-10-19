@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { AppConfigService } from '@/config/appconfig.service';
 import { Bot, BotRepository, RatingData } from '@/data/bot.repository';
+import { EventEmitter, once } from 'node:events';
 
 interface PendingData {
   matches: number;
@@ -14,8 +15,15 @@ const createTempData: () => PendingData = () => {
   };
 };
 
+export type NextMatchResult =
+  | { type: 'match', opponentIds: number[] }
+  | { type: 'wait', changed: Promise<void> }
+  | { type: 'no-more-opponents' }
+  | { type: 'done' }
+
 @Injectable()
 export class MatchmakerService implements OnModuleInit {
+  private readonly matchChanged = new EventEmitter();
   bots: Bot[] = [];
   pendingCache: Map<number, PendingData>;
 
@@ -53,11 +61,19 @@ export class MatchmakerService implements OnModuleInit {
     return -r_opp - rating_opp.lastMatchId + this.randomNoise();
   };
 
-  async getNextOpponent(id: number): Promise<number[] | null> {
+  async getNextOpponent(id: number): Promise<NextMatchResult> {
     const opponents: number[] = [];
     this.bots = await this.botRepository.findAll();
     if (!this.pendingCache.has(id)) {
       this.pendingCache.set(id, createTempData());
+    }
+    if (this.pendingCache.get(id)!.matches >= this.appConfig.config.maxPlannedMatchesPerBot) {
+      const changed = once(this.matchChanged, 'changed');
+
+      return {
+        type: 'wait',
+        changed: changed.then(() => undefined),
+      };
     }
     console.log('played ', this.bots[id].rating.matchesPlayed)
     console.log('planned ', this.pendingCache.get(id)!.matches)
@@ -65,7 +81,7 @@ export class MatchmakerService implements OnModuleInit {
       this.pendingCache.get(id)!.matches + this.bots[id].rating.matchesPlayed;
     if (matches >= this.appConfig.config.matchesToPlay) {
       console.log('saturated', matches);
-      return null;
+      return { type: 'done' };
     }
 
     let score: {
@@ -92,12 +108,12 @@ export class MatchmakerService implements OnModuleInit {
           const all = structuredClone(opponents);
           all.push(id);
           this.addToCache(all);
-          return opponents;
+          return { type: 'match', opponentIds: opponents };
         }
       }
     }
     console.log('no remaining');
-    return null;
+    return { type: 'no-more-opponents' };
   }
 
   private generateQueue(
@@ -152,5 +168,6 @@ export class MatchmakerService implements OnModuleInit {
         }
       }
     }
+    this.matchChanged.emit('changed');
   }
 }

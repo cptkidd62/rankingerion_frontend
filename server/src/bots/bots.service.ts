@@ -15,7 +15,7 @@ import {
   PlaytimeError,
 } from '@/errors/PlayErrors';
 import { AppConfigService } from '@/config/appconfig.service';
-import { MatchmakerService } from '@/matchmaker/matchmaker.service';
+import { MatchmakerService, NextMatchResult } from '@/matchmaker/matchmaker.service';
 import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -165,8 +165,16 @@ export class BotsService {
   ): Promise<void> {
 
     const bots = await this.botRepo.findAll();
-    let ids: number[] | null;
-    while ((ids = await this.matchmakerService.getNextOpponent(id)) != null) {
+    let result: NextMatchResult;
+    while ((result = await this.matchmakerService.getNextOpponent(id)).type != 'done') {
+      if (result.type == 'no-more-opponents') {
+        break;
+      }
+      if (result.type == 'wait') {
+        await result.changed;
+        continue;
+      }
+      let ids: number[] = result.opponentIds;
       const players = [bots[id]];
       const scores: number[] = [randomInt(0, 1000)];
       const botIds = [id];
@@ -228,25 +236,98 @@ export class BotsService {
     user_id: number,
   ): Promise<void> {
     console.log('create with benchmarker');
+    const activeMatches = new Set<Promise<boolean>>();
+    let shouldStop = false;
+    let checkFinish = false;
+    while (true) {
+      let result: NextMatchResult = await this.matchmakerService.getNextOpponent(id);
+      switch (result.type) {
+        case 'match': {
+          let ids: number[] = result.opponentIds;
+          const botIds = structuredClone(result.opponentIds);
+          botIds.push(id);
 
-    const bots = await this.botRepo.findAll();
-    const users = await this.userRepo.findAll();
-    const this_bot = bots.find((b) => b.id == id)!;
-    let ids: number[] | null;
-    while ((ids = await this.matchmakerService.getNextOpponent(id)) != null) {
-      const players = [bots[id]];
-      const botIds = [id];
-      const botNames = [bots[id].name];
-      const userIds = [user_id];
-      const userNames = [bots[id].username];
-      for (let i = 0; i < ids.length; i++) {
-        players.push(bots[ids[i]]);
-        const opp = bots[ids[i]];
-        botIds.push(opp.id);
-        botNames.push(opp.name);
-        userIds.push(opp.user_id);
-        userNames.push(opp.username);
+          const task = this.processScheduledMatch(
+            id, ids,
+          ).then((shouldContinue) => {
+            if (!shouldContinue) {
+              shouldStop = true;
+            }
+            return shouldContinue;
+          }).finally(() => {
+            this.matchmakerService.removeFromCache(botIds);
+          });
+
+          activeMatches.add(task);
+
+          void task.then(() => {
+            activeMatches.delete(task);
+          });
+          break;
+        }
+        case 'wait': {
+          await result.changed;
+          break;
+        }
+        case 'no-more-opponents': {
+          checkFinish = true;
+          break;
+        }
+        case 'done': {
+          checkFinish = true;
+          break;
+        }
       }
+      if (shouldStop) {
+        await Promise.all(activeMatches);
+        return;
+      }
+      if (checkFinish) {
+        await Promise.all(activeMatches);
+        const bots = await this.botRepo.findAll();
+        const this_bot = bots.find((b) => b.id == id)!;
+        console.log('XXXXXX', this_bot.rating.matchesPlayed)
+        if (result.type == 'no-more-opponents' || this_bot.rating.matchesPlayed >= this.appConfig.config.matchesToPlay) {
+          await this.botRepo.updateById(this_bot.id, {
+            id: this_bot.id,
+            name: this_bot.name,
+            language: this_bot.language,
+            user_id: this_bot.user_id,
+            username: this_bot.username,
+            dateCreated: this_bot.dateCreated,
+            filename: this_bot.filename,
+            status: { type: 'ok', progress: 'no_more_opponents', isDeleted: false },
+            errorsCount: this_bot.errorsCount,
+            lastErrorMsg: this_bot.lastErrorMsg,
+            rating: this_bot.rating,
+          });
+          break;
+        }
+        checkFinish = false;
+      }
+    }
+  }
+
+  private async processScheduledMatch(
+    id: number,
+    opponentIds: number[]
+  ): Promise<boolean> {
+    const bots = await this.botRepo.findAll();
+    const this_bot = bots.find((b) => b.id == id)!;
+    const players = [bots[id]];
+    const botIds = [id];
+    const botNames = [bots[id].name];
+    const userIds = [this_bot.user_id];
+    const userNames = [bots[id].username];
+    for (let i = 0; i < opponentIds.length; i++) {
+      players.push(bots[opponentIds[i]]);
+      const opp = bots[opponentIds[i]];
+      botIds.push(opp.id);
+      botNames.push(opp.name);
+      userIds.push(opp.user_id);
+      userNames.push(opp.username);
+    }
+    try {
       const res = await this.benchmarkerService.playSingle(
         players.map((player) => this.botFile(player)),
       );
@@ -283,8 +364,7 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
-              this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
-              return;
+              return false;
             }
           }
         } else if (res instanceof PlaytimeError) {
@@ -320,27 +400,22 @@ export class BotsService {
             });
             if (player.id === this_bot.id) {
               // don't continue if own bot has error
-              this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
-              return;
+              return false;
             }
           }
         } else if (res instanceof ConnectionError) {
           console.error('ConnectionError');
-          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
-          return;
+          return false;
         } else {
           console.error('PlayTaskError');
-          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
-        continue;
+        return true;
       }
       if (this_bot.status.isDeleted) {
-        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
-        return;
+        return false;
       }
       if (players.some((bot) => bot.status.isDeleted)) {
-        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
-        continue;
+        return true;
       }
       const scores = res.scores;
       const match = {
@@ -357,18 +432,15 @@ export class BotsService {
         match.id = matchid;
         try {
           await this.ratingService.processMatch(match);
-          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
         catch (err) {
           console.error(err);
-          this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         }
       }
       catch (err) {
-        this.matchmakerService.removeFromCache(players.map((bot) => bot.id));
         console.error('Error during create match:', err);
       }
-      players.forEach(async (bot) => {
+      await Promise.all(players.map(async (bot) => {
         await this.botRepo.updateById(bot.id, {
           id: bot.id,
           name: bot.name,
@@ -382,21 +454,11 @@ export class BotsService {
           lastErrorMsg: scores[0] == -1 ? res.logs[0] : bot.lastErrorMsg,
           rating: bot.rating,
         });
-      })
+      }));
     }
-    await this.botRepo.updateById(this_bot.id, {
-      id: this_bot.id,
-      name: this_bot.name,
-      language: this_bot.language,
-      user_id: this_bot.user_id,
-      username: this_bot.username,
-      dateCreated: this_bot.dateCreated,
-      filename: this_bot.filename,
-      status: { type: 'ok', progress: 'no_more_opponents', isDeleted: false },
-      errorsCount: this_bot.errorsCount,
-      lastErrorMsg: this_bot.lastErrorMsg,
-      rating: this_bot.rating,
-    });
+    finally {
+      return true;
+    }
   }
 
   async getFile(botId: number): Promise<BotFileData> {
