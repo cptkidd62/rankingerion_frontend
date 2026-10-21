@@ -30,12 +30,21 @@ function toggleEditName() {
   errorMsg.value = '';
   newPwd.value = '';
 }
+
+function uploadProfileImage() {
+  document.getElementById("profile-img")?.click();
+}
 </script>
 
 <template>
   <div class="account">
     <h1>My account</h1>
     <p>Username: {{ auth.user?.username }}</p>
+    <hr>
+    <img class="profile-image-button" src="./../assets/Anonymous_logo.png" alt="profile-image">
+    <input type="file" id="profile-img" accept="image/png, image/jpeg, image/gif" style="display: none" />
+    <button class="button" @click="uploadProfileImage()">Upload image</button>
+    <hr>
     <span>
       <button class="button" @click="toggleEditName()">{{ editingPwd ? 'Cancel' : 'Change password' }}</button>
       <span v-if="editingPwd">
@@ -54,9 +63,23 @@ function toggleEditName() {
   display: flex;
   flex-flow: column;
   align-items: center;
+  width: fit-content;
+  align-self: center;
+  margin: 0 auto;
 }
 
 .button {
-  margin: 1em 0.5em;
+  margin: 0 0.5em;
+}
+
+.profile-image-button {
+  border-radius: 1em;
+  margin-bottom: 1em;
+}
+
+hr {
+  color: var(--color-text);
+  width: 100%;
+  margin: 1em 0;
 }
 </style>
