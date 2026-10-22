@@ -41,7 +41,7 @@ const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string | null>(null);
 
 const imageUrl = computed(() =>
-  previewUrl.value ?? (auth.user ? useUsersStore().images[auth.user!.id] : anonymousLogo)
+  previewUrl.value ?? (auth.user ? (useUsersStore().images[auth.user.id] ?? anonymousLogo) : anonymousLogo)
 )
 
 async function onFileChange(event: Event) {
