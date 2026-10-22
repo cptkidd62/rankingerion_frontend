@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useBotsStore } from '@/stores/bots';
 import { useConfigStore } from '@/stores/config';
 import RatingSelector from '@/components/RatingSelector.vue';
+import ProfileImage from '@/components/ProfileImage.vue';
 
 const auth = useAuthStore()
 const botsStore = useBotsStore()
@@ -72,7 +73,10 @@ onUnmounted(() => {
             </td>
             <td>
               <RouterLink class="table-link" :to="`/bots/${bot.id}`">
-                {{ bot.username }}
+                <div class="user-block">
+                  <ProfileImage size="24px" :id="bot.user_id" />
+                  {{ bot.username }}
+                </div>
               </RouterLink>
             </td>
             <td class="monospace">
@@ -104,5 +108,11 @@ onUnmounted(() => {
 .own {
   background-color: var(--color-border);
   color: var(--color-text);
+}
+
+.user-block {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 </style>

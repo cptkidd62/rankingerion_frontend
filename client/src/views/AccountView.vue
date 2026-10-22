@@ -64,6 +64,7 @@ function onFileChange(event: Event) {
 
   console.log(selectedFile.value);
   api.users.uploadProfileImage(selectedFile.value, useAuthStore().user!.id);
+  useUsersStore().fetchImages();
 }
 
 onUnmounted(() => {
@@ -79,7 +80,8 @@ onUnmounted(() => {
     <p>Username: {{ auth.user?.username }}</p>
     <hr>
     <img class="profile-image-button" :src="imageUrl" alt="profile-image">
-    <input type="file" id="profile-img" accept="image/png, image/jpeg, image/gif" @change="onFileChange" style="display: none" />
+    <input type="file" id="profile-img" accept="image/png, image/jpeg, image/gif" @change="onFileChange"
+      style="display: none" />
     <button class="button" @click="uploadProfileImage()">Upload image</button>
     <hr>
     <span>
@@ -112,6 +114,7 @@ onUnmounted(() => {
 img {
   width: 10em;
   height: 10em;
+  object-fit: cover;
 }
 
 .profile-image-button {

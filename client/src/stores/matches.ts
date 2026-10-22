@@ -70,7 +70,8 @@ export const useMatchesStore = defineStore('matches', () => {
       winrate: 0,
       rankDelta: null,
       botname: "",
-      username: ""
+      username: "",
+      user_id: -1,
     };
     for (var match of matches.value) {
       const idx = match.bot_ids.indexOf(botId);
@@ -82,6 +83,7 @@ export const useMatchesStore = defineStore('matches', () => {
             const c = structuredClone(count);
             c.botname = bots.bots[ido].name;
             c.username = bots.bots[ido].username;
+            c.user_id = bots.bots[ido].user_id;
             summary.set(ido, [c, bots.bots[ido].status.isDeleted]);
           }
           if (match.score[idx] > match.score[i]) {

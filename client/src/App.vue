@@ -4,6 +4,7 @@ import { useAuthStore } from './stores/auth';
 import { onMounted } from 'vue';
 import { useConfigStore } from './stores/config';
 import { useUsersStore } from './stores/users';
+import ProfileImage from './components/ProfileImage.vue';
 
 const auth = useAuthStore()
 const users = useUsersStore()
@@ -25,7 +26,11 @@ onMounted(() => {
       <nav>
         <RouterLink v-if="auth.token" to="/ranking">Ranking</RouterLink>
         <RouterLink v-if="auth.token" to="/bots">My bots</RouterLink>
-        <RouterLink v-if="auth.token" to="/account">My account ({{ auth.user?.username }})</RouterLink>
+        <RouterLink v-if="auth.token" to="/account">
+          <div class="acc">My account ({{ auth.user?.username }})
+            <ProfileImage size="1.2em" />
+          </div>
+        </RouterLink>
         <RouterLink v-if="auth.token" to="/signin" @click.prevent="auth.logout()">Log out</RouterLink>
       </nav>
     </div>
@@ -48,6 +53,11 @@ header {
   font-size: 1.5rem;
   font-weight: bold;
   white-space: nowrap;
+}
+
+.acc {
+  display: flex;
+  gap: 8px;
 }
 
 nav {

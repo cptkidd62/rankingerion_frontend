@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
 import type { OpponentSummary } from '@/types/stats';
+import ProfileImage from './ProfileImage.vue';
 
 const props = defineProps({
   oppsummary: {
@@ -23,7 +24,10 @@ const props = defineProps({
     </td>
     <td>
       <RouterLink class="table-link" :to="`/bots/${oppsummary[0]}`">
-        {{ oppsummary[1][0].username }}
+        <div class="user-block">
+          <ProfileImage size="24px" :id="oppsummary[1][0].user_id" />
+          {{ oppsummary[1][0].username }}
+        </div>
       </RouterLink>
     </td>
     <td>
@@ -75,5 +79,11 @@ a.table-link:hover {
 
 tr.result-list-item:hover {
   color: var(--color-header)
+}
+
+.user-block {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 </style>
