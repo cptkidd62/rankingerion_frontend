@@ -2,7 +2,8 @@
 import { api } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
-import { ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
+import anonymousLogo from '@/assets/Anonymous_logo.png'
 
 const auth = useAuthStore()
 const editingPwd = ref(false)
@@ -34,6 +35,38 @@ function toggleEditName() {
 function uploadProfileImage() {
   document.getElementById("profile-img")?.click();
 }
+
+const selectedFile = ref<File | null>(null)
+const previewUrl = ref<string | null>(null)
+
+const imageUrl = computed(() =>
+  previewUrl.value ?? anonymousLogo
+)
+
+function onFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    input.value = ''
+    return
+  }
+
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+  }
+
+  selectedFile.value = file
+  previewUrl.value = URL.createObjectURL(file)
+}
+
+onUnmounted(() => {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+  }
+})
 </script>
 
 <template>
@@ -41,8 +74,8 @@ function uploadProfileImage() {
     <h1>My account</h1>
     <p>Username: {{ auth.user?.username }}</p>
     <hr>
-    <img class="profile-image-button" src="./../assets/Anonymous_logo.png" alt="profile-image">
-    <input type="file" id="profile-img" accept="image/png, image/jpeg, image/gif" style="display: none" />
+    <img class="profile-image-button" :src="imageUrl" alt="profile-image">
+    <input type="file" id="profile-img" accept="image/png, image/jpeg, image/gif" @change="onFileChange" style="display: none" />
     <button class="button" @click="uploadProfileImage()">Upload image</button>
     <hr>
     <span>
@@ -70,6 +103,11 @@ function uploadProfileImage() {
 
 .button {
   margin: 0 0.5em;
+}
+
+img {
+  width: 10em;
+  height: 10em;
 }
 
 .profile-image-button {
