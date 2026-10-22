@@ -10,5 +10,10 @@ export const usersApi = {
     formData.append('file', file);
     const response = await axios.post(API_URL + '/' + userId + '/img', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
     return response
+  },
+
+  async fetchAllProfileImages() {
+    const response = await axios.get(API_URL + '/imgs')
+    return response
   }
 }

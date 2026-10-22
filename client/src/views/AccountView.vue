@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 import { computed, onUnmounted, ref } from 'vue'
 import anonymousLogo from '@/assets/Anonymous_logo.png'
+import { useUsersStore } from '@/stores/users'
 
 const auth = useAuthStore()
 const editingPwd = ref(false)
@@ -40,7 +41,7 @@ const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string | null>(null);
 
 const imageUrl = computed(() =>
-  previewUrl.value ?? anonymousLogo
+  previewUrl.value ?? (auth.user ? useUsersStore().images[auth.user!.id] : anonymousLogo)
 )
 
 function onFileChange(event: Event) {

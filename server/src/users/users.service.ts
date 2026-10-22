@@ -47,6 +47,31 @@ export class UsersService {
     }
   }
 
+  async getAllImages(): Promise<Record<number, string>> {
+    const images: Record<number, string> = {};
+    const users = await this.userRepo.findAll();
+
+    for (const user of users) {
+      if (user.filename == '') {
+        continue;
+      }
+
+      const mimeTypes: Record<string, string> = {
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        gif: 'image/gif',
+      }
+
+      const buffer = await fs.readFile(this.makeImageFullPath(user.filename));
+
+      images[user.id] =
+        `data:${mimeTypes[this.getExtention(user.filename)]};base64,${buffer.toString('base64')}`;
+    }
+
+    return images;
+  }
+
   private getExtention(filepath: string): string {
     return path.extname(filepath);
   }

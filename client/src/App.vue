@@ -3,13 +3,16 @@ import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from './stores/auth';
 import { onMounted } from 'vue';
 import { useConfigStore } from './stores/config';
+import { useUsersStore } from './stores/users';
 
 const auth = useAuthStore()
+const users = useUsersStore()
 const configStore = useConfigStore();
 
 onMounted(() => {
   if (auth.token) {
     auth.fetchUser();
+    users.ensureInitialized();
   }
   configStore.fetchConfig();
 });

@@ -33,6 +33,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('imgs')
+  async getAllImages(): Promise<Record<number, string>> {
+    return this.usersService.getAllImages();
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findById(@Param('id') id: number): Promise<User | null> {
     return this.usersService.findById(id);
