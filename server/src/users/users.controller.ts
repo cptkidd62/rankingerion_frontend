@@ -66,7 +66,11 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Post(':id/img')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    limits: {
+      fileSize: 5 * 1024 * 1024,
+    },
+  }))
   async uploadProfileImage(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: AuthenticatedRequest,

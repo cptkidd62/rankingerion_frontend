@@ -44,7 +44,7 @@ const imageUrl = computed(() =>
   previewUrl.value ?? (auth.user ? useUsersStore().images[auth.user!.id] : anonymousLogo)
 )
 
-function onFileChange(event: Event) {
+async function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
 
@@ -63,7 +63,18 @@ function onFileChange(event: Event) {
   previewUrl.value = URL.createObjectURL(file);
 
   console.log(selectedFile.value);
-  api.users.uploadProfileImage(selectedFile.value, useAuthStore().user!.id);
+  try {
+    await api.users.uploadProfileImage(selectedFile.value, useAuthStore().user!.id);
+  }
+  catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 413) {
+        alert('Image must not exceed 5 MB.');
+      } else {
+        alert('Failed to upload image.');
+      }
+    }
+  }
   useUsersStore().fetchImages();
 }
 

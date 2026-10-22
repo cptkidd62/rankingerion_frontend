@@ -15,7 +15,7 @@ export const useUsersStore = defineStore('users', () => {
       console.log(images.value);
       initialized.value = true
     } catch (error) {
-      console.error('Matches loading error', error);
+      console.error('Images loading error', error);
     } finally {
       loading.value = false
     }
