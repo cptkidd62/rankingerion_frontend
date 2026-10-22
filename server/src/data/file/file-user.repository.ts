@@ -106,4 +106,9 @@ export class FileUserRepository extends UserRepository implements OnModuleInit {
     this.users[id].password = password;
     this.dirty = true;
   }
+
+  async updateFilename(id: number, filename: string): Promise<void> {
+    this.users[id].filename = filename;
+    this.dirty = true;
+  }
 }

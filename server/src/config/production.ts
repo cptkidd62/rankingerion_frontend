@@ -6,6 +6,7 @@ export const ProdConfig: AppConfig = {
   matchesFile: 'matches.json',
   dataDir: './mock_data', // path to folder where usersFile, botsFile and matchesFile are located
   botsDir: './mock_data/bots', // path to folder where uploaded bots are saved
+  imgsDir: './mock_data/imgs', // path to folder where uploaded images are saved
   useBenchmarker: true, // Benchmarker vs mock matches - do not modify for production
   gameName: 'TestGame', // name of game displayed on the website
   referee: 'Sandbox', // name of referee in Benchmarker

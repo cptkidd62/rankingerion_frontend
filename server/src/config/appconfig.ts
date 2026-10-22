@@ -4,6 +4,7 @@ export type AppConfig = {
   matchesFile: string;
   dataDir: string;
   botsDir: string;
+  imgsDir: string;
 
   useBenchmarker: boolean;
 

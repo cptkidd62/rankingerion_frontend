@@ -6,6 +6,7 @@ const DevConfig = {
   matchesFile: 'matches.json',
   dataDir: './mock_data',
   botsDir: './mock_data/bots',
+  imgsDir: './mock_data/imgs',
   gameName: 'TestGame',
   referee: 'Sandbox',
   playersCount: 2,

@@ -15,7 +15,7 @@ async function updatePwd() {
     await api.auth.password(newPwd.value);
     editingPwd.value = false;
     newPwd.value = '';
-    window.alert('Password changed successfully')
+    window.alert('Password changed successfully');
     await auth.fetchUser();
     errorMsg.value = '';
   } catch (error) {
@@ -36,35 +36,38 @@ function uploadProfileImage() {
   document.getElementById("profile-img")?.click();
 }
 
-const selectedFile = ref<File | null>(null)
-const previewUrl = ref<string | null>(null)
+const selectedFile = ref<File | null>(null);
+const previewUrl = ref<string | null>(null);
 
 const imageUrl = computed(() =>
   previewUrl.value ?? anonymousLogo
 )
 
 function onFileChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
 
-  if (!file) return
+  if (!file) return;
 
   if (!file.type.startsWith('image/')) {
-    input.value = ''
-    return
+    input.value = '';
+    return;
   }
 
   if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
+    URL.revokeObjectURL(previewUrl.value);
   }
 
-  selectedFile.value = file
-  previewUrl.value = URL.createObjectURL(file)
+  selectedFile.value = file;
+  previewUrl.value = URL.createObjectURL(file);
+
+  console.log(selectedFile.value);
+  api.users.uploadProfileImage(selectedFile.value, useAuthStore().user!.id);
 }
 
 onUnmounted(() => {
   if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
+    URL.revokeObjectURL(previewUrl.value);
   }
 })
 </script>

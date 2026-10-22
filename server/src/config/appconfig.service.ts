@@ -39,6 +39,11 @@ export class AppConfigService {
       mkdirSync(this.config.botsDir, { recursive: true });
     }
     try {
+      accessSync(this.config.imgsDir);
+    } catch {
+      mkdirSync(this.config.imgsDir, { recursive: true });
+    }
+    try {
       accessSync(this.config.dataDir + '/' + this.config.usersFile);
     } catch {
       copyFileSync('./example-users.json', this.config.dataDir + '/' + this.config.usersFile);

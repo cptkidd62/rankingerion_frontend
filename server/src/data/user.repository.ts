@@ -2,6 +2,7 @@ export interface User {
   id: number;
   username: string;
   password: string;
+  filename: string;
 }
 
 export abstract class UserRepository {
@@ -11,4 +12,5 @@ export abstract class UserRepository {
   abstract create(user: User): Promise<User | null>;
   abstract deleteById(id: number): Promise<void>;
   abstract updatePassword(id: number, password: string): Promise<void>;
+  abstract updateFilename(id: number, filename: string): Promise<void>;
 }
