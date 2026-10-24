@@ -17,29 +17,43 @@ case "$1" in
 
     start)
         if [ ! -f ".benchmarker.pid" ] && [ ! -f ".backend.pid" ] && [ ! -f ".frontend.pid" ]; then
-            mkdir logs
+            mkdir -p logs
 
             echo "==BENCHMARKER== run"
-            (cd local-benchmarker && npx tsx main.ts "$2") > logs/benchmarker.log 2>&1 &
+            (cd local-benchmarker && exec setsid npx tsx main.ts "$2") > logs/benchmarker.log 2>&1 &
             echo $! > .benchmarker.pid
 
             echo "==SERVER== run"
-            (cd server && npm run start:prod) > logs/backend.log 2>&1 &
+            (cd server && exec setsid npm run start:prod) > logs/backend.log 2>&1 &
             echo $! > .backend.pid
 
             echo "==CLIENT== run"
-            (cd client && npx serve -s dist -l 5173) > logs/frontend.log 2>&1 &
+            (cd client && exec setsid npx serve -s dist -l 5173) > logs/frontend.log 2>&1 &
             echo $! > .frontend.pid
             echo "==DONE=="
         fi
         ;;
 
     stop)
-        kill $(cat .backend.pid) 2>/dev/null
-        kill $(cat .frontend.pid) 2>/dev/null
-        kill $(cat .benchmarker.pid) 2>/dev/null
+        stop_service() {
+            local pid_file="$1"
 
-        rm -f .backend.pid .frontend.pid .benchmarker.pid
+            if [ -f "$pid_file" ]; then
+                local pid
+                pid=$(cat "$pid_file")
+
+                if kill -0 "$pid" 2>/dev/null; then
+                    kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null
+                fi
+
+                rm -f "$pid_file"
+            fi
+        }
+
+        stop_service .backend.pid
+        stop_service .frontend.pid
+        stop_service .benchmarker.pid
+
         echo "==DONE=="
         ;;
 
