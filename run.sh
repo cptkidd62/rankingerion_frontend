@@ -16,20 +16,22 @@ case "$1" in
         ;;
 
     start)
-        mkdir logs
+        if [ ! -f ".benchmarker.pid" ] && [ ! -f ".backend.pid" ] && [ ! -f ".frontend.pid" ]; then
+            mkdir logs
 
-        echo "==BENCHMARKER== run"
-        (cd local-benchmarker && npx tsx main.ts "$2") > logs/benchmarker.log 2>&1 &
-        echo $! > .benchmarker.pid
+            echo "==BENCHMARKER== run"
+            (cd local-benchmarker && npx tsx main.ts "$2") > logs/benchmarker.log 2>&1 &
+            echo $! > .benchmarker.pid
 
-        echo "==SERVER== run"
-        (cd server && npm run start:prod) > logs/backend.log 2>&1 &
-        echo $! > .backend.pid
+            echo "==SERVER== run"
+            (cd server && npm run start:prod) > logs/backend.log 2>&1 &
+            echo $! > .backend.pid
 
-        echo "==CLIENT== run"
-        (cd client && npx serve -s dist -l 5173) > logs/frontend.log 2>&1 &
-        echo $! > .frontend.pid
-        echo "==DONE=="
+            echo "==CLIENT== run"
+            (cd client && npx serve -s dist -l 5173) > logs/frontend.log 2>&1 &
+            echo $! > .frontend.pid
+            echo "==DONE=="
+        fi
         ;;
 
     stop)
