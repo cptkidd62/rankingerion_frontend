@@ -25,7 +25,7 @@ export class BenchmarkerService {
     try {
       console.log('SEND', c);
       const results = await this.clientService.enqueueBatch([
-        new PlayTask(agents, this.randomLong(), this.appConfigService.config.referee),
+        new PlayTask(agents, this.randomLong(), this.appConfigService.config.options),
       ]);
       console.log('**** OUT Batch results no %d:', c);
       for (let i = 0; i < results.length; i++) {

@@ -9,7 +9,7 @@ export type AppConfig = {
   useBenchmarker: boolean;
 
   gameName: string;
-  referee: string;
+  options: string;
   playersCount: number;
 
   // matchmaking

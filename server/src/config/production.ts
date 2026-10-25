@@ -9,7 +9,7 @@ export const ProdConfig: AppConfig = {
   imgsDir: './mock_data/imgs', // path to folder where uploaded images are saved
   useBenchmarker: true, // Benchmarker vs mock matches - do not modify for production
   gameName: 'TestGame', // name of game displayed on the website
-  referee: 'Sandbox', // name of referee in Benchmarker
+  options: 'Sandbox', // name of referee in Benchmarker
   playersCount: 2, // number of players per game
   ratingForMatchmaking: 'glicko', // rating used for matchmaking - 'glicko' or 'trueskill' ('glicko' available only for 2 players)
   acceptedTextExtentions: ['.cpp'],

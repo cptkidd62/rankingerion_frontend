@@ -51,8 +51,8 @@ export class PlayTaskContainer extends TaskContainer {
     return Number(process.env.DEFAULT_PRIORITY ?? 10);
   }
 
-  getReferee(): string {
-    return this.bc.batch[this.index].referee;
+  getOptions(): string {
+    return this.bc.batch[this.index].options;
   }
 }
 

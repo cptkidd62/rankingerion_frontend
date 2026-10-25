@@ -149,7 +149,7 @@ export class ClientService {
     this.outstream.writeInt(agents.length);
     agents.forEach((agent) => this.outstream.writeUTF(agent.toString()));
     this.outstream.writeLong(playTask.getSeed());
-    this.outstream.writeUTF(playTask.getReferee());
+    this.outstream.writeUTF(playTask.getOptions());
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.sentTasks.push(playTask);

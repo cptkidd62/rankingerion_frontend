@@ -4,6 +4,6 @@ export class PlayTask {
   constructor(
     public agents: Agent[],
     public seed: bigint,
-    public referee: string,
+    public options: string,
   ) {}
 }

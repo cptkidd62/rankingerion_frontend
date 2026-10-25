@@ -8,7 +8,7 @@ const DevConfig = {
   botsDir: './mock_data/bots',
   imgsDir: './mock_data/imgs',
   gameName: 'TestGame',
-  referee: 'Sandbox',
+  options: 'Sandbox',
   playersCount: 2,
   ratingForMatchmaking: 'glicko',
   acceptedTextExtentions: ['.cpp'],
