@@ -17,9 +17,8 @@ Project can be also run through `./run.sh`:
 - `./run.sh stop` - stops all the components
 
 To handle the app through HTTPS, Nginx reverse proxy can be used (install Nginx first).
-You need certificate to make the connection trusted.
-Paste the config from `deploy/nginx.conf` to `nginx.conf` your Nginx installation uses (most likely located in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`), while substituting IP in both `server_name  127.0.0.1;` with your damain name or host IP, and pasting certificate paths in `ssl_certificate <path>;` (public) and `ssl_certificate_key <path>;` (private).
-Then run or reload Nginx.
+Scripts in `deploy` can be used for Nginx setup as well as certificates generation.
+Make sure `nginx` and `mkcert` are installed first.
 
 ## Author
 Project originally created as a part of masters thesis of Zuzanna Kania at University of Wrocław.
