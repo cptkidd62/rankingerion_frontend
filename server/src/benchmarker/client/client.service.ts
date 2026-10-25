@@ -114,7 +114,7 @@ export class ClientService {
   private register() {
     this.outstream.writeUTF(os.hostname());
     this.outstream.writeUTF(''); // referee
-    this.outstream.writeInt(10);
+    this.outstream.writeInt(Number(process.env.DEFAULT_PRIORITY!));
     const buf = this.outstream.getBuffer();
     this.sendingQueue.push(buf);
     this.trySend();
