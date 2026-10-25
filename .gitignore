@@ -2,3 +2,4 @@ logs
 .backend.pid
 .benchmarker.pid
 .frontend.pid
+certs
