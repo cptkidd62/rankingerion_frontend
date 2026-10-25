@@ -18,15 +18,8 @@ Project can be also run through `./run.sh`:
 
 To handle the app through HTTPS, Nginx reverse proxy can be used (install Nginx first).
 You need certificate to make the connection trusted.
-Paste the paths in `deploy/nginx.conf` in `ssl_certificate <path>;` (public) and `ssl_certificate_key <path>;` (private).
-Then run the following:
-
-```
-sudo cp deploy/nginx.conf /etc/nginx/sites-available/rankingerion
-sudo ln -s /etc/nginx/sites-available/rankingerion /etc/nginx/sites-enabled/rankingerion
-sudo nginx -t
-sudo systemctl reload nginx
-```
+Paste the config from `deploy/nginx.conf` to `nginx.conf` your Nginx installation uses (most likely located in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`), while substituting IP in both `server_name  127.0.0.1;` with your damain name or host IP, and pasting certificate paths in `ssl_certificate <path>;` (public) and `ssl_certificate_key <path>;` (private).
+Then run or reload Nginx.
 
 ## Author
 Project originally created as a part of masters thesis of Zuzanna Kania at University of Wrocław.
