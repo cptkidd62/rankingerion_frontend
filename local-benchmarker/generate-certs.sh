@@ -74,7 +74,8 @@ openssl pkcs12 -export \
     -inkey "$CERT_DIR/server.key" \
     -in "$CERT_DIR/server.pem" \
     -certfile "$CERT_DIR/ca.pem" \
-    -name "local-test-server"
+    -name "local-test-server" \
+    -passout pass:
 
 echo "Generating client PFX..."
 openssl pkcs12 -export \
@@ -82,6 +83,7 @@ openssl pkcs12 -export \
     -inkey "$CERT_DIR/client.key" \
     -in "$CERT_DIR/client.pem" \
     -certfile "$CERT_DIR/ca.pem" \
-    -name "local-test-client"
+    -name "local-test-client" \
+    -passout pass:
 
 echo "Done."
