@@ -62,7 +62,7 @@ export abstract class BotRepository {
   abstract updateById(id: number, bot: Bot): Promise<void>;
   abstract updateNameById(id: number, name: string): Promise<void>;
   abstract updateRatingById(id: number, rating: RatingData): Promise<void>;
-  abstract updateErrorLogById(id: number, msg: string): Promise<void>;
+  abstract updateErrorLogById(id: number, msg: string, ignore?: boolean): Promise<void>;
   abstract updateStatusTypeById(id: number, statusType: StatusType): Promise<void>;
   abstract updateStatusProgressById(id: number, statusProgress: StatusProgress): Promise<void>;
   abstract updateStatusById(id: number, statusType: StatusType, statusProgress: StatusProgress): Promise<void>;

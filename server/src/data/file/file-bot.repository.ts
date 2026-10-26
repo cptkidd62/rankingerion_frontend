@@ -182,12 +182,13 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     }
   }
 
-  async updateErrorLogById(id: number, msg: string): Promise<void> {
+  async updateErrorLogById(id: number, msg: string, ignore?: boolean): Promise<void> {
     await this.mutex.acquire();
     try {
       const idx = this.bots.findIndex((bot) => bot.id == id);
       if (idx >= 0) {
-        this.bots[idx].errorsCount++;
+        if (!ignore)
+          this.bots[idx].errorsCount++;
         this.bots[idx].lastErrorMsg = msg;
         this.dirty = true;
       }

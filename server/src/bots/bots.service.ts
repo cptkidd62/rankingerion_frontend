@@ -283,7 +283,7 @@ export class BotsService {
           const player = players.at(res.agentIndex!);
           if (player) {
             await this.botRepo.updateStatusById(player.id, 'compilation_error', 'failed');
-            await this.botRepo.updateErrorLogById(player.id, res.message);
+            await this.botRepo.updateErrorLogById(player.id, res.message, true);
             await this.botRepo.updateRatingById(player.id, {
               value: 0,
               RD: player.rating.RD,
