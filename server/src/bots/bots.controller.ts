@@ -58,8 +58,6 @@ export class BotsController {
     @Body()
     {
       name,
-      language,
-      code,
       userId,
     }: {
       name: string;
@@ -73,7 +71,7 @@ export class BotsController {
     console.log(name, userId);
     console.log('file', file);
     if (req.user?.id != userId) throw new ForbiddenException();
-    return this.botsService.createWithMatches(name, file, language, code, userId);
+    return this.botsService.createWithMatches(name, file, userId);
   }
 
   @UseGuards(AuthGuard)

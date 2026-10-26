@@ -55,8 +55,6 @@ export class BotsService {
   async create(
     name: string,
     file: Express.Multer.File,
-    language: string,
-    code: string,
     user_id: number,
   ): Promise<number> {
     if ((await this.botRepo.filterByUserId(user_id)).filter((bot) => !bot.status.isDeleted).length >= this.appConfig.config.maxBotsPerUser) {
@@ -98,53 +96,16 @@ export class BotsService {
       return id;
     }
     else {
-      const ext = language;
-      if (ext === '') {
-        throw new BotUploadException('Missing file extention');
-      }
-      if (!this.validateExtention(ext)) {
-        throw new BotUploadException('Unsupported file extention');
-      }
-      const user = await this.userRepo.findById(user_id);
-      if (user === null) {
-        throw new BadRequestException('User not found');
-      }
-      if (!(await this.botNameUnique(name, user_id))) {
-        throw new BadRequestException(
-          'You already use this bot name (checks deleted too)',
-        );
-      }
-      if (code == '') {
-        throw new BadRequestException('Code cannot be empty');
-      }
-      const uuid = crypto.randomUUID();
-      const filePath = this.makeBotFullPath(uuid + ext);
-      await fs.writeFile(filePath, code, 'utf-8');
-      const id = await this.botRepo.create({
-        id: 0,
-        name: name,
-        language: ext,
-        user_id: user_id,
-        username: user.username,
-        dateCreated: Date.now(),
-        filename: uuid,
-        status: { type: 'created', progress: 'in_progress', isDeleted: false },
-        errorsCount: 0,
-        lastErrorMsg: '',
-        rating: initialRating,
-      });
-      return id;
+      throw new BotUploadException('Missing file');
     }
   }
 
   async createWithMatches(
     name: string,
     file: Express.Multer.File,
-    language: string,
-    code: string,
     user_id: number,
   ): Promise<number> {
-    const id = await this.create(name, file, language, code, user_id);
+    const id = await this.create(name, file, user_id);
 
     if (id === undefined) {
       return id;
