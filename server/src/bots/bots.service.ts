@@ -300,28 +300,9 @@ export class BotsService {
           }
         } else if (res instanceof PlaytimeError) {
           console.error(
-            'playtime error of bot %s on index %d: %s',
-            res.agentName,
-            res.agentIndex,
+            'playtime error: %s',
             res.message,
           );
-          const player = players.at(res.agentIndex!);
-          if (player) {
-            await this.botRepo.updateStatusById(player.id, 'playtime_error', 'failed');
-            await this.botRepo.updateRatingById(player.id, {
-              value: 0,
-              RD: player.rating.RD,
-              lastMatchId: player.rating.lastMatchId,
-              matchesPlayed: player.rating.matchesPlayed,
-              opponentsPlayed: player.rating.opponentsPlayed,
-              trueSkillMu: player.rating.trueSkillMu,
-              trueSkillSigma: player.rating.trueSkillSigma,
-            });
-            if (player.id === this_bot.id) {
-              // don't continue if own bot has error
-              return false;
-            }
-          }
         } else if (res instanceof ConnectionError) {
           console.error('ConnectionError');
           return false;
