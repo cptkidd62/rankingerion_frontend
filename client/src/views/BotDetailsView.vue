@@ -243,7 +243,7 @@ onUnmounted(() => {
                     </tr>
                 </tbody>
             </table>
-            <div v-if="bot.user_id == useAuthStore().user?.id">
+            <div v-if="bot.user_id == useAuthStore().user?.id" class="compilation-msg monospace">
                 {{ bot.lastErrorMsg }}
             </div>
         </div>
@@ -272,5 +272,10 @@ button {
 .text-input.edit {
     margin-left: 1em;
     margin-right: 1em;
+}
+
+.compilation-msg {
+    text-align: left;
+    margin-top: 1.5em;
 }
 </style>
