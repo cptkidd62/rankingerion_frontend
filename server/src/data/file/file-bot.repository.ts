@@ -1,10 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { promises as fs } from 'fs';
+import { readFileSync } from 'fs';
 import * as path from 'path';
 import { Bot, BotRepository, RatingData, StatusProgress, StatusType } from '../bot.repository';
 import { Mutex } from 'async-mutex';
 import { initialRating } from '../rating.service';
 import { AppConfigService } from '@/config/appconfig.service';
+import { createHash } from 'crypto';
 
 interface BotFileData {
   next_id: number;
@@ -42,6 +44,9 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
         bot.rating = initialRating;
         if (bot.status.type == 'compilation_error' || bot.status.type == 'playtime_error') {
           bot.rating.value = 0;
+        }
+        if (bot.fileHash == undefined || bot.fileHash == '') {
+          bot.fileHash = createHash('sha256').update(readFileSync(this.makeBotFullPath(this.botFile(bot)))).digest('hex');
         }
       }
       this.nextId = data.next_id;
@@ -234,5 +239,13 @@ export class FileBotRepository extends BotRepository implements OnModuleInit {
     finally {
       this.mutex.release();
     }
+  }
+
+  private botFile(bot: Bot): string {
+    return bot.filename + bot.language;
+  }
+
+  private makeBotFullPath(filename: string): string {
+    return path.join(this.appConfig.config.botsDir, filename);
   }
 }

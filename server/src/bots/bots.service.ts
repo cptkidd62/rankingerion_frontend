@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { randomInt } from 'crypto';
+import { createHash, randomInt } from 'crypto';
 import { BotRepository, Bot, BotDTO, BotFileData } from '@/data/bot.repository';
 import { MatchRepository } from '@/data/match.repository';
 import { UserRepository } from '@/data/user.repository';
@@ -77,6 +77,10 @@ export class BotsService {
           'You already use this bot name (checks deleted too)',
         );
       }
+      const hash = createHash('sha256').update(file.buffer).digest('hex');
+      if ((await this.botRepo.filterByUserId(user_id)).filter((bot) => bot.fileHash == hash).length > 0) {
+        throw new BadRequestException('You\'ve already uploaded this file');
+      }
       const uuid = crypto.randomUUID();
       const filePath = this.makeBotFullPath(uuid + ext);
       await fs.writeFile(filePath, file.buffer, 'utf-8');
@@ -88,6 +92,7 @@ export class BotsService {
         username: user.username,
         dateCreated: Date.now(),
         filename: uuid,
+        fileHash: hash,
         status: { type: 'created', progress: 'in_progress', isDeleted: false },
         errorsCount: 0,
         lastErrorMsg: '',

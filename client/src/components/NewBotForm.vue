@@ -10,8 +10,6 @@ const emit = defineEmits<{
 const name = ref('')
 const fileInput = ref<HTMLInputElement | null>()
 const file = ref<File | null>()
-const language = ref('')
-const code = ref('')
 const isDragging = ref(false);
 const dragCounter = ref(0);
 

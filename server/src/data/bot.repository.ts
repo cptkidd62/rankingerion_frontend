@@ -27,6 +27,7 @@ export interface Bot {
   username: string;
   dateCreated: number;
   filename: string;
+  fileHash: string;
   status: BotStatus;
   errorsCount: number;
   lastErrorMsg: string;
