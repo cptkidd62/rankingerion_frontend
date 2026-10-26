@@ -16,11 +16,17 @@ case "$1" in
         ;;
 
     start)
+        if [ -n "$2" ]; then
+            echo "$2" > .benchmarker-count
+        fi
+
+        COUNT="${2:-$(cat .benchmarker-count 2>/dev/null || echo 1)}"
+
         if [ ! -f ".benchmarker.pid" ] && [ ! -f ".backend.pid" ] && [ ! -f ".frontend.pid" ]; then
             mkdir -p logs
 
             echo "==BENCHMARKER== run"
-            (cd local-benchmarker && exec setsid npx tsx main.ts "$2") > logs/benchmarker.log 2>&1 &
+            (cd local-benchmarker && exec setsid npx tsx main.ts "$COUNT") > logs/benchmarker.log 2>&1 &
             echo $! > .benchmarker.pid
 
             echo "==SERVER== run"
@@ -57,7 +63,12 @@ case "$1" in
         echo "==DONE=="
         ;;
 
+    restart)
+        "$0" stop
+        "$0" start "$2"
+        ;;
+
     *)
-        echo "Usage: $0 {setup|start <count>|stop}"
+        echo "Usage: $0 {setup|start <count>|stop|restart <count>}"
         ;;
 esac
