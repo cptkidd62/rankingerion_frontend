@@ -43,7 +43,7 @@ export class BenchmarkerService {
         if (match) {
           const [, name] = match;
           const idx = bots.findIndex((bot) => path.parse(bot).name === name);
-          return new CompilationError(idx, name);
+          return new CompilationError(this.clientService.getCompilationErrorMsg(agents[idx].toString()) ?? '', idx, name);
         } else {
           return new PlaytimeError(error);
         }

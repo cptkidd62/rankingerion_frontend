@@ -188,7 +188,7 @@ onUnmounted(() => {
                     <tr>
                         <th>W / D / L</th>
                         <td>{{ scoreCountOverall.wins }} / {{ scoreCountOverall.draws }} / {{ scoreCountOverall.losses
-                        }}</td>
+                            }}</td>
                     </tr>
                     <tr>
                         <th>Errors</th>
@@ -243,6 +243,9 @@ onUnmounted(() => {
                     </tr>
                 </tbody>
             </table>
+            <div v-if="bot.user_id == useAuthStore().user?.id">
+                {{ bot.lastErrorMsg }}
+            </div>
         </div>
     </div>
 </template>

@@ -43,6 +43,7 @@ export class ClientService {
   private outstream: OutputStream = new OutputStream();
   private instream: InputStream = new InputStream();
 
+  private compilationErrors: Map<string, string> = new Map();
   private sendingQueue: Array<Buffer> = [];
   private batches: Array<BatchContainer> = [];
   private sentTasks: Array<TaskContainer> = [];
@@ -262,6 +263,7 @@ export class ClientService {
   }
 
   private compilationError(agent: Agent, errorMsg: string) {
+    this.compilationErrors.set(agent.toString(), errorMsg);
     debugLog(
       1,
       'Compilation error on agent: ' +
@@ -441,6 +443,10 @@ export class ClientService {
         return;
       }
     }
+  }
+
+  getCompilationErrorMsg(agent: string): string | undefined {
+    return this.compilationErrors.get(agent);
   }
 }
 

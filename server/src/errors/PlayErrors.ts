@@ -9,7 +9,14 @@ export class PlayTaskError extends Error {
   }
 }
 
-export class CompilationError extends PlayTaskError {}
+export class CompilationError extends PlayTaskError {
+  message: string;
+
+  constructor(message: string, agentIndex?: number, agentName?: string) {
+    super(agentIndex, agentName);
+    this.message = message;
+  }
+}
 
 export class PlaytimeError extends PlayTaskError {
   message: string;
